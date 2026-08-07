@@ -27,75 +27,57 @@
 :root {
   --bg: #ffffff;
   --bg-soft: #f7f8fa;
-  --bg-code: #f4f5f7;
-  --fg: #16181d;
-  --fg-muted: #5b6270;
-  --fg-faint: #858c99;
-  --border: #e3e6ec;
-  --border-strong: #cdd2dc;
+  --bg-code: #f2f3f6;
+  --fg: #101216;
+  --fg-muted: #565d6b;
+  --fg-faint: #6b7280;
+  --border: #e4e7ed;
+  --border-strong: #c9cfda;
   --accent: #4338ca;
   --accent-fg: #ffffff;
   --accent-soft: #eef0fe;
+  --grid: rgba(16, 18, 22, 0.045);
   --ok: #0f7a4d;
   --warn: #a35c00;
-  --danger: #b3261e;
-  --radius: 10px;
-  --maxw: 1080px;
+  --radius: 6px;
+  --maxw: 1120px;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0c0e13;
-    --bg-soft: #12151c;
-    --bg-code: #14171f;
-    --fg: #e8eaf0;
-    --fg-muted: #9aa3b2;
-    --fg-faint: #6f7787;
-    --border: #232833;
-    --border-strong: #333a49;
+  :root:not([data-theme]) {
+    --bg: #08090d;
+    --bg-soft: #0e1015;
+    --bg-code: #101319;
+    --fg: #edeef2;
+    --fg-muted: #98a0b0;
+    --fg-faint: #868e9d;
+    --border: #1e222b;
+    --border-strong: #2e3340;
     --accent: #8b93ff;
-    --accent-fg: #0c0e13;
-    --accent-soft: #1a1d2b;
+    --accent-fg: #08090d;
+    --accent-soft: #161a28;
+    --grid: rgba(255, 255, 255, 0.032);
     --ok: #4ade80;
     --warn: #fbbf24;
-    --danger: #f87171;
   }
 }
-
 :root[data-theme="dark"] {
-  --bg: #0c0e13;
-  --bg-soft: #12151c;
-  --bg-code: #14171f;
-  --fg: #e8eaf0;
-  --fg-muted: #9aa3b2;
-  --fg-faint: #6f7787;
-  --border: #232833;
-  --border-strong: #333a49;
+  --bg: #08090d;
+  --bg-soft: #0e1015;
+  --bg-code: #101319;
+  --fg: #edeef2;
+  --fg-muted: #98a0b0;
+  --fg-faint: #868e9d;
+  --border: #1e222b;
+  --border-strong: #2e3340;
   --accent: #8b93ff;
-  --accent-fg: #0c0e13;
-  --accent-soft: #1a1d2b;
+  --accent-fg: #08090d;
+  --accent-soft: #161a28;
+  --grid: rgba(255, 255, 255, 0.032);
   --ok: #4ade80;
   --warn: #fbbf24;
-  --danger: #f87171;
-}
-
-:root[data-theme="light"] {
-  --bg: #ffffff;
-  --bg-soft: #f7f8fa;
-  --bg-code: #f4f5f7;
-  --fg: #16181d;
-  --fg-muted: #5b6270;
-  --fg-faint: #858c99;
-  --border: #e3e6ec;
-  --border-strong: #cdd2dc;
-  --accent: #4338ca;
-  --accent-fg: #ffffff;
-  --accent-soft: #eef0fe;
-  --ok: #0f7a4d;
-  --warn: #a35c00;
-  --danger: #b3261e;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -104,42 +86,43 @@ html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
   html { scroll-behavior: auto; }
   * { animation: none !important; transition: none !important; }
 }
-
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--sans); font-size: 16px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
 }
-
 a { color: inherit; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 
-/* ── Header ─────────────────────────────────────────────────────────── */
+/* ── Mono label: the recurring "developer tool" signal ───────────────── */
+.mono { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; }
+.eyebrow { display: flex; align-items: center; gap: 14px; color: var(--accent); margin-bottom: 20px; }
+.eyebrow::before { content: ""; width: 42px; height: 1px; background: currentColor; flex: none; }
+
+/* ── Header ──────────────────────────────────────────────────────────── */
 header {
   position: sticky; top: 0; z-index: 50;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
   backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--border);
 }
-.nav { display: flex; align-items: center; gap: 16px; height: 60px; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: -0.01em; text-decoration: none; font-size: 17px; }
-.brand svg { width: 26px; height: 26px; display: block; border-radius: 6px; }
-.nav-links { margin-left: auto; display: flex; align-items: center; gap: 4px; }
-.nav-links a {
-  padding: 7px 11px; border-radius: 7px; text-decoration: none;
-  color: var(--fg-muted); font-size: 14.5px; font-weight: 500;
+.nav { display: flex; align-items: center; gap: 8px; height: 62px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; font-size: 18px; }
+.brand svg { width: 26px; height: 26px; display: block; }
+.nav-links { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+.nav-links a { padding: 8px 12px; text-decoration: none; color: var(--fg-muted); font-size: 14px; font-weight: 500; }
+.nav-links a:hover { color: var(--fg); }
+.nav-cta {
+  border: 1px solid var(--border-strong); border-radius: var(--radius);
+  padding: 8px 14px !important; color: var(--fg) !important;
+  font-family: var(--mono); font-size: 12px !important; letter-spacing: .1em; text-transform: uppercase;
 }
-.nav-links a:hover { color: var(--fg); background: var(--bg-soft); }
+.nav-cta:hover { border-color: var(--accent); color: var(--accent) !important; }
 .icon-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center; margin-left: 6px;
+  width: 34px; height: 34px; border: 1px solid var(--border); border-radius: var(--radius);
   background: transparent; color: var(--fg-muted); cursor: pointer; padding: 0;
 }
 .icon-btn:hover { color: var(--fg); border-color: var(--border-strong); }
@@ -150,171 +133,167 @@ header {
   :root:not([data-theme]) .sun { display: none; }
   :root:not([data-theme]) .moon { display: block; }
 }
-@media (max-width: 720px) { .nav-links .hide-sm { display: none; } }
+@media (max-width: 800px) { .nav-links .hide-sm { display: none; } }
 
-/* ── Hero ───────────────────────────────────────────────────────────── */
-.hero { position: relative; padding: 84px 0 64px; overflow: hidden; }
+/* ── Hero ────────────────────────────────────────────────────────────── */
+.hero { position: relative; padding: 92px 0 72px; overflow: hidden; }
+/* Grid + wash. Both are pure CSS so the page keeps loading zero external
+   assets, which is what lets vercel.json assert default-src 'self'. */
 .hero::before {
-  content: ""; position: absolute; inset: -50% -20% auto -20%; height: 520px;
-  background: radial-gradient(60% 60% at 50% 40%, color-mix(in srgb, var(--accent) 15%, transparent), transparent 70%);
-  pointer-events: none;
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(120% 80% at 50% 0%, #000 30%, transparent 78%);
+  -webkit-mask-image: radial-gradient(120% 80% at 50% 0%, #000 30%, transparent 78%);
 }
-.hero > * { position: relative; }
-.eyebrow {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 13px; font-weight: 550; letter-spacing: 0.01em;
-  color: var(--accent); background: var(--accent-soft);
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
-  padding: 5px 12px; border-radius: 999px; margin-bottom: 22px;
+.hero::after {
+  content: ""; position: absolute; left: 50%; top: -320px; width: 1100px; height: 620px;
+  transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 72%);
 }
+.hero > * { position: relative; z-index: 1; }
+
 h1 {
-  font-size: clamp(2.2rem, 6vw, 3.6rem); line-height: 1.06;
-  letter-spacing: -0.032em; font-weight: 700; margin: 0 0 20px;
-  max-width: 17ch;
+  font-size: clamp(2.5rem, 6.4vw, 4.3rem); line-height: 1.02;
+  letter-spacing: -0.042em; font-weight: 800; margin: 0 0 24px; max-width: 15ch;
 }
-.lede { font-size: clamp(1.05rem, 2.2vw, 1.22rem); color: var(--fg-muted); max-width: 62ch; margin: 0 0 32px; }
+h1 .hl { color: var(--accent); }
+.lede { font-size: clamp(1.05rem, 2vw, 1.24rem); color: var(--fg-muted); max-width: 60ch; margin: 0 0 36px; }
 .lede strong { color: var(--fg); font-weight: 600; }
 
-.cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 20px; }
+/* Install block — the herdr shape: wide, mono, divider before COPY. */
+.install {
+  display: flex; align-items: stretch; max-width: 560px;
+  background: var(--bg-code); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; margin-bottom: 14px;
+}
+.install code {
+  flex: 1; display: flex; align-items: center; gap: 12px; padding: 15px 18px;
+  font-family: var(--mono); font-size: 15px; color: var(--fg); overflow-x: auto; white-space: nowrap;
+}
+.install .prompt { color: var(--accent); user-select: none; font-weight: 600; }
+.copy {
+  border: 0; border-left: 1px solid var(--border); background: transparent; color: var(--fg-faint);
+  padding: 0 20px; cursor: pointer; font-family: var(--mono); font-size: 11px;
+  letter-spacing: .12em; text-transform: uppercase; flex: none;
+}
+.copy:hover { color: var(--fg); background: var(--bg-soft); }
+.copy[data-copied="1"] { color: var(--ok); }
+.meta { font-family: var(--mono); font-size: 12.5px; color: var(--fg-faint); margin: 0 0 34px; }
+.meta a { color: var(--accent); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
+
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
 .btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 11px 20px; border-radius: 9px; text-decoration: none;
-  font-size: 15px; font-weight: 570; border: 1px solid transparent;
-  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+  display: inline-flex; align-items: center; gap: 9px; padding: 13px 24px;
+  border-radius: var(--radius); text-decoration: none; font-size: 15px; font-weight: 600;
+  border: 1px solid transparent; transition: transform .1s ease, background .12s ease, border-color .12s ease;
 }
 .btn:active { transform: translateY(1px); }
 .btn-primary { background: var(--accent); color: var(--accent-fg); }
-.btn-primary:hover { background: color-mix(in srgb, var(--accent) 86%, black); }
+.btn-primary:hover { background: color-mix(in srgb, var(--accent) 84%, var(--fg)); }
 .btn-ghost { border-color: var(--border-strong); color: var(--fg); }
-.btn-ghost:hover { background: var(--bg-soft); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 .btn svg { width: 16px; height: 16px; }
 
-.install {
-  display: inline-flex; align-items: center; gap: 12px;
-  background: var(--bg-code); border: 1px solid var(--border);
-  border-radius: 9px; padding: 10px 10px 10px 16px;
-  font-family: var(--mono); font-size: 14.5px; max-width: 100%;
-}
-.install code { color: var(--fg); white-space: nowrap; overflow-x: auto; }
-.install .prompt { color: var(--fg-faint); user-select: none; }
-.copy {
-  border: 1px solid var(--border); background: var(--bg); color: var(--fg-muted);
-  border-radius: 6px; padding: 5px 9px; font-size: 12px; font-family: var(--sans);
-  font-weight: 550; cursor: pointer; white-space: nowrap; flex-shrink: 0;
-}
-.copy:hover { color: var(--fg); border-color: var(--border-strong); }
-.copy[data-copied="1"] { color: var(--ok); border-color: var(--ok); }
-
-.hero-note { font-size: 14px; color: var(--fg-faint); margin-top: 16px; }
-
-/* ── Terminal ───────────────────────────────────────────────────────── */
-.terminal {
-  margin: 44px 0 0; border: 1px solid var(--border); border-radius: 12px;
+/* ── Scan panel: a product surface, not just a code block ────────────── */
+.panel {
+  margin-top: 56px; border: 1px solid var(--border); border-radius: 10px;
   background: var(--bg-code); overflow: hidden;
 }
-.terminal-bar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 14px; border-bottom: 1px solid var(--border);
-  background: var(--bg-soft);
+.panel-bar {
+  display: flex; align-items: center; gap: 14px; padding: 12px 18px;
+  border-bottom: 1px solid var(--border); background: var(--bg-soft); flex-wrap: wrap;
 }
-.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-strong); }
-.terminal-cmd { font-family: var(--mono); font-size: 13px; color: var(--fg-muted); margin-left: 6px; }
-.terminal-body { overflow-x: auto; padding: 16px; }
-.terminal pre {
-  margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.55;
-  color: var(--fg); white-space: pre;
-}
+.dots { display: flex; gap: 7px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--border-strong); display: block; }
+.panel-cmd { font-family: var(--mono); font-size: 13px; color: var(--fg-muted); }
+.panel-live { margin-left: auto; display: flex; align-items: center; gap: 7px; color: var(--ok); font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.panel-live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.panel-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); border-bottom: 1px solid var(--border); }
+.panel-stat { padding: 15px 18px; border-right: 1px solid var(--border); }
+.panel-stat:last-child { border-right: 0; }
+.panel-stat .k { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-faint); }
+.panel-stat .v { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-top: 3px; }
+.panel-body { overflow-x: auto; padding: 18px; }
+.panel-body pre { margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.6; white-space: pre; color: var(--fg); }
 
-/* ── Sections ───────────────────────────────────────────────────────── */
-section { padding: 72px 0; border-top: 1px solid var(--border); }
-section.plain { border-top: none; }
-.section-head { max-width: 60ch; margin-bottom: 40px; }
-h2 { font-size: clamp(1.5rem, 3.4vw, 2.05rem); line-height: 1.18; letter-spacing: -0.022em; font-weight: 660; margin: 0 0 14px; }
-h3 { font-size: 1.02rem; font-weight: 620; margin: 0 0 7px; letter-spacing: -0.008em; }
-.section-head p { color: var(--fg-muted); margin: 0; font-size: 1.03rem; }
+/* ── Sections ────────────────────────────────────────────────────────── */
+section { padding: 88px 0; border-top: 1px solid var(--border); }
+.section-head { max-width: 62ch; margin-bottom: 44px; }
+h2 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); line-height: 1.12; letter-spacing: -0.032em; font-weight: 750; margin: 0 0 16px; }
+h3 { font-size: 1.05rem; font-weight: 650; margin: 0 0 8px; letter-spacing: -0.012em; }
+.section-head p { color: var(--fg-muted); margin: 0; font-size: 1.05rem; }
 .q { color: var(--fg); font-style: italic; }
 
-.grid { display: grid; gap: 16px; }
-.grid-3 { grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); }
-.grid-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.grid { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.cell { background: var(--bg); padding: 26px; }
+.cell p { margin: 0; color: var(--fg-muted); font-size: 14.6px; line-height: 1.62; }
+.cell .mono { color: var(--accent); display: block; margin-bottom: 12px; font-size: 11px; }
+a.cell { text-decoration: none; display: block; transition: background .12s ease; }
+a.cell:hover { background: var(--bg-soft); }
+a.cell h3::after { content: " →"; color: var(--accent); font-weight: 500; }
 
-.card {
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 22px; background: var(--bg-soft);
-}
-.card p { margin: 0; color: var(--fg-muted); font-size: 14.6px; line-height: 1.6; }
-.card .kicker {
-  font-family: var(--mono); font-size: 11.5px; letter-spacing: .05em;
-  text-transform: uppercase; color: var(--accent); margin-bottom: 10px; font-weight: 600;
-}
-a.card { text-decoration: none; display: block; transition: border-color .12s ease; }
-a.card:hover { border-color: var(--accent); }
-a.card h3::after { content: " →"; color: var(--accent); font-weight: 500; }
+/* ── Numbered steps ──────────────────────────────────────────────────── */
+.steps { display: grid; gap: 0; }
+.step { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 24px; padding: 30px 0; border-top: 1px solid var(--border); align-items: start; }
+.step:first-child { border-top: 0; }
+.step-n { font-family: var(--mono); font-size: 30px; font-weight: 600; color: var(--fg-muted); line-height: 1; letter-spacing: -0.02em; }
+.step p { margin: 0 0 14px; color: var(--fg-muted); font-size: 14.8px; max-width: 62ch; }
+@media (max-width: 620px) { .step { grid-template-columns: minmax(0, 1fr); gap: 10px; } .step-n { font-size: 22px; } }
 
-/* ── Evidence callout ───────────────────────────────────────────────── */
-.evidence {
-  border: 1px solid var(--border); border-left: 3px solid var(--accent);
-  border-radius: var(--radius); background: var(--bg-soft); padding: 26px 28px;
-}
-.evidence dl { margin: 0; display: grid; grid-template-columns: minmax(140px, auto) 1fr; gap: 12px 24px; }
-.evidence dt { font-weight: 600; font-size: 14.5px; }
+/* ── Evidence callout ────────────────────────────────────────────────── */
+.evidence { border: 1px solid var(--border); border-radius: 10px; background: var(--bg-soft); padding: 8px 28px; }
+.evidence dl { margin: 0; }
+.evidence .row { display: grid; grid-template-columns: minmax(150px, auto) 1fr; gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--border); }
+.evidence .row:last-child { border-bottom: 0; }
+.evidence dt { font-weight: 650; font-size: 14.5px; margin: 0; }
 .evidence dd { margin: 0; color: var(--fg-muted); font-size: 14.5px; }
-@media (max-width: 620px) {
-  .evidence dl { grid-template-columns: 1fr; gap: 4px 0; }
-  .evidence dd { margin-bottom: 12px; }
-}
+@media (max-width: 640px) { .evidence .row { grid-template-columns: 1fr; gap: 4px; } }
 
-/* ── Stats ──────────────────────────────────────────────────────────── */
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.stat { background: var(--bg); padding: 22px 20px; }
-.stat .n { font-size: 1.9rem; font-weight: 680; letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
-.stat .l { font-size: 13.5px; color: var(--fg-muted); }
+/* ── Stats strip ─────────────────────────────────────────────────────── */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.stat { background: var(--bg); padding: 28px 22px; }
+.stat .n { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+.stat .l { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-faint); margin-top: 10px; }
 
-/* ── Table ──────────────────────────────────────────────────────────── */
-.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
-table { border-collapse: collapse; width: 100%; font-size: 14.6px; min-width: 560px; }
-th, td { text-align: left; padding: 13px 18px; border-bottom: 1px solid var(--border); vertical-align: top; }
-th { font-weight: 620; font-size: 13px; letter-spacing: .02em; text-transform: uppercase; color: var(--fg-faint); background: var(--bg-soft); }
+/* ── Tables ──────────────────────────────────────────────────────────── */
+.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 14.6px; min-width: 580px; }
+th, td { text-align: left; padding: 15px 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { font-family: var(--mono); font-weight: 500; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-faint); background: var(--bg-soft); }
 tbody tr:last-child td { border-bottom: none; }
-td.name { font-weight: 570; white-space: nowrap; }
-td code, p code, li code, dd code { font-family: var(--mono); font-size: .89em; background: var(--bg-code); border: 1px solid var(--border); padding: 1px 5px; border-radius: 4px; }
+td.name { font-weight: 620; white-space: nowrap; }
+code { font-family: var(--mono); font-size: .89em; background: var(--bg-code); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; }
 
-/* ── Code block ─────────────────────────────────────────────────────── */
-.code {
-  border: 1px solid var(--border); border-radius: var(--radius);
-  background: var(--bg-code); overflow-x: auto; padding: 18px 20px;
-}
-.code pre { margin: 0; font-family: var(--mono); font-size: 13.2px; line-height: 1.62; white-space: pre; }
+.code { border: 1px solid var(--border); border-radius: 10px; background: var(--bg-code); overflow-x: auto; padding: 20px; }
+.code pre { margin: 0; font-family: var(--mono); font-size: 13px; line-height: 1.62; white-space: pre; }
 .c-com { color: var(--fg-faint); }
 .c-key { color: var(--accent); }
+.c-str { color: var(--ok); }
 
-/* ── Lists ──────────────────────────────────────────────────────────── */
-.checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 11px; }
-.checks li { display: flex; gap: 11px; align-items: flex-start; font-size: 14.8px; color: var(--fg-muted); }
-.checks svg { width: 17px; height: 17px; flex-shrink: 0; margin-top: 3px; color: var(--ok); }
+.checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.checks li { display: flex; gap: 12px; align-items: flex-start; font-size: 14.8px; color: var(--fg-muted); }
+.checks svg { width: 17px; height: 17px; flex: none; margin-top: 3px; color: var(--ok); }
 .checks strong { color: var(--fg); font-weight: 600; }
+.note { border: 1px solid var(--border); border-left: 3px solid var(--warn); border-radius: 0 10px 10px 0; padding: 20px 24px; background: var(--bg-soft); font-size: 14.6px; color: var(--fg-muted); }
+.note strong { color: var(--fg); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 44px; }
 
-/* ── Footer ─────────────────────────────────────────────────────────── */
-footer { border-top: 1px solid var(--border); padding: 52px 0 64px; background: var(--bg-soft); }
-.foot-grid { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 36px; }
-@media (max-width: 780px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
-.foot-col h4 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--fg-faint); margin: 0 0 12px; font-weight: 620; }
-.foot-col a { display: block; text-decoration: none; color: var(--fg-muted); font-size: 14.5px; padding: 3px 0; }
+/* ── Footer ──────────────────────────────────────────────────────────── */
+footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: var(--bg-soft); }
+.foot-grid { display: grid; grid-template-columns: 1.7fr repeat(3, 1fr); gap: 40px; }
+@media (max-width: 820px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+.foot-col h4 { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--fg-faint); margin: 0 0 14px; font-weight: 500; }
+.foot-col a { display: block; text-decoration: none; color: var(--fg-muted); font-size: 14.5px; padding: 4px 0; }
 .foot-col a:hover { color: var(--accent); }
-/* The rule above would otherwise turn the footer wordmark into a block and
-   stack the icon above the text. */
-.foot-col a.brand { display: inline-flex; color: var(--fg); font-size: 17px; padding: 0; }
+.foot-col a.brand { color: var(--fg); font-size: 18px; padding: 0; display: inline-flex; }
 .foot-col a.brand:hover { color: var(--fg); }
-.foot-about p { color: var(--fg-muted); font-size: 14.5px; margin: 12px 0 0; max-width: 40ch; }
-.foot-bottom { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; font-size: 13.5px; color: var(--fg-faint); }
-
-.status-note {
-  border: 1px solid var(--border); border-left: 3px solid var(--warn);
-  border-radius: var(--radius); padding: 18px 22px; background: var(--bg-soft);
-  font-size: 14.6px; color: var(--fg-muted);
-}
-.status-note strong { color: var(--fg); }
-.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.foot-about p { color: var(--fg-muted); font-size: 14.5px; margin: 14px 0 0; max-width: 40ch; }
+.foot-bottom { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; color: var(--fg-faint); }
 </style>
 </head>
 <body>
@@ -332,11 +311,12 @@ footer { border-top: 1px solid var(--border); padding: 52px 0 64px; background: 
       AIROM
     </a>
     <nav class="nav-links">
-      <a href="#what" class="hide-sm">What it finds</a>
-      <a href="#beyond" class="hide-sm">Features</a>
+      <a href="#evidence" class="hide-sm">Evidence</a>
+      <a href="#start" class="hide-sm">Get started</a>
+      <a href="#features" class="hide-sm">Features</a>
       <a href="#formats" class="hide-sm">Formats</a>
       <a href="https://docs.airom.dev">Docs</a>
-      <a href="https://github.com/airomhq/airom">GitHub</a>
+      <a class="nav-cta" href="https://github.com/airomhq/airom">GitHub</a>
       <button class="icon-btn" id="theme" type="button" aria-label="Toggle colour theme">
         <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
@@ -347,45 +327,47 @@ footer { border-top: 1px solid var(--border); padding: 52px 0 64px; background: 
 
 <main id="main">
 
-<!-- ── Hero ──────────────────────────────────────────────────────────── -->
 <div class="hero">
   <div class="wrap">
-    <span class="eyebrow">Open source · Apache 2.0 · single static binary</span>
-    <h1>Find the AI in your code, and prove it.</h1>
+    <div class="eyebrow mono">AI Bill of Materials scanner</div>
+    <h1>Find the AI in your code, <span class="hl">and prove it.</span></h1>
     <p class="lede">
-      AIROM scans a filesystem, git repo, container image, or Kubernetes workload and
+      AIROM scans a filesystem, git repo, container image or Kubernetes workload and
       generates an <strong>AI Bill of Materials</strong> — the models, prompts, datasets,
       embeddings, vector databases and frameworks your software actually uses — with
       <strong>file:line evidence</strong> behind every entry.
     </p>
 
-    <div class="cta-row">
-      <div class="install">
-        <span class="prompt">$</span>
-        <code id="install-cmd">pip install airom</code>
-        <button class="copy" data-copy="pip install airom" type="button">Copy</button>
-      </div>
-      <a class="btn btn-primary" href="https://docs.airom.dev/quickstart">
-        Quickstart
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-      <a class="btn btn-ghost" href="https://github.com/airomhq/airom">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 00-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17.999 4.7 19 5 19 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0012 .5z"/></svg>
-        GitHub
-      </a>
+    <div class="install">
+      <code><span class="prompt">$</span>pip install airom</code>
+      <button class="copy" data-copy="pip install airom" type="button">Copy</button>
     </div>
-
-    <p class="hero-note">
-      No agent, no daemon, no account, no telemetry. Weights are identified by magic bytes —
-      never loaded, deserialized, or run.
+    <p class="meta">
+      macOS · Linux · Windows · Apache 2.0 —
+      <a href="https://docs.airom.dev/installation">Homebrew, Go install and signed binaries →</a>
     </p>
 
-    <div class="terminal">
-      <div class="terminal-bar">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        <span class="terminal-cmd">airom scan .</span>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://docs.airom.dev/quickstart">
+        Get started
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="https://docs.airom.dev">Read the docs</a>
+    </div>
+
+    <div class="panel">
+      <div class="panel-bar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="panel-cmd">airom scan .</span>
+        <span class="panel-live">Scan complete</span>
       </div>
-      <div class="terminal-body">
+      <div class="panel-stats">
+        <div class="panel-stat"><div class="k">Components</div><div class="v">8</div></div>
+        <div class="panel-stat"><div class="k">Occurrences</div><div class="v">11</div></div>
+        <div class="panel-stat"><div class="k">Kinds</div><div class="v">7</div></div>
+        <div class="panel-stat"><div class="k">Unresolved</div><div class="v">0</div></div>
+      </div>
+      <div class="panel-body">
 <pre>┌──────────────────┬────────────────────────┬─────────┬─────────────┬───────┬────────────────────┬──────────┐
 │ KIND             │ NAME                   │ VERSION │ PROVIDER    │ CONF  │ LOCATION           │ EVIDENCE │
 ├──────────────────┼────────────────────────┼─────────┼─────────────┼───────┼────────────────────┼──────────┤
@@ -403,32 +385,29 @@ footer { border-top: 1px solid var(--border); padding: 52px 0 64px; background: 
   </div>
 </div>
 
-<!-- ── Why ───────────────────────────────────────────────────────────── -->
-<section id="why">
+<!-- ── Evidence ──────────────────────────────────────────────────────── -->
+<section id="evidence">
   <div class="wrap">
     <div class="section-head">
+      <div class="eyebrow mono">Evidence first</div>
       <h2>Sooner or later, someone asks why</h2>
       <p class="q">“Your AIBOM says this service uses <code>gpt-4.1</code>. Why? Where?”</p>
-      <p style="margin-top:14px">
+      <p style="margin-top:16px">
         Most tools can’t answer. They describe a model you named in a registry, or they never
-        look at your code. AIROM is evidence-first: every component it emits carries the proof.
+        look at your code. Every component AIROM emits carries the proof.
       </p>
     </div>
 
     <div class="evidence">
       <dl>
-        <dt>Occurrences</dt>
-        <dd>Every sighting — <code>file:line</code>, the matched snippet, and the enclosing function or class when known.</dd>
-        <dt>Detection method</dt>
-        <dd>Which technique found it: source-code analysis, AST fingerprint, manifest analysis, binary analysis, hash comparison, config analysis, or filename.</dd>
-        <dt>Confidence</dt>
-        <dd>A calibrated 0–1 score, on the component and on each individual occurrence.</dd>
-        <dt>Detector ID</dt>
-        <dd>The stable rule that fired, e.g. <code>rules/openai/model-literal</code>.</dd>
+        <div class="row"><dt>Occurrences</dt><dd>Every sighting — <code>file:line</code>, the matched snippet, and the enclosing function or class when known.</dd></div>
+        <div class="row"><dt>Detection method</dt><dd>Which technique found it: source-code analysis, AST fingerprint, manifest analysis, binary analysis, hash comparison, config analysis, or filename.</dd></div>
+        <div class="row"><dt>Confidence</dt><dd>A calibrated 0–1 score, on the component and on each individual occurrence.</dd></div>
+        <div class="row"><dt>Detector ID</dt><dd>The stable rule that fired, e.g. <code>rules/openai/model-literal</code>.</dd></div>
       </dl>
     </div>
 
-    <p style="color:var(--fg-muted); margin:26px 0 0; max-width:64ch">
+    <p style="color:var(--fg-muted); margin:28px 0 0; max-width:64ch">
       That lands as CycloneDX <code>evidence.occurrences[]</code> — the field other AIBOM tools
       leave empty. Every row is a claim you can walk back to a line of source.
     </p>
@@ -436,26 +415,72 @@ footer { border-top: 1px solid var(--border); padding: 52px 0 64px; background: 
 </section>
 
 <!-- ── Honesty ───────────────────────────────────────────────────────── -->
-<section class="plain" style="padding-top:0">
+<section>
   <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">Honest by construction</div>
+      <h2>What it doesn’t know, it says</h2>
+      <p>A scanner that guesses is worse than one that admits the gap, because you cannot tell the two apart from the output.</p>
+    </div>
     <div class="grid grid-3">
-      <div class="card">
-        <div class="kicker">Unknown ≠ supported</div>
-        <h3>It says what it doesn’t know</h3>
-        <p>A version it couldn’t resolve stays empty instead of guessing. A model outside the
-        lifecycle catalog carries no claim, never a quiet “supported”.</p>
+      <div class="cell">
+        <span class="mono">Unknown ≠ supported</span>
+        <h3>No quiet defaults</h3>
+        <p>A version it couldn’t resolve stays empty instead of guessing. A model outside the lifecycle catalog carries no claim, never a quiet “supported”.</p>
       </div>
-      <div class="card">
-        <div class="kicker">Ranges ≠ versions</div>
-        <h3>A declared range is not a release</h3>
-        <p><code>&gt;=1.0,&lt;2</code> is recorded as a constraint, not a version — which is what
-        stops the CVE overlay matching advisories against a release nobody confirmed is installed.</p>
+      <div class="cell">
+        <span class="mono">Ranges ≠ versions</span>
+        <h3>A range is not a release</h3>
+        <p><code>&gt;=1.0,&lt;2</code> is recorded as a constraint, not a version — which is what stops the CVE overlay matching advisories against a release nobody confirmed is installed.</p>
       </div>
-      <div class="card">
-        <div class="kicker">Reproducible</div>
+      <div class="cell">
+        <span class="mono">Reproducible</span>
         <h3>Byte-identical output</h3>
-        <p>The same tree produces the same document at any worker count. Determinism is an
-        invariant, enforced by tests, not a side effect.</p>
+        <p>The same tree produces the same document at any worker count. Determinism is an invariant enforced by tests, not a side effect.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Get started ───────────────────────────────────────────────────── -->
+<section id="start">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">Get started</div>
+      <h2>Three steps to a gated build</h2>
+      <p>One static binary. No agent, no daemon, no account, no telemetry.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">01</div>
+        <div>
+          <h3>Install</h3>
+          <p>A single static Go binary. The wheel ships the scanner itself, so there is nothing else to install.</p>
+          <div class="code"><pre>pip install airom</pre></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">02</div>
+        <div>
+          <h3>Scan anything</h3>
+          <p>A directory, a git URL, a container archive, or Kubernetes manifests — and emit as many formats as you need from the one pass.</p>
+          <div class="code"><pre>airom scan .                              <span class="c-com"># a directory</span>
+airom repo https://github.com/org/app     <span class="c-com"># a git URL</span>
+airom image --input app.tar               <span class="c-com"># a container archive</span>
+
+airom scan . <span class="c-key">-o</span> cyclonedx=bom.json <span class="c-key">-o</span> spdx=bom.spdx.json</pre></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">03</div>
+        <div>
+          <h3>Gate the build</h3>
+          <p>Findings land as GitHub Code Scanning alerts on the pull request that introduced them, and the exit code fails the job on what you choose to care about.</p>
+          <div class="code"><pre><span class="c-key">- run:</span> pip install airom
+<span class="c-key">- run:</span> airom scan . <span class="c-key">--exit-code</span> 1 <span class="c-key">--fail-on</span> <span class="c-str">"risk:high|cve:critical"</span> <span class="c-key">-o</span> sarif=airom.sarif
+<span class="c-key">- uses:</span> github/codeql-action/upload-sarif@v3
+  <span class="c-key">with:</span> { sarif_file: airom.sarif }</pre></div>
+        </div>
       </div>
     </div>
   </div>
@@ -465,6 +490,7 @@ footer { border-top: 1px solid var(--border); padding: 52px 0 64px; background: 
 <section id="what">
   <div class="wrap">
     <div class="section-head">
+      <div class="eyebrow mono">Coverage</div>
       <h2>What it finds</h2>
       <p>Across Python, JavaScript, TypeScript, Go, Java, Rust, C#, Kotlin and SQL.</p>
     </div>
@@ -472,98 +498,73 @@ footer { border-top: 1px solid var(--border); padding: 52px 0 64px; background: 
     <div class="table-scroll">
       <table>
         <tbody>
-          <tr>
-            <td class="name">Hosted models</td>
-            <td>OpenAI, Anthropic, Gemini, Bedrock, Azure OpenAI, Cohere, Mistral, Groq — model IDs and SDK call sites.</td>
-          </tr>
-          <tr>
-            <td class="name">Local weights</td>
-            <td>GGUF, safetensors, ONNX, PyTorch, SavedModel, TFLite, HDF5, TensorRT — identified by magic bytes and bounded header parsing. Never loaded or run.</td>
-          </tr>
-          <tr>
-            <td class="name">Frameworks</td>
-            <td>LangChain, LlamaIndex, CrewAI, Agno, AutoGen, Semantic Kernel, CAMEL, MetaGPT, Letta, Crawl4AI, FastMCP, Transformers, and more.</td>
-          </tr>
-          <tr>
-            <td class="name">Local inference &amp; training</td>
-            <td>vLLM, llama.cpp, GPT4All, Ollama, DeepSpeed, Unsloth.</td>
-          </tr>
-          <tr>
-            <td class="name">Vector databases</td>
-            <td>Chroma, Milvus, Qdrant, Pinecone, Weaviate, FAISS, Redis, pgvector — including SQL schemas and a server-side pgvector install.</td>
-          </tr>
-          <tr>
-            <td class="name">Prompts &amp; datasets</td>
-            <td>Prompt files and templates, CSV/JSONL/Parquet signatures, <code>load_dataset()</code>, Hugging Face and Kaggle references.</td>
-          </tr>
-          <tr>
-            <td class="name">Everything else</td>
-            <td>Generation parameters bound to their call site, serving infrastructure, and RAG pipelines stitched into one component.</td>
-          </tr>
+          <tr><td class="name">Hosted models</td><td>OpenAI, Anthropic, Gemini, Bedrock, Azure OpenAI, Cohere, Mistral, Groq — model IDs and SDK call sites.</td></tr>
+          <tr><td class="name">Local weights</td><td>GGUF, safetensors, ONNX, PyTorch, SavedModel, TFLite, HDF5, TensorRT — identified by magic bytes and bounded header parsing. Never loaded or run.</td></tr>
+          <tr><td class="name">Frameworks</td><td>LangChain, LlamaIndex, CrewAI, Agno, AutoGen, Semantic Kernel, CAMEL, MetaGPT, Letta, Crawl4AI, FastMCP, Transformers, and more.</td></tr>
+          <tr><td class="name">Local inference</td><td>vLLM, llama.cpp, GPT4All, Ollama, DeepSpeed, Unsloth.</td></tr>
+          <tr><td class="name">Vector databases</td><td>Chroma, Milvus, Qdrant, Pinecone, Weaviate, FAISS, Redis, pgvector — including SQL schemas and a server-side pgvector install.</td></tr>
+          <tr><td class="name">Prompts &amp; datasets</td><td>Prompt files and templates, CSV/JSONL/Parquet signatures, <code>load_dataset()</code>, Hugging Face and Kaggle references.</td></tr>
+          <tr><td class="name">Everything else</td><td>Generation parameters bound to their call site, serving infrastructure, and RAG pipelines stitched into one component.</td></tr>
         </tbody>
       </table>
     </div>
 
-    <p style="color:var(--fg-muted); margin:24px 0 0; max-width:66ch">
+    <p style="color:var(--fg-muted); margin:26px 0 40px; max-width:66ch">
       Dependencies are read from manifests, <strong style="color:var(--fg)">lockfiles</strong>,
       <strong style="color:var(--fg)">installed metadata</strong>, and even
       <strong style="color:var(--fg)">PyInstaller binaries</strong> — so a frozen app with no
       source on disk still produces an inventory.
     </p>
 
-    <div class="stats" style="margin-top:36px">
+    <div class="stats">
       <div class="stat"><div class="n">143</div><div class="l">detection rules</div></div>
       <div class="stat"><div class="n">61</div><div class="l">rule packs</div></div>
       <div class="stat"><div class="n">35</div><div class="l">detectors</div></div>
       <div class="stat"><div class="n">9</div><div class="l">languages</div></div>
+      <div class="stat"><div class="n">8</div><div class="l">output formats</div></div>
     </div>
   </div>
 </section>
 
 <!-- ── Beyond inventory ──────────────────────────────────────────────── -->
-<section id="beyond">
+<section id="features">
   <div class="wrap">
     <div class="section-head">
-      <h2>Beyond inventory</h2>
-      <p>An inventory is the floor. These are the things you can do once you have one.</p>
+      <div class="eyebrow mono">Beyond inventory</div>
+      <h2>An inventory is the floor</h2>
+      <p>These are the things you can do once you have one.</p>
     </div>
 
     <div class="grid grid-3">
-      <a class="card" href="https://docs.airom.dev/concepts/risks">
-        <div class="kicker">Offline</div>
+      <a class="cell" href="https://docs.airom.dev/concepts/risks">
+        <span class="mono">Offline</span>
         <h3>Risk detection</h3>
-        <p>Load-time code-execution surfaces — pickle imports, Keras Lambda layers, GGUF template
-        gadgets, unsafe <code>torch.load</code> — as CycloneDX vulnerabilities and SARIF.</p>
+        <p>Load-time code-execution surfaces — pickle imports, Keras Lambda layers, GGUF template gadgets, unsafe <code>torch.load</code> — as CycloneDX vulnerabilities and SARIF.</p>
       </a>
-      <a class="card" href="https://docs.airom.dev/concepts/cve">
-        <div class="kicker">On by default</div>
+      <a class="cell" href="https://docs.airom.dev/concepts/cve">
+        <span class="mono">On by default</span>
         <h3>CVE overlay</h3>
-        <p>Your AI dependencies against OSV.dev, with real CVSS scores and a fail-closed gate.
-        Refuses under <code>--offline</code> rather than reporting a quiet nothing.</p>
+        <p>Your AI dependencies against OSV.dev, with real CVSS scores and a fail-closed gate. Refuses under <code>--offline</code> rather than reporting a quiet nothing.</p>
       </a>
-      <a class="card" href="https://docs.airom.dev/concepts/eol">
-        <div class="kicker">Dated &amp; sourced</div>
+      <a class="cell" href="https://docs.airom.dev/concepts/eol">
+        <span class="mono">Dated &amp; sourced</span>
         <h3>Model lifecycle</h3>
-        <p>Hosted models matched against a curated catalog of provider retirement announcements.
-        Nothing inferred from naming patterns.</p>
+        <p>Hosted models matched against a curated catalog of provider retirement announcements. Nothing inferred from naming patterns.</p>
       </a>
-      <a class="card" href="https://docs.airom.dev/concepts/compliance">
-        <div class="kicker">No invented scores</div>
+      <a class="cell" href="https://docs.airom.dev/concepts/compliance">
+        <span class="mono">No invented scores</span>
         <h3>Compliance mapping</h3>
-        <p>NIST AI RMF and OWASP Agentic controls as CycloneDX attestations — met, gap, or manual,
-        each linked to the evidence behind it.</p>
+        <p>NIST AI RMF and OWASP Agentic controls as CycloneDX attestations — met, gap, or manual, each linked to the evidence behind it.</p>
       </a>
-      <a class="card" href="https://docs.airom.dev/reference/cli">
-        <div class="kicker">Per-PR control</div>
+      <a class="cell" href="https://docs.airom.dev/reference/cli">
+        <span class="mono">Per-PR control</span>
         <h3>AIBOM diff</h3>
-        <p>The semantic delta between two scans, so AI becomes a pull-request gate. Refuses to gate
-        across tooling drift rather than blaming a PR for a rule change.</p>
+        <p>The semantic delta between two scans, so AI becomes a pull-request gate. Refuses to gate across tooling drift rather than blaming a PR for a rule change.</p>
       </a>
-      <a class="card" href="https://docs.airom.dev/rules/updates">
-        <div class="kicker">ed25519-verified</div>
+      <a class="cell" href="https://docs.airom.dev/rules/updates">
+        <span class="mono">ed25519-verified</span>
         <h3>Signed rule updates</h3>
-        <p>New frameworks and fresh retirement dates reach you without a new binary, over a signed
-        update channel. Scans themselves never fetch.</p>
+        <p>New frameworks and fresh retirement dates reach you without a new binary, over a signed update channel. Scans themselves never fetch.</p>
       </a>
     </div>
   </div>
@@ -573,15 +574,14 @@ footer { border-top: 1px solid var(--border); padding: 52px 0 64px; background: 
 <section id="formats">
   <div class="wrap">
     <div class="section-head">
+      <div class="eyebrow mono">Output</div>
       <h2>One scan, every format</h2>
       <p>Writers are pure projections of one graph — no re-derivation, no drift between them.</p>
     </div>
 
     <div class="table-scroll">
       <table>
-        <thead>
-          <tr><th>Format</th><th>Flag</th><th>Notes</th></tr>
-        </thead>
+        <thead><tr><th>Format</th><th>Flag</th><th>Notes</th></tr></thead>
         <tbody>
           <tr><td class="name">CycloneDX 1.6 / 1.7</td><td><code>cyclonedx</code></td><td>ML-BOM with modelCard, <code>evidence.occurrences[]</code>, vulnerabilities and compliance attestations.</td></tr>
           <tr><td class="name">SPDX 3.0.1</td><td><code>spdx</code></td><td>JSON-LD across the AI, Dataset, Software and Security profiles.</td></tr>
@@ -592,65 +592,33 @@ footer { border-top: 1px solid var(--border); padding: 52px 0 64px; background: 
         </tbody>
       </table>
     </div>
-
-    <div class="grid grid-2" style="margin-top:32px">
-      <div>
-        <h3 style="margin-bottom:12px">Gate a build</h3>
-        <div class="code"><pre><span class="c-com"># many formats, one pass</span>
-airom scan . <span class="c-key">-o</span> cyclonedx=bom.json <span class="c-key">-o</span> spdx=bom.spdx.json
-
-<span class="c-com"># fail the build on what matters</span>
-airom scan . <span class="c-key">--exit-code</span> 1 <span class="c-key">--fail-on</span> <span style="color:var(--ok)">"risk:high|cve:critical"</span></pre></div>
-      </div>
-      <div>
-        <h3 style="margin-bottom:12px">In GitHub Actions</h3>
-        <div class="code"><pre><span class="c-key">- run:</span> pip install airom
-<span class="c-key">- run:</span> airom scan . <span class="c-key">-o</span> sarif=airom.sarif
-<span class="c-key">- uses:</span> github/codeql-action/upload-sarif@v3
-  <span class="c-key">with:</span> { sarif_file: airom.sarif }</pre></div>
-      </div>
-    </div>
   </div>
 </section>
 
 <!-- ── Security + status ─────────────────────────────────────────────── -->
 <section id="security">
   <div class="wrap">
-    <div class="grid grid-2" style="gap:44px">
+    <div class="two">
       <div>
-        <h2 style="margin-bottom:18px">Built like a security tool</h2>
+        <div class="eyebrow mono">Security</div>
+        <h2 style="margin-bottom:22px">Built like a security tool</h2>
         <ul class="checks">
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-            <span><strong>No model execution, ever.</strong> Weights are identified by magic bytes and bounded header parsing. Nothing is loaded, deserialized, or run.</span>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-            <span><strong>Fuzzed parsers.</strong> Every binary header parser is fuzzed in CI and must return errors, never panic.</span>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-            <span><strong>No surprise network access.</strong> <code>--offline</code> asserts it globally.</span>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-            <span><strong>Signed releases.</strong> <code>CGO_ENABLED=0</code>, cosign-signed, shipping an SBOM and a self-scanned AIBOM.</span>
-          </li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>No model execution, ever.</strong> Weights are identified by magic bytes and bounded header parsing. Nothing is loaded, deserialized, or run.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Fuzzed parsers.</strong> Every binary header parser is fuzzed in CI and must return errors, never panic.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>No surprise network access.</strong> <code>--offline</code> asserts it globally.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Signed releases.</strong> <code>CGO_ENABLED=0</code>, cosign-signed, shipping an SBOM and a self-scanned AIBOM.</span></li>
         </ul>
       </div>
       <div>
-        <h2 style="margin-bottom:18px">Where it stands</h2>
-        <div class="status-note">
-          <p style="margin:0 0 12px"><strong>v0.3.6 — early but real.</strong> The pipeline, detectors,
-          writers and overlays are implemented and tested. Expect rough edges.</p>
-          <p style="margin:0">Known gaps, each also surfaced in the affected flag’s <code>--help</code>:
-          caching is not implemented, live registry and daemon image pulls are not available
-          (use <code>airom image --input &lt;archive&gt;</code>), and live-cluster scanning is not
-          available (use <code>airom k8s --manifests &lt;dir&gt;</code>).</p>
+        <div class="eyebrow mono">Status</div>
+        <h2 style="margin-bottom:22px">Where it stands</h2>
+        <div class="note">
+          <p style="margin:0 0 12px"><strong>v0.3.6 — early but real.</strong> The pipeline, detectors, writers and overlays are implemented and tested. Expect rough edges.</p>
+          <p style="margin:0">Known gaps, each also surfaced in the affected flag’s <code>--help</code>: caching is not implemented, live registry and daemon image pulls are not available (use <code>airom image --input &lt;archive&gt;</code>), and live-cluster scanning is not available (use <code>airom k8s --manifests &lt;dir&gt;</code>).</p>
         </div>
-        <p style="margin:18px 0 0; font-size:14.5px; color:var(--fg-muted)">
-          The full ledger — what’s complete, what’s deferred, and how AIROM compares to adjacent
-          tools — is in
+        <p style="margin:20px 0 0; font-size:14.5px; color:var(--fg-muted)">
+          The full ledger — what’s complete, what’s deferred, and how AIROM compares to
+          adjacent tools — is in
           <a href="https://github.com/airomhq/airom/blob/main/docs/project-status.md" style="color:var(--accent)">project&nbsp;status</a>.
         </p>
       </div>
@@ -661,17 +629,17 @@ airom scan . <span class="c-key">--exit-code</span> 1 <span class="c-key">--fail
 <!-- ── CTA ───────────────────────────────────────────────────────────── -->
 <section>
   <div class="wrap" style="text-align:center">
-    <h2 style="margin-bottom:14px">Scan something</h2>
-    <p style="color:var(--fg-muted); max-width:52ch; margin:0 auto 28px">
+    <h2 style="margin-bottom:16px">Scan something</h2>
+    <p style="color:var(--fg-muted); max-width:52ch; margin:0 auto 32px">
       One command, one static binary. Point it at a repo and see what comes back.
     </p>
+    <div class="install" style="margin:0 auto 16px">
+      <code><span class="prompt">$</span>pip install airom &amp;&amp; airom scan .</code>
+      <button class="copy" data-copy="pip install airom &amp;&amp; airom scan ." type="button">Copy</button>
+    </div>
     <div class="cta-row" style="justify-content:center">
-      <div class="install">
-        <span class="prompt">$</span>
-        <code>pip install airom &amp;&amp; airom scan .</code>
-        <button class="copy" data-copy="pip install airom &amp;&amp; airom scan ." type="button">Copy</button>
-      </div>
       <a class="btn btn-primary" href="https://docs.airom.dev">Read the docs</a>
+      <a class="btn btn-ghost" href="https://github.com/airomhq/airom">Star on GitHub</a>
     </div>
   </div>
 </section>
@@ -718,28 +686,22 @@ airom scan . <span class="c-key">--exit-code</span> 1 <span class="c-key">--fail
     </div>
     <div class="foot-bottom">
       <span>Apache License 2.0 · © AIROM contributors</span>
-      <span>Not affiliated with any model provider named on this page.</span>
+      <span>Not affiliated with any model provider named on this page</span>
     </div>
   </div>
 </footer>
 
 <script>
 (function () {
-  // Theme toggle. The initial value comes from the inline script in <head>;
-  // this only handles the click and flips relative to what is actually shown.
   var btn = document.getElementById("theme");
   btn.addEventListener("click", function () {
     var cur = document.documentElement.getAttribute("data-theme");
-    if (!cur) {
-      cur = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    }
+    if (!cur) cur = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     var next = cur === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     try { localStorage.setItem("airom-theme", next); } catch (e) {}
   });
 
-  // Copy buttons. Falls back to selecting the text when the clipboard API is
-  // unavailable (http origins, older browsers) rather than silently no-opping.
   document.querySelectorAll(".copy").forEach(function (b) {
     b.addEventListener("click", function () {
       var text = b.getAttribute("data-copy");
@@ -747,20 +709,14 @@ airom scan . <span class="c-key">--exit-code</span> 1 <span class="c-key">--fail
         var old = b.textContent;
         b.textContent = "Copied";
         b.setAttribute("data-copied", "1");
-        setTimeout(function () {
-          b.textContent = old;
-          b.removeAttribute("data-copied");
-        }, 1600);
+        setTimeout(function () { b.textContent = old; b.removeAttribute("data-copied"); }, 1600);
       };
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(done, function () {});
       } else {
         var ta = document.createElement("textarea");
-        ta.value = text;
-        ta.style.position = "fixed";
-        ta.style.opacity = "0";
-        document.body.appendChild(ta);
-        ta.select();
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
         try { document.execCommand("copy"); done(); } catch (e) {}
         document.body.removeChild(ta);
       }
