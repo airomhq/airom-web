@@ -1,0 +1,93 @@
+# Validates both sites on every change.
+#
+# Vercel already builds and deploys this repo, so the point of this workflow is
+# what Vercel does NOT do: the strict Mintlify validator, the broken-link
+# checker, and a check that the landing page stays self-contained. A docs change
+# that breaks a link deploys perfectly green and reads wrong — that is the
+# failure this catches.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    name: Docs — validate, link-check, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Mintlify refuses to run on Node 25+. docs-site/package.json pins
+      # engines.node to 24.x for Vercel; pin the same major here so the two
+      # builds cannot diverge on the one thing that hard-fails.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Validate (strict — warnings fail too)
+        working-directory: docs-site
+        run: npx --yes mint@latest validate
+
+      - name: Check links
+        working-directory: docs-site
+        run: npx --yes mint@latest broken-links
+
+      # The same script Vercel runs, including the guard that fails the build if
+      # project files leak into the published site.
+      - name: Build
+        working-directory: docs-site
+        run: bash build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docs-site
+          path: docs-site/dist
+          retention-days: 14
+
+  landing:
+    name: Landing page — self-contained check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # www/vercel.json asserts a Content-Security-Policy of default-src 'self'.
+      # That is only honest while the page loads nothing from a third party, and
+      # a stray CDN <script> would be silently blocked in the browser rather
+      # than caught in review — the page would just quietly stop working.
+      #
+      # Sub-resources ONLY. An external <a href> or <link rel="canonical"> is a
+      # reference, not a fetch, and the CSP does not restrict those.
+      - name: No external sub-resources
+        run: |
+          f=www/index.html
+          status=0
+          if grep -nE 'src="https?://' "$f"; then
+            echo "::error::external src= — the CSP in www/vercel.json forbids loading it"; status=1
+          fi
+          if grep -nE '<link[^>]+rel="(stylesheet|preload|prefetch|preconnect|dns-prefetch)"[^>]*href="https?://' "$f"; then
+            echo "::error::external stylesheet/preload — the CSP in www/vercel.json forbids loading it"; status=1
+          fi
+          if grep -nE '@import|url\(\s*["'"'"']?https?://' "$f"; then
+            echo "::error::CSS pulls in an external resource"; status=1
+          fi
+          [ $status -eq 0 ] && echo "no external sub-resources"
+          exit $status
+
+      - name: Referenced local assets exist
+        run: |
+          f=www/index.html
+          status=0
+          for p in $(grep -oE '(src|href)="/[^"#]*"' "$f" | sed -E 's/.*="\/([^"]*)"/\1/' | sort -u); do
+            [ -z "$p" ] && continue
+            if [ ! -e "www/$p" ]; then
+              echo "::error::$f references /$p, which is not in www/"; status=1
+            fi
+          done
+          [ $status -eq 0 ] && echo "all local assets exist"
+          exit $status
