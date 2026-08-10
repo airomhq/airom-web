@@ -48,7 +48,8 @@ copies would drift, and the copy CI checks would stop being the copy that ships.
 
 ## Deployment
 
-Two Vercel projects under the `airom` team, both from this repo:
+Two Vercel projects under the `airom` team, both deploying from this repo on
+every push to `main`, with a preview URL per pull request:
 
 | Project | Root directory | Domain |
 |---|---|---|
