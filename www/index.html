@@ -334,12 +334,6 @@ a.cell { text-decoration: none; display: block; transition: background .12s ease
 a.cell:hover { background: var(--bg-soft); }
 a.cell h3::after { content: " →"; color: var(--accent); font-weight: 500; }
 
-/* ── Numbered steps ──────────────────────────────────────────────────── */
-.steps { display: grid; gap: 0; }
-.step { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 24px; padding: 30px 0; border-top: 1px solid var(--border); align-items: start; }
-.step:first-child { border-top: 0; }
-.step-n { font-family: var(--mono); font-size: 30px; font-weight: 600; color: var(--fg-muted); line-height: 1; letter-spacing: -0.02em; }
-.step p { margin: 0 0 14px; color: var(--fg-muted); font-size: 14.8px; max-width: 62ch; }
 @media (max-width: 620px) { .step { grid-template-columns: minmax(0, 1fr); gap: 10px; } .step-n { font-size: 22px; } }
 
 /* ── Evidence callout ────────────────────────────────────────────────── */
@@ -357,28 +351,9 @@ a.cell h3::after { content: " →"; color: var(--accent); font-weight: 500; }
 .stat .n { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
 .stat .l { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-faint); margin-top: 10px; }
 
-/* ── Tables ──────────────────────────────────────────────────────────── */
-.table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
-table { border-collapse: collapse; width: 100%; font-size: 14.6px; min-width: 580px; }
-th, td { text-align: left; padding: 15px 20px; border-bottom: 1px solid var(--border); vertical-align: top; }
-th { font-family: var(--mono); font-weight: 500; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-faint); background: var(--bg-soft); }
 tbody tr:last-child td { border-bottom: none; }
 td.name { font-weight: 620; white-space: nowrap; }
 code { font-family: var(--mono); font-size: .89em; background: var(--bg-code); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; }
-
-.code { border: 1px solid var(--border); border-radius: 10px; background: var(--bg-code); overflow-x: auto; padding: 20px; }
-.code pre { margin: 0; font-family: var(--mono); font-size: 13px; line-height: 1.62; white-space: pre; }
-.c-com { color: var(--fg-faint); }
-.c-key { color: var(--accent); }
-.c-str { color: var(--ok); }
-
-.checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
-.checks li { display: flex; gap: 12px; align-items: flex-start; font-size: 14.8px; color: var(--fg-muted); }
-.checks svg { width: 17px; height: 17px; flex: none; margin-top: 3px; color: var(--ok); }
-.checks strong { color: var(--fg); font-weight: 600; }
-.note { border: 1px solid var(--border); border-left: 3px solid var(--warn); border-radius: 0 10px 10px 0; padding: 20px 24px; background: var(--bg-soft); font-size: 14.6px; color: var(--fg-muted); }
-.note strong { color: var(--fg); }
-.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 44px; }
 
 /* ── Footer ──────────────────────────────────────────────────────────── */
 footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: var(--bg-soft); }
@@ -408,10 +383,8 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
       AIROM
     </a>
     <nav class="nav-links">
-      <a href="#evidence" class="hide-sm">Evidence</a>
-      <a href="#start" class="hide-sm">Get started</a>
+      <a href="#evidence" class="hide-sm">Why</a>
       <a href="#features" class="hide-sm">Features</a>
-      <a href="#formats" class="hide-sm">Formats</a>
       <a href="https://docs.airom.dev">Docs</a>
       <a class="nav-cta" href="https://github.com/airomhq/airom">GitHub</a>
       <button class="icon-btn" id="theme" type="button" aria-label="Toggle colour theme">
@@ -508,111 +481,6 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
       That lands as CycloneDX <code>evidence.occurrences[]</code> — the field other AIBOM tools
       leave empty. Every row is a claim you can walk back to a line of source.
     </p>
-  </div>
-</section>
-
-<!-- ── Honesty ───────────────────────────────────────────────────────── -->
-<section>
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow mono">Honest by construction</div>
-      <h2>What it doesn’t know, it says</h2>
-      <p>A scanner that guesses is worse than one that admits the gap, because you cannot tell the two apart from the output.</p>
-    </div>
-    <div class="grid grid-3">
-      <div class="cell">
-        <span class="mono">Unknown ≠ supported</span>
-        <h3>No quiet defaults</h3>
-        <p>A version it couldn’t resolve stays empty instead of guessing. A model outside the lifecycle catalog carries no claim, never a quiet “supported”.</p>
-      </div>
-      <div class="cell">
-        <span class="mono">Ranges ≠ versions</span>
-        <h3>A range is not a release</h3>
-        <p><code>&gt;=1.0,&lt;2</code> is recorded as a constraint, not a version — which is what stops the CVE overlay matching advisories against a release nobody confirmed is installed.</p>
-      </div>
-      <div class="cell">
-        <span class="mono">Reproducible</span>
-        <h3>Byte-identical output</h3>
-        <p>The same tree produces the same document at any worker count. Determinism is an invariant enforced by tests, not a side effect.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── Get started ───────────────────────────────────────────────────── -->
-<section id="start">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow mono">Get started</div>
-      <h2>Three steps to a gated build</h2>
-      <p>One static binary. No agent, no daemon, no account, no telemetry.</p>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-n">01</div>
-        <div>
-          <h3>Install</h3>
-          <p>A single static Go binary. The wheel ships the scanner itself, so there is nothing else to install.</p>
-          <div class="code"><pre>pip install airom</pre></div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-n">02</div>
-        <div>
-          <h3>Scan anything</h3>
-          <p>A directory, a git URL, a container archive, or Kubernetes manifests — and emit as many formats as you need from the one pass.</p>
-          <div class="code"><pre>airom scan .                              <span class="c-com"># a directory</span>
-airom repo https://github.com/org/app     <span class="c-com"># a git URL</span>
-airom image --input app.tar               <span class="c-com"># a container archive</span>
-
-airom scan . <span class="c-key">-o</span> cyclonedx=bom.json <span class="c-key">-o</span> spdx=bom.spdx.json</pre></div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-n">03</div>
-        <div>
-          <h3>Gate the build</h3>
-          <p>Findings land as GitHub Code Scanning alerts on the pull request that introduced them, and the exit code fails the job on what you choose to care about.</p>
-          <div class="code"><pre><span class="c-key">- run:</span> pip install airom
-<span class="c-key">- run:</span> airom scan . <span class="c-key">--exit-code</span> 1 <span class="c-key">--fail-on</span> <span class="c-str">"risk:high|cve:critical"</span> <span class="c-key">-o</span> sarif=airom.sarif
-<span class="c-key">- uses:</span> github/codeql-action/upload-sarif@v3
-  <span class="c-key">with:</span> { sarif_file: airom.sarif }</pre></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── What it finds ─────────────────────────────────────────────────── -->
-<section id="what">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow mono">Coverage</div>
-      <h2>What it finds</h2>
-      <p>Across Python, JavaScript, TypeScript, Go, Java, Rust, C#, Kotlin and SQL.</p>
-    </div>
-
-    <div class="table-scroll">
-      <table>
-        <tbody>
-          <tr><td class="name">Hosted models</td><td>OpenAI, Anthropic, Gemini, Bedrock, Azure OpenAI, Cohere, Mistral, Groq — model IDs and SDK call sites.</td></tr>
-          <tr><td class="name">Local weights</td><td>GGUF, safetensors, ONNX, PyTorch, SavedModel, TFLite, HDF5, TensorRT — identified by magic bytes and bounded header parsing. Never loaded or run.</td></tr>
-          <tr><td class="name">Frameworks</td><td>LangChain, LlamaIndex, CrewAI, Agno, AutoGen, Semantic Kernel, CAMEL, MetaGPT, Letta, Crawl4AI, FastMCP, Transformers, and more.</td></tr>
-          <tr><td class="name">Local inference</td><td>vLLM, llama.cpp, GPT4All, Ollama, DeepSpeed, Unsloth.</td></tr>
-          <tr><td class="name">Vector databases</td><td>Chroma, Milvus, Qdrant, Pinecone, Weaviate, FAISS, Redis, pgvector — including SQL schemas and a server-side pgvector install.</td></tr>
-          <tr><td class="name">Prompts &amp; datasets</td><td>Prompt files and templates, CSV/JSONL/Parquet signatures, <code>load_dataset()</code>, Hugging Face and Kaggle references.</td></tr>
-          <tr><td class="name">Everything else</td><td>Generation parameters bound to their call site, serving infrastructure, and RAG pipelines stitched into one component.</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p style="color:var(--fg-muted); margin:26px 0 40px; max-width:66ch">
-      Dependencies are read from manifests, <strong style="color:var(--fg)">lockfiles</strong>,
-      <strong style="color:var(--fg)">installed metadata</strong>, and even
-      <strong style="color:var(--fg)">PyInstaller binaries</strong> — so a frozen app with no
-      source on disk still produces an inventory.
-    </p>
-
     <div class="stats">
       <div class="stat"><div class="n">143</div><div class="l">detection rules</div></div>
       <div class="stat"><div class="n">61</div><div class="l">rule packs</div></div>
@@ -667,75 +535,15 @@ airom scan . <span class="c-key">-o</span> cyclonedx=bom.json <span class="c-key
   </div>
 </section>
 
-<!-- ── Formats ───────────────────────────────────────────────────────── -->
-<section id="formats">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow mono">Output</div>
-      <h2>One scan, every format</h2>
-      <p>Writers are pure projections of one graph — no re-derivation, no drift between them.</p>
-    </div>
-
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>Format</th><th>Flag</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td class="name">CycloneDX 1.6 / 1.7</td><td><code>cyclonedx</code></td><td>ML-BOM with modelCard, <code>evidence.occurrences[]</code>, vulnerabilities and compliance attestations.</td></tr>
-          <tr><td class="name">SPDX 3.0.1</td><td><code>spdx</code></td><td>JSON-LD across the AI, Dataset, Software and Security profiles.</td></tr>
-          <tr><td class="name">SARIF 2.1.0</td><td><code>sarif</code></td><td>One result per occurrence — lands as GitHub Code Scanning alerts.</td></tr>
-          <tr><td class="name">OpenVEX 0.2.0</td><td><code>vex</code></td><td>Over the CVE overlay. Only ever asserts <code>affected</code>.</td></tr>
-          <tr><td class="name">Native JSON / YAML</td><td><code>json</code> · <code>yaml</code></td><td>The two lossless formats. Round-trip the whole graph.</td></tr>
-          <tr><td class="name">Table · Markdown</td><td><code>table</code> · <code>compliance</code></td><td>Human review in a terminal, and a Markdown compliance report.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ── Security + status ─────────────────────────────────────────────── -->
-<section id="security">
-  <div class="wrap">
-    <div class="two">
-      <div>
-        <div class="eyebrow mono">Security</div>
-        <h2 style="margin-bottom:22px">Built like a security tool</h2>
-        <ul class="checks">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>No model execution, ever.</strong> Weights are identified by magic bytes and bounded header parsing. Nothing is loaded, deserialized, or run.</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Fuzzed parsers.</strong> Every binary header parser is fuzzed in CI and must return errors, never panic.</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>No surprise network access.</strong> <code>--offline</code> asserts it globally.</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Signed releases.</strong> <code>CGO_ENABLED=0</code>, cosign-signed, shipping an SBOM and a self-scanned AIBOM.</span></li>
-        </ul>
-      </div>
-      <div>
-        <div class="eyebrow mono">Status</div>
-        <h2 style="margin-bottom:22px">Where it stands</h2>
-        <div class="note">
-          <p style="margin:0 0 12px"><strong>v0.3.6 — early but real.</strong> The pipeline, detectors, writers and overlays are implemented and tested. Expect rough edges.</p>
-          <p style="margin:0">Known gaps, each also surfaced in the affected flag’s <code>--help</code>: caching is not implemented, live registry and daemon image pulls are not available (use <code>airom image --input &lt;archive&gt;</code>), and live-cluster scanning is not available (use <code>airom k8s --manifests &lt;dir&gt;</code>).</p>
-        </div>
-        <p style="margin:20px 0 0; font-size:14.5px; color:var(--fg-muted)">
-          The full ledger — what’s complete, what’s deferred, and how AIROM compares to
-          adjacent tools — is in
-          <a href="https://github.com/airomhq/airom/blob/main/docs/project-status.md" style="color:var(--accent)">project&nbsp;status</a>.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ── CTA ───────────────────────────────────────────────────────────── -->
 <section>
   <div class="wrap" style="text-align:center">
     <h2 style="margin-bottom:16px">Scan something</h2>
     <p style="color:var(--fg-muted); max-width:52ch; margin:0 auto 32px">
-      One command, one static binary. Point it at a repo and see what comes back.
+      One command, one static binary. No agent, no daemon, no account, no telemetry.
     </p>
-    <div class="install" style="margin:0 auto 16px">
-      <code><span class="prompt">$</span>pip install airom &amp;&amp; airom scan .</code>
-      <button class="copy" data-copy="pip install airom &amp;&amp; airom scan ." type="button">Copy</button>
-    </div>
     <div class="cta-row" style="justify-content:center">
-      <a class="btn btn-primary" href="https://docs.airom.dev">Read the docs</a>
+      <a class="btn btn-primary" href="https://docs.airom.dev/quickstart">Get started</a>
       <a class="btn btn-ghost" href="https://github.com/airomhq/airom">Star on GitHub</a>
     </div>
   </div>
@@ -783,7 +591,7 @@ airom scan . <span class="c-key">-o</span> cyclonedx=bom.json <span class="c-key
     </div>
     <div class="foot-bottom">
       <span>Apache License 2.0 · © AIROM contributors</span>
-      <span>Not affiliated with any model provider named on this page</span>
+      <span>Early but real — expect rough edges. <a href="https://github.com/airomhq/airom/blob/main/docs/project-status.md">Known gaps →</a></span>
     </div>
   </div>
 </footer>
