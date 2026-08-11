@@ -28,7 +28,7 @@ never emit them: `local-model-file` (binary header parsers own it), `rag-pipelin
 
 <Note>
 The split is enforced, not advisory. The rule compiler rejects a pack that reaches past
-this envelope at startup — before any file is scanned.
+this envelope at startup, before any file is scanned.
 </Note>
 
 ## The embedded ruleset
@@ -51,8 +51,8 @@ construction and versioned with each release.
 
 ## Inspecting the effective ruleset
 
-`airom rules list` prints the ruleset AIROM will actually run — embedded packs plus any
-`--rules` overlays, post-merge — with each rule's originating layer.
+`airom rules list` prints the ruleset AIROM will actually run: embedded packs plus any
+`--rules` overlays, post-merge, with each rule's originating layer.
 
 ```bash title="List the effective ruleset"
 airom rules list
@@ -86,15 +86,15 @@ airom scan . --rules mycorp.yaml --rules team-overrides.yaml
 Merging is **by rule ID**, with three operations:
 
 <AccordionGroup>
-  <Accordion title="Add — a rule ID that does not exist yet">
+  <Accordion title="Add: a rule ID that does not exist yet">
     New IDs in an overlay must be namespaced by the overlay's own `pack` name. A pack
     declaring `pack: mycorp` can add `mycorp/internal-gateway`, not `openai/something`.
   </Accordion>
-  <Accordion title="Override — a rule ID that matches an existing rule">
+  <Accordion title="Override: a rule ID that matches an existing rule">
     The overlay rule **replaces the existing rule wholly**. There is no field-level
     merging: your rule must be complete and passes the same validation.
   </Accordion>
-  <Accordion title="Disable — an entry of just the ID plus disable: true">
+  <Accordion title="Disable: an entry of just the ID plus disable: true">
     ```yaml
     pack: mycorp-overrides
     version: 1
@@ -103,12 +103,12 @@ Merging is **by rule ID**, with three operations:
         disable: true
     ```
     The rule leaves the effective set entirely. `disable` is overlay-only, and the target
-    must exist — disabling a rule that isn't there is an error, never a silent no-op.
+    must exist. Disabling a rule that isn't there is an error, never a silent no-op.
   </Accordion>
 </AccordionGroup>
 
-Later layers win, and within the `--rules` list, later files win. A third layer — an
-OCI-distributed remote registry — is a reserved slot for v2 and pairs with the
+Later layers win, and within the `--rules` list, later files win. A third layer, an
+OCI-distributed remote registry, is a reserved slot for v2 and pairs with the
 signing/trust-policy work; it is not implemented.
 
 <Tip>
@@ -118,7 +118,7 @@ shows the merged result, and the rule's `LAYER` will be your file's path.
 
 ## Validating a pack: `lint` and `test`
 
-Both commands take exactly one pack file and need no Go toolchain — which is the point.
+Both commands take exactly one pack file and need no Go toolchain, which is the point.
 Rule authors are not expected to be Go programmers.
 
 <Tabs>
@@ -193,7 +193,7 @@ selected:  selected by "default"
 ```
 
 That `rules:98` reflects the *effective* set. Add an overlay with two new rules and
-`airom detectors list --rules mycorp.yaml` reports `rules:100` — a quick confirmation
+`airom detectors list --rules mycorp.yaml` reports `rules:100`, a quick confirmation
 that your pack was actually loaded.
 
 <Note>
@@ -212,7 +212,7 @@ Then, per file:
 
 <Steps>
   <Step title="Selector gate">
-    Language and size are checked from compiled rule metadata — before any content is
+    Language and size are checked from compiled rule metadata, before any content is
     read.
   </Step>
   <Step title="Region classification">
@@ -232,7 +232,7 @@ Then, per file:
   </Step>
 </Steps>
 
-Rule findings then flow through the same assembler as every Go detector's output —
+Rule findings then flow through the same assembler as every Go detector's output,
 identity, dedup, and grouped noisy-OR confidence are the assembler's job, never the
 rule's.
 
@@ -244,7 +244,7 @@ The SHA-256 of the effective compiled ruleset participates in the cache namespac
 namespace = sha256(detectorVersions ‖ effectiveRulesetSHA256 ‖ sizeCaps ‖ ignoreConfig)
 ```
 
-Any change to any rule — embedded or overlay, add, override, or disable — produces a new
+Any change to any rule, whether embedded or overlay, add, override, or disable, produces a new
 namespace, and every previously cached finding becomes structurally invisible to the new
 configuration. This is why a pack's `version:` field is informational: rules-as-data
 invalidate on **content**, which eliminates the forgotten-version-bump stale-cache bug.

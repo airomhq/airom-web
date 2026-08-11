@@ -13,7 +13,7 @@ airom <command> [args] [flags]
 ```
 
 <Note>
-  The [global flags](#global-flags) are persistent — every command accepts them —
+  The [global flags](#global-flags) are persistent and every command accepts them,
   but only the scan-family commands (`scan`, `fs`, `repo`, `image`, `k8s`) use the
   full set. Elsewhere: `detectors list`, `detectors explain`, and `rules list`
   resolve the same configuration and so honor `--select` and `--rules`; `clean`
@@ -92,7 +92,7 @@ A reference and `--input` are mutually exclusive, and at least one of the two is
 required.
 
 <Warning>
-  Live registry and Docker-daemon pulls are **not wired yet** — they fail with a
+  Live registry and Docker-daemon pulls are **not wired yet**; they fail with a
   clear error. Today, scan an image from a tarball (`--input`) or an OCI layout on
   disk.
 </Warning>
@@ -130,7 +130,7 @@ airom k8s --manifests <dir>
 At most one positional `[context]` (a kubeconfig context name).
 
 <Warning>
-  Live-cluster mode is **not wired yet** — it fails with a clear error. Use
+  Live-cluster mode is **not wired yet**; it fails with a clear error. Use
   `--manifests <dir>` to extract image refs from YAML offline.
 </Warning>
 
@@ -157,12 +157,12 @@ airom diff base.json head.json --exit-code 1
 Exactly two native AIBOM JSON files are required (`airom scan <target> -o json=<file>`);
 other formats are refused explicitly. `--format` selects one of `table` (default),
 `markdown` (ready to post as a PR comment), or `json`. The gate flags work like scan's,
-evaluated over the added and changed components only — removals never trip the gate, and
+evaluated over the added and changed components only. Removals never trip the gate, and
 `compliance:` terms are rejected. Test-scoped components are excluded unless
 `--include-tests` is set. Added and removed components carry a **Risk**, **Vulnerabilities**, or **Lifecycle** column when that section surfaces one, so a PR introducing a retired model or a checkpoint that executes code on load says so in the row.
 
 Both documents must come from the same tooling. `airom diff` compares the two `tool`
-blocks — binary version, ruleset version and hash, lifecycle catalog — and reports any
+blocks (binary version, ruleset version and hash, lifecycle catalog) and reports any
 mismatch as **⚠ Not comparable** in every format. A rule added between the two scans
 makes components appear that the PR never wrote; a rule removed makes them vanish. With
 `--fail-on` active a mismatch is a fatal error (exit 2) rather than a pass or a failure,
@@ -196,7 +196,7 @@ Exactly one `<id>` is required. Output fields: `id`, `version`, `phase`, `select
 
 ### airom rules list
 
-Show the effective ruleset — embedded packs plus `--rules` overlays — with each
+Show the effective ruleset, embedded packs plus `--rules` overlays, with each
 rule's layer.
 
 ```bash title="airom rules list"
@@ -209,7 +209,7 @@ arguments, no command-specific flags.
 
 ### airom rules lint
 
-Validate a rule pack — or a [model lifecycle catalog](/concepts/eol) — against
+Validate a rule pack, or a [model lifecycle catalog](/concepts/eol), against
 its full contract. The signed bundle carries both, so one command checks either;
 the file's shape selects the validator.
 
@@ -234,7 +234,7 @@ airom rules test <file>
 
 Exactly one `<file>`. Prints `<file>: OK (n expectation(s) checked)` on success;
 failures exit non-zero. Handed a [model lifecycle catalog](/concepts/eol) it says
-so and exits 0 — a catalog has no fixtures to run, and it is `rules lint` that
+so and exits 0. A catalog has no fixtures to run, and it is `rules lint` that
 validates one. That keeps a publishing pipeline free to run both commands over
 every YAML in the bundle without special-casing which file is which.
 
@@ -244,7 +244,7 @@ Fetch, verify, and cache a signed rule bundle from the
 [airom-rules](https://github.com/airomhq/airom-rules) release channel. A bundle
 may also carry the [model lifecycle catalog](/concepts/eol), so this is what
 refreshes retirement dates without a binary upgrade. This is
-the only rules subcommand that touches the network — scans never do. See
+the only rules subcommand that touches the network; scans never do. See
 [Rule updates](/rules/updates) for the full model.
 
 ```bash title="airom rules update"
@@ -292,7 +292,7 @@ airom dev new-detector <name>
 `<name>` must match `[a-z0-9-]+`. Writes `internal/detectors/<pkg>/` containing
 `<pkg>.go`, `<pkg>_test.go`, and a `testdata/` directory, where `<pkg>` is `<name>`
 with the dashes removed (`new-detector safetensors-header` scaffolds
-`internal/detectors/safetensorsheader/`) — a Go package name cannot contain a
+`internal/detectors/safetensorsheader/`), because a Go package name cannot contain a
 dash. Refuses to overwrite an existing directory. No command-specific flags.
 
 It then prints the two follow-up steps: `go test ./internal/detectors/<pkg>/ -update`
@@ -317,7 +317,7 @@ your home directory or a filesystem root.
 
 ### airom version
 
-Print the version, commit, and build date — the same `ToolInfo` embedded in every
+Print the version, commit, and build date, the same `ToolInfo` embedded in every
 AIBOM.
 
 ```bash title="airom version"
@@ -336,14 +336,14 @@ every command carries: `-h`/`--help`, and `--version` on the root.
 | `--cache-dir` | string | `<user cache dir>/airom` | Scan cache location (also where fetched rule bundles live). |
 | `--cdx-version` | string | `1.6` | CycloneDX spec version: `1.6` or `1.7`. |
 | `--no-cached-rules` | bool | `false` | Ignore any fetched rule bundle; scan with the built-in packs. See [Rule updates](/rules/updates). |
-| `--compliance` | stringArray | — | Map the AIBOM onto a governance framework (`nist-ai-rmf`, `owasp-agentic`). Repeatable. |
-| `--no-eol` | bool | `false` | Disable the **model lifecycle (EOL) overlay**, which is **on by default**. It matches inventoried AI models against a curated catalog of provider retirement announcements. The catalog is local — from a fetched bundle when one carries it, else embedded — so unlike `--no-cve` it needs no network and survives `--offline`. See [Model lifecycle](/concepts/eol). |
-| `--include-tests` | bool | `false` | Count AI found **only** in test scaffolding (`testdata/`, `*_test.go`, `tests/`, `spec/`, `test_*.py`, `*.spec.ts`, …), matched against scan-root-relative paths. Off by default — a rule-pack fixture is not part of what your software uses. Test-scoped components stay in the native JSON (`testOnly: true`) and CycloneDX (`scope: "excluded"`); this flag decides whether the table, SARIF, and `--fail-on` count them. See [Test scope](/concepts/test-scope). |
+| `--compliance` | stringArray | none | Map the AIBOM onto a governance framework (`nist-ai-rmf`, `owasp-agentic`). Repeatable. |
+| `--no-eol` | bool | `false` | Disable the **model lifecycle (EOL) overlay**, which is **on by default**. It matches inventoried AI models against a curated catalog of provider retirement announcements. The catalog is local, taken from a fetched bundle when one carries it and otherwise embedded, so unlike `--no-cve` it needs no network and survives `--offline`. See [Model lifecycle](/concepts/eol). |
+| `--include-tests` | bool | `false` | Count AI found **only** in test scaffolding (`testdata/`, `*_test.go`, `tests/`, `spec/`, `test_*.py`, `*.spec.ts`, …), matched against scan-root-relative paths. Off by default, because a rule-pack fixture is not part of what your software uses. Test-scoped components stay in the native JSON (`testOnly: true`) and CycloneDX (`scope: "excluded"`); this flag decides whether the table, SARIF, and `--fail-on` count them. See [Test scope](/concepts/test-scope). |
 | `--no-cve` | bool | `false` | Disable the OSV.dev **CVE overlay**, which is **on by default**. The overlay matches AI dependencies against OSV.dev for known CVEs; it queries the network and is not deterministic over time, so `--no-cve` (or `--offline`) gives a byte-stable offline BOM. See [CVE overlay](/concepts/cve). |
 | `--exit-code` | int | `1` when a policy is active | Exit status when `--fail-on` matches. `0` reports matches without failing. |
-| `--fail-on` | string | — | CI policy expression, e.g. `"hosted-llm&confidence>=0.9"`. |
-| `--format` | string | — | Single-format alias for `-o`. Mutually exclusive with `-o`. |
-| `--ignore` | stringArray | — | Additional ignore glob. Repeatable. Applied on top of `.gitignore`/`.airomignore`. |
+| `--fail-on` | string | none | CI policy expression, e.g. `"hosted-llm&confidence>=0.9"`. |
+| `--format` | string | none | Single-format alias for `-o`. Mutually exclusive with `-o`. |
+| `--ignore` | stringArray | none | Additional ignore glob. Repeatable. Applied on top of `.gitignore`/`.airomignore`. |
 | `--io-budget` | string | `256m` | Byte-weighted I/O semaphore budget (`k`/`m`/`g` suffixes). |
 | `--max-file-size` | string | `1m` | Full-content read cap for text detectors (`k`/`m`/`g` suffixes). |
 | `--min-confidence` | float | `0` | Presentation-layer confidence filter, `0`–`1`. |
@@ -351,15 +351,15 @@ every command carries: `-h`/`--help`, and `--version` on the root.
 | `--offline` | bool | `false` | Assert no network access for the entire run. |
 | `-o, --output` | stringArray | `table` to stdout | Output as `fmt[=path]`. Repeatable. Formats: `cyclonedx`, `json`, `sarif`, `table`, `yaml`. |
 | `--parallel` | int | `GOMAXPROCS` | Worker count. |
-| `--pprof` | string | — | Serve `net/http/pprof`. Bare flag = `localhost:6060`. |
+| `--pprof` | string | none | Serve `net/http/pprof`. Bare flag = `localhost:6060`. |
 | `-q, --quiet` | bool | `false` | Errors only. |
-| `--rules` | stringArray | — | Overlay rule pack file. Repeatable. Merged by rule ID. |
+| `--rules` | stringArray | none | Overlay rule pack file. Repeatable. Merged by rule ID. |
 | `--sarif-strict-kinds` | bool | `false` | Emit spec-pure `kind:"informational"` instead of `level:"note"`. |
-| `--select` | string | — | Detector selection expression, e.g. `"rules,+modelfile/gguf,-dataset/file"`. |
+| `--select` | string | none | Detector selection expression, e.g. `"rules,+modelfile/gguf,-dataset/file"`. |
 | `--stats` | bool | `false` | Emit the full `ScanStats` block in the output. |
 | `--wide` | bool | `false` | Table output only: list every `file:line` occurrence under each component. The default table shows just the primary `LOCATION` and an occurrence count. |
 | `--no-progress` | bool | `false` | Disable the scan progress spinner. Auto-off when stderr is not a terminal, and under `-q`. Progress is stderr-only and never affects the emitted AIBOM. |
-| `--trace` | string | — | Write a Go execution trace to file. |
+| `--trace` | string | none | Write a Go execution trace to file. |
 | `-v, --verbose` | count | `0` | Increase log verbosity. Repeatable; `-vv` adds source locations. |
 
 ### Flag notes
@@ -371,7 +371,7 @@ every command carries: `-h`/`--help`, and `--version` on the root.
 
     ```bash title="--pprof forms"
     airom fs .  --pprof                   # localhost:6060
-    airom fs .  --pprof=0.0.0.0:7070      # custom address — note the '='
+    airom fs .  --pprof=0.0.0.0:7070      # custom address, note the '='
     ```
 
     The space-separated spelling `--pprof 0.0.0.0:7070` is rejected up front with
@@ -410,13 +410,13 @@ every command carries: `-h`/`--help`, and `--version` on the root.
 
 `--exit-code` alone, with no `--fail-on`, means "fail on any component".
 `--exit-code 0` with an active `--fail-on` reports matches without failing the
-build — useful for a soft rollout of a new gate.
+build, which is useful for a soft rollout of a new gate.
 
 ## The --fail-on grammar
 
 ```text title="Grammar"
 expr       = clause *( "|" clause )      ; OR
-clause     = term   *( "&" term )        ; AND — all terms must hold for ONE component
+clause     = term   *( "&" term )        ; AND: all terms must hold for ONE component
 term       = ident | risk | cve | eol | compliance | comparison
 ident      = a ComponentKind ("hosted-llm")
 risk       = "risk" | "risk:<severity>" | "risk:<slug>"        ; see Risk detection
@@ -427,7 +427,7 @@ comparison = "confidence" OP number      ; OP: >= <= > < =
 ```
 
 `&` binds tighter than `|`. Every term in a clause must hold for the **same**
-component — a clause is a per-component predicate, not a whole-document one.
+component. A clause is a per-component predicate, not a whole-document one.
 An unknown term is a **usage error at parse time**, never a silently-passing gate.
 
 ```bash title="Policy examples"
@@ -443,16 +443,20 @@ airom fs . --fail-on "local-model-file|hosted-llm&confidence>=0.8"
 Any of the 13 component kinds may be used as an `ident`: `hosted-llm`,
 `local-model-file`, `embedding-model`, `framework`, `library`, `vector-db`,
 `prompt`, `dataset`, `ai-config`, `infra`, `service`, `rag-pipeline`,
-`application`. Beyond kinds: the [risk](/concepts/risks) selectors (`risk`,
-`risk:<severity>`, `risk:<slug>`; `pickle-risk` is a deprecated alias for
-`risk:pickle-import`), the [CVE](/concepts/cve) selectors (`cve`,
-`cve:<severity>` — a threshold; the overlay is on by default), the
-[model-lifecycle](/concepts/eol) selectors (`eol`, `eol:retired`,
-`eol:deprecated` — a threshold — and `eol:before:<YYYY-MM-DD>`, which fails when
-anything dies before a date you name), and the
-[compliance](/concepts/compliance) selectors (`compliance:gap`,
-`compliance:<framework>`, `compliance:<framework>:<control>`; requires
-`--compliance`, cannot be `&`-combined).
+`application`.
+
+Four selector families go beyond kinds:
+
+- **[Risk](/concepts/risks)**: `risk`, `risk:<severity>`, `risk:<slug>`.
+  `pickle-risk` is a deprecated alias for `risk:pickle-import`.
+- **[CVE](/concepts/cve)**: `cve` and `cve:<severity>`, where the severity form
+  is a threshold. The overlay is on by default.
+- **[Model lifecycle](/concepts/eol)**: `eol`, `eol:retired`, and
+  `eol:deprecated`, where the deprecated form is a threshold.
+  `eol:before:<YYYY-MM-DD>` fails when anything dies before a date you name.
+- **[Compliance](/concepts/compliance)**: `compliance:gap`,
+  `compliance:<framework>`, and `compliance:<framework>:<control>`. These
+  require `--compliance` and cannot be `&`-combined.
 
 ## Table output
 
@@ -491,7 +495,7 @@ Vulnerabilities-by-severity breakdown when the [CVE overlay](/concepts/cve) ran)
 precedes the table. Columns are `KIND`, `NAME`, `VERSION`, `PROVIDER`, `CONF`,
 `LOCATION`, `EVIDENCE`, plus a `VULN` column (and a per-CVE detail table below)
 when a scan surfaces CVEs. `LOCATION` is the primary sighting (`path:line`) and
-`EVIDENCE` renders as `n occ` — the number of occurrences backing the component.
+`EVIDENCE` renders as `n occ`, the number of occurrences backing the component.
 `--wide` lists every one.
 
 <Card title="Configuration reference" icon="sliders" href="/reference/configuration">

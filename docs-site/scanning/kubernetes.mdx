@@ -7,7 +7,7 @@ icon: "ship-wheel"
 `airom k8s` enumerates the container images referenced by Kubernetes workloads, then scans each unique image.
 
 <Warning>
-  **Live-cluster mode is not wired up.** `airom k8s` without `--manifests` does not talk to a cluster — it fails immediately with a clear error. Offline manifest mode (`--manifests <dir>`) is what works today, and it is what this page documents.
+  **Live-cluster mode is not wired up.** `airom k8s` without `--manifests` does not talk to a cluster; it fails immediately with a clear error. Offline manifest mode (`--manifests <dir>`) is what works today, and it is what this page documents.
 </Warning>
 
 ```
@@ -52,11 +52,11 @@ airom: k8s scan of ./k8s
 
 Each image is reported once, sorted by reference, with the number of distinct workloads that reference it. AIROM then scans each image in turn and emits an AIBOM per image, prefixed with an `=== image <ref> ===` header.
 
-A file that cannot be read, or a document that fails to parse, degrades to an `Unknown` and the walk continues — one bad manifest never kills the run.
+A file that cannot be read, or a document that fails to parse, degrades to an `Unknown` and the walk continues, so one bad manifest never kills the run.
 
 ## The catch: image refs must be resolvable locally
 
-Manifest enumeration gives you image *references* (`ollama/ollama:latest`). Scanning those references requires resolving the image — and, as documented in [/scanning/container-images](/scanning/container-images), live registry and daemon pulls are not wired up in this build.
+Manifest enumeration gives you image *references* (`ollama/ollama:latest`). Scanning those references requires resolving the image, and as documented in [/scanning/container-images](/scanning/container-images), live registry and daemon pulls are not wired up in this build.
 
 <Warning>
   A registry reference pulled out of a manifest cannot be fetched today. AIROM logs a warning for each image it could not scan and moves on. In practice the enumeration is the reliable part of `k8s --manifests`; scanning succeeds only for references that resolve to a local image archive or OCI layout path.
@@ -76,11 +76,11 @@ airom image --input rag-api.tar -o cyclonedx=rag-api.cdx.json
 ## Flags
 
 <ParamField path="--manifests" type="string">
-  Directory of manifest YAML to enumerate workload images from. Required today — without it, `k8s` reports that live-cluster scanning is unavailable.
+  Directory of manifest YAML to enumerate workload images from. Required today. Without it, `k8s` reports that live-cluster scanning is unavailable.
 </ParamField>
 
 <ParamField path="--namespace" type="string">
-  Restrict to one namespace. Accepted and parsed, but it applies to live-cluster enumeration, which is not wired up. **In manifest mode it does not filter** — every workload document in the directory is read regardless of its namespace.
+  Restrict to one namespace. Accepted and parsed, but it applies to live-cluster enumeration, which is not wired up. **In manifest mode it does not filter**: every workload document in the directory is read regardless of its namespace.
 </ParamField>
 
 <ParamField path="-A, --all-namespaces" type="bool" default="false">
@@ -88,7 +88,7 @@ airom image --input rag-api.tar -o cyclonedx=rag-api.cdx.json
 </ParamField>
 
 <ParamField path="--parallel-images" type="bool" default="false">
-  Scan images concurrently. Accepted and parsed, but **not yet honored** — images are scanned serially today, whether or not you pass it.
+  Scan images concurrently. Accepted and parsed, but **not yet honored**. Images are scanned serially today, whether or not you pass it.
 </ParamField>
 
 The optional `[context]` positional selects a kube context. It is accepted, but it only means something in live-cluster mode, which is not wired up.
@@ -105,6 +105,6 @@ The optional `[context]` positional selects a kube context. It is accepted, but 
 airom k8s --manifests ./k8s --fail-on 'hosted-llm&confidence>=0.9'
 ```
 
-Images that could not be scanned are reported as warnings — they do not trip the gate. Given the resolution limitation above, do not treat a green `k8s --manifests` gate as evidence that your workload images are clean.
+Images that could not be scanned are reported as warnings, and they do not trip the gate. Given the resolution limitation above, do not treat a green `k8s --manifests` gate as evidence that your workload images are clean.
 
 See [/reference/cli](/reference/cli) for the full `--fail-on` grammar and exit-code contract.

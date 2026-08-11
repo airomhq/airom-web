@@ -6,17 +6,19 @@ icon: "rocket"
 
 <Steps>
   <Step title="Install">
-    AIROM is a single static binary. Install it with the Go toolchain (Go 1.25+):
+    AIROM is a single static binary. The wheel bundles it, so pip gives you the
+    CLI without a Go toolchain:
 
     ```bash title="Install"
-    go install github.com/airomhq/airom/cmd/airom@latest
+    pip install airom
     ```
 
-    <Warning>
-      The binary lands in `$(go env GOPATH)/bin`. If that directory is not on
-      your `PATH`, the next step fails with `command not found`. See
-      [Installation](/installation) for the fix and for building from source.
-    </Warning>
+    <Note>
+      Prefer Go? `go install github.com/airomhq/airom/cmd/airom@latest` works
+      too, but the binary lands in `$(go env GOPATH)/bin` and the next step
+      fails with `command not found` if that directory is not on your `PATH`.
+      See [Installation](/installation) for every method and for the `PATH` fix.
+    </Note>
   </Step>
 
   <Step title="Verify">
@@ -25,17 +27,17 @@ icon: "rocket"
     ```
 
     ```text
-    airom dev
-      commit: none
-      built:  unknown
+    airom 0.3.7
+      commit: 81d6a92
+      built:  2026-08-10T12:37:51Z
       go:     go1.26.5 (darwin/arm64)
     ```
 
     <Note>
-      `dev` / `none` / `unknown` is expected here. The version, commit, and date
-      are stamped in at build time via ldflags; a plain `go install` does not set
-      them. [Building from source](/installation#build-from-source) produces a
-      stamped binary.
+      A pip install reports the exact release it came from. A plain `go install`
+      prints `dev` / `none` / `unknown` instead, because the version, commit,
+      and date are stamped in at build time with ldflags and `go install` does
+      not set them. The scanner is fully functional either way.
     </Note>
 
     This is the same `ToolInfo` that gets embedded in every AIBOM AIROM writes,
@@ -82,8 +84,8 @@ icon: "rocket"
     ```
 
     <Note>
-      The scan exited `0`. Findings are not failures — AIROM inventories, it
-      does not judge. To make CI fail, you opt in with `--fail-on`.
+      The scan exited `0`. Findings are not failures: AIROM inventories, it
+      does not judge. To make CI fail, opt in with `--fail-on`.
     </Note>
   </Step>
 
@@ -123,10 +125,10 @@ icon: "rocket"
 ## Where the evidence lives
 
 The table's `LOCATION` column points at the primary sighting and `EVIDENCE`
-counts how many back a component. The full `file:line` provenance for *every*
-occurrence — plus the matched snippet, the enclosing symbol, the detector that
-fired, and a per-occurrence confidence — is carried in the structured outputs
-(and `--wide` expands them under each row).
+counts how many back a component. The structured outputs carry the full
+`file:line` provenance for *every* occurrence, along with the matched snippet,
+the enclosing symbol, the detector that fired, and a per-occurrence confidence.
+`--wide` expands the same detail under each table row.
 
 ```bash title="Inspect the occurrences"
 airom scan . -o json=aibom.json
@@ -165,9 +167,9 @@ airom scan . -o json=aibom.json
 }
 ```
 
-That is the whole point: the `gpt-4.1` row in the table is not an assertion, it
-is `src/rag.py:8`, column 9–24, matched by `rules/openai/model-literal` via
-source-code analysis, with the literal text that triggered it.
+The `gpt-4.1` row in the table is not an assertion. It is `src/rag.py:8`,
+columns 9 to 24, matched by `rules/openai/model-literal` through source-code
+analysis, with the literal text that triggered it.
 </Accordion>
 
 ## Wire it into CI
@@ -185,7 +187,7 @@ airom scan . \
 | --- | --- |
 | `0` | Scan completed. Findings are not failures. |
 | `1` | The `--fail-on` policy matched. Override the value with `--exit-code`. |
-| `2` | Fatal error — bad flags/config, or source acquisition failed. |
+| `2` | Fatal error: bad flags or config, or source acquisition failed. |
 
 <Tip>
   Want to report matches without failing? `--exit-code 0` alongside your
@@ -196,7 +198,7 @@ airom scan . \
 
 <CardGroup cols={2}>
   <Card title="Installation" icon="download" href="/installation">
-    PATH setup, building from source, and the pre-release caveats.
+    pip, Go install, prebuilt binaries, and building from source.
   </Card>
   <Card title="CLI reference" icon="terminal" href="/reference/cli">
     Every command, flag, and exit code.

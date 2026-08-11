@@ -1,6 +1,6 @@
 ---
 title: "Rule updates"
-description: "Fetch fresh detection rules without upgrading airom — a signed, cached, offline-safe bundle."
+description: "Fetch fresh detection rules without upgrading airom, using a signed, cached, offline-safe bundle."
 icon: "refresh-cw"
 ---
 
@@ -8,7 +8,7 @@ airom ships its rule packs **embedded in the binary**, so a scan always works
 with no network. But a new AI framework shouldn't require a new airom release to
 detect. `airom rules update` fetches a newer, **signed** rule bundle from the
 [airom-rules](https://github.com/airomhq/airom-rules) channel into the cache;
-scans then prefer it — while the embedded packs remain the offline floor.
+scans then prefer it, while the embedded packs remain the offline floor.
 
 ```bash title="Update, then scan"
 airom rules update           # fetch + verify + cache the latest bundle
@@ -23,14 +23,14 @@ airom fs .                   # this scan now uses it
     with `--no-cached-rules`), that's what every scan uses. Nothing here requires
     a network or a second install.
   </Step>
-  <Step title="`rules update` fetches a bundle — explicitly">
+  <Step title="`rules update` fetches a bundle, explicitly">
     It resolves the release, verifies it, and caches it under
     `<cache-dir>/rules/<version>`. This is the deliberate, unthrottled path: it
     fetches every time you ask, and can pin a version.
   </Step>
   <Step title="Scans also check once a day, unless told not to">
     With `--auto-update-rules` (on by default) a scan checks for a newer bundle
-    before it resolves its rules — **at most once every 24 hours**, and never
+    before it resolves its rules, **at most once every 24 hours**, and never
     under `--offline`, `--no-cached-rules`, or in CI. Verification is identical
     to `rules update`, and a failed check keeps whatever you already have.
   </Step>
@@ -59,8 +59,8 @@ every time.
 
 <Warning>
   That standdown is not a nicety. [`airom diff`](/reference/cli) **refuses** to
-  compare two AIBOMs produced by different rulesets — it will not blame a pull
-  request for a rule change — so a base scan and a head scan that straddle a
+  compare two AIBOMs produced by different rulesets, and it will not blame a pull
+  request for a rule change, so a base scan and a head scan that straddle a
   bundle release would fail the gate with nothing wrong in the code. A
   `--fail-on` threshold has the same exposure: a stricter rule turns a green
   build red with no commit behind it. Pin explicitly (`airom rules update
@@ -101,7 +101,7 @@ means a new airom release with the new public key.
 
 <Warning>
   `--insecure-skip-signature` bypasses signature verification (the checksum is
-  still enforced). Use it only against a source you fully control — never the
+  still enforced). Use it only against a source you fully control, never the
   public channel.
 </Warning>
 
@@ -112,7 +112,7 @@ airom fs . --no-cached-rules    # ignore the bundle; use the embedded packs
 airom clean                     # remove the cache, including fetched bundles
 ```
 
-A cached bundle that fails to load never bricks a scan — airom falls back to the
+A cached bundle that fails to load never bricks a scan. airom falls back to the
 embedded packs with a warning.
 
 ## Provenance
@@ -134,7 +134,7 @@ that produced it:
 SHA-256 of the effective ruleset.
 
 `eolCatalog` names the [lifecycle catalog](/concepts/eol) behind the document's
-EOL claims — `builtin`, or `builtin+<version>` when a bundle overlaid it, since
+EOL claims: `builtin`, or `builtin+<version>` when a bundle overlaid it, since
 the merge is per provider and both layers can be answering. It is absent when
 `--no-eol` turned the overlay off: a claim nobody made needs no provenance. A
 retirement date is only as trustworthy as the catalog and verification date
@@ -148,5 +148,5 @@ All three project into CycloneDX (`airom:rules.version`, `airom:rules.hash`,
 
 Rules live in [airom-rules](https://github.com/airomhq/airom-rules); stable ones
 are promoted into airom's embedded packs over time. To write one, see
-[Writing rules](/rules/writing-rules) — the schema and fixtures are identical to
+[Writing rules](/rules/writing-rules). The schema and fixtures are identical to
 the built-in packs.

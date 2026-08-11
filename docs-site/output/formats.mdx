@@ -5,7 +5,7 @@ icon: "file-output"
 ---
 
 AIROM assembles one graph per scan, then renders it. Every format is a pure
-projection of that same graph — a writer never re-derives a fact, never reaches
+projection of that same graph. A writer never re-derives a fact, never reaches
 back into the engine, and never adds information the graph does not already
 carry. One scan, every format, no drift between them.
 
@@ -15,12 +15,12 @@ carry. One scan, every format, no drift between them.
 |---|---|---|---|
 | Table | `table` | No | Human review in a terminal. The default. |
 | Native JSON | `json` | Yes | The reference serialization. Round-trips the full graph. |
-| CycloneDX | `cyclonedx` | No | ML-BOM exchange — with `vulnerabilities[]` for risks and `definitions`/`declarations` for compliance. See [/output/cyclonedx](/output/cyclonedx). |
+| CycloneDX | `cyclonedx` | No | ML-BOM exchange, with `vulnerabilities[]` for risks and `definitions`/`declarations` for compliance. See [/output/cyclonedx](/output/cyclonedx). |
 | SARIF | `sarif` | No | Code scanning UIs. See [/output/sarif](/output/sarif). |
 | YAML | `yaml` | Yes | The same content as `json`, shaped for human review and diffs. |
 | Compliance report | `compliance` | No | A Markdown report of `--compliance` results. See [/concepts/compliance](/concepts/compliance). |
-| OpenVEX | `vex` | No | Consumers that ingest VEX. Every statement is `affected` — see below. |
-| SPDX | `spdx` | No | SPDX 3.0.1 JSON-LD with the AI, Dataset, Software, and Security profiles. The lossiest format — see below. |
+| OpenVEX | `vex` | No | Consumers that ingest VEX. Every statement is `affected`. See below. |
+| SPDX | `spdx` | No | SPDX 3.0.1 JSON-LD with the AI, Dataset, Software, and Security profiles. The lossiest format. See below. |
 
 ## VEX and SPDX
 
@@ -29,12 +29,12 @@ overlay. Every statement is `affected`, and `not_affected` is unreachable by
 construction: AIROM does no reachability analysis, so it knows a component is
 present at a version an advisory lists as vulnerable and nothing more. An
 all-clear it cannot justify is the one output that would make you stop looking.
-The upstream fixed version goes in `action_statement`, never a `fixed` status —
+The upstream fixed version goes in `action_statement`, never a `fixed` status,
 that would assert *your* product is remediated when it is still running the
 vulnerable release.
 
 `spdx` emits an [SPDX 3.0.1](https://spdx.github.io/spdx-spec/v3.0.1/) JSON-LD
-graph. Take it when your downstream tooling ingests SPDX — and know what you are
+graph. Take it when your downstream tooling ingests SPDX, and know what you are
 giving up. It is the lossiest format AIROM emits, and the loss lands squarely on
 the thing AIROM exists to record: **SPDX 3.0.1 has no slot for an occurrence**,
 so no `file:line` evidence survives. Each package states its occurrence *count*
@@ -45,11 +45,11 @@ What it does carry: models as `ai_AIPackage`, datasets as
 `dataset_DatasetPackage`, suppliers as `Organization` elements, licenses as
 `hasDeclaredLicense` edges, model retirement as `validUntilTime`, and both
 overlays through the Security profile. Required fields on the AI and Dataset
-classes follow SPDX's `NOASSERTION` discipline rather than being omitted — a
+classes follow SPDX's `NOASSERTION` discipline rather than being omitted, so a
 consumer can tell "we looked and do not know" from "this tool never looked".
 
 <Note>
-`json` and `yaml` are the two lossless formats — they carry the whole
+`json` and `yaml` are the two lossless formats. They carry the whole
 `Inventory`, including relationship evidence that CycloneDX and SARIF have no
 place to put. If you need to keep everything, keep one of those.
 </Note>
@@ -94,12 +94,12 @@ AI Bill of Materials — /tmp/my-ai-app
 A boxed **Scan Summary** panel (target, counts, a By-Type breakdown, and a
 Vulnerabilities-by-severity breakdown when the [CVE overlay](/concepts/cve) ran)
 precedes the component table. The table columns are `KIND`, `NAME`, `VERSION`,
-`PROVIDER`, `CONF`, `LOCATION`, `EVIDENCE` — plus a `VULN` column (top severity +
+`PROVIDER`, `CONF`, `LOCATION`, `EVIDENCE`, plus a `VULN` column (top severity +
 count) when a scan surfaces CVEs, followed by a per-CVE detail table.
 `LOCATION` is the primary sighting (`path:line`); `EVIDENCE` is the total
 occurrence count (`2 occ`), not a file list. `--wide` expands every occurrence
 below the table. Empty scalars render as `-`. The scan-root application component
-is omitted from the table — it is metadata, not a finding — so the component
+is omitted from the table, because it is metadata rather than a finding, so the component
 count covers findings only.
 
 If nothing matches, the table degrades to a single line:
@@ -127,7 +127,7 @@ airom scan . -o cyclonedx=bom.json -o sarif=scan.sarif
 ```
 
 That is a single scan. `bom.json` and `scan.sarif` are two projections of one
-graph, so they can never disagree about what was found — no second traversal, no
+graph, so they can never disagree about what was found. There is no second traversal, no
 re-detection, no skew.
 
 ```bash title="A file plus a table on stdout"
@@ -161,7 +161,7 @@ Passing both **on the command line** is an error:
 ```
 
 <Tip>
-`--format` cannot express multi-output — it is one format, stdout only. Reach for
+`--format` cannot express multi-output. It is one format, stdout only. Reach for
 `-o` as soon as you want a file or a second format.
 </Tip>
 
@@ -189,7 +189,7 @@ consequences worth relying on:
 
 <Card title="No format-only facts" icon="scale-balanced">
   A writer renders nothing the graph lacks. If a field is missing from
-  CycloneDX, it is missing from the graph — not dropped by the writer.
+  CycloneDX, it is missing from the graph, not dropped by the writer.
 </Card>
 
 <Card title="Consistent across formats" icon="layers">
@@ -213,7 +213,7 @@ consequences worth relying on:
 | `--stats` | `json`, `yaml` | Keep the full `ScanStats` block (timings, per-detector counts). |
 
 <Note>
-`--stats` only shows up in `json` and `yaml` — they are the formats that
+`--stats` only shows up in `json` and `yaml`, the formats that
 serialize `ScanStats`. Without it, the stats block is trimmed to
 `filesWalked`, `filesProcessed` and `filesFailed`; the volatile timing and
 per-detector numbers are dropped so the output stays reproducible. The table,
@@ -222,7 +222,7 @@ CycloneDX and SARIF writers never render the stats block either way.
 
 <Note>
 `--min-confidence` filters at the presentation layer. On general-purpose
-directories, `--min-confidence 0.8` is the practical setting — see
+directories, `--min-confidence 0.8` is the practical setting. See
 [/concepts/confidence](/concepts/confidence).
 </Note>
 

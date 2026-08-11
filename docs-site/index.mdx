@@ -1,45 +1,45 @@
 ---
 title: "AIROM"
-description: "Open-source AI Bill of Materials (AIBOM) scanner — inventory AI models, datasets, prompts & RAG pipelines with file:line evidence, load-time risk detection, and NIST AI RMF / OWASP compliance mapping."
+description: "Open-source AI Bill of Materials (AIBOM) scanner. Inventories AI models, datasets, prompts and RAG pipelines with file:line evidence, load-time risk detection, and NIST AI RMF / OWASP compliance mapping."
 icon: "scan-search"
 ---
 
 AIROM is an open-source AI Bill of Materials (AIBOM) scanner. Point it at a
-directory, a git repo, a container image, or a set of Kubernetes manifests, and
-it produces an inventory of the AI assets in there: the models you call, the
-weights on disk, the frameworks and SDKs you import, the vector databases, the
-prompts, the datasets, the serving infrastructure.
+directory, a Git repository, a container image, or a set of Kubernetes
+manifests. It inventories the AI assets it finds there: the models you call,
+the weights on disk, the frameworks and SDKs you import, the vector databases,
+the prompts, the datasets, and the serving infrastructure.
 
 It is a single static Go binary. No agent, no runtime hooks, no telemetry.
 
 ## Evidence first
 
-Most inventory tools hand you a list and ask you to trust it. Your AIBOM says
-`gpt-4.1` — why? Where exactly? Said who?
+Most inventory tools hand you a list and ask you to trust it. When your AIBOM
+says `gpt-4.1`, you should be able to find out where that came from and which
+rule decided it.
 
-AIROM answers that for every component it emits. Each one carries:
+AIROM records that for every component it emits. Each one carries four fields:
 
 | Field | What it holds |
 | --- | --- |
 | **Occurrences** | Every sighting: `file:line`, the matched snippet, and the enclosing function or class when known |
-| **Detection method** | Which technique found it — one of `source-code-analysis`, `ast-fingerprint`, `manifest-analysis`, `binary-analysis`, `hash-comparison`, `config-analysis`, `filename`. An eighth method, `attestation`, is a reserved slot for v2 |
-| **Confidence** | A calibrated 0–1 score, on the component and on each individual occurrence |
-| **Detector ID** | The stable rule that fired, e.g. `rules/openai/model-literal` |
+| **Detection method** | How it was found. One of `source-code-analysis`, `ast-fingerprint`, `manifest-analysis`, `binary-analysis`, `hash-comparison`, `config-analysis`, `filename`. An eighth method, `attestation`, is a reserved slot for v2 |
+| **Confidence** | A calibrated score from 0 to 1, recorded on the component and on each occurrence |
+| **Detector ID** | The rule that fired, such as `rules/openai/model-literal`. Identifiers stay stable across releases |
 
-That means every row in the table is a claim you can walk back to a line of
-source. A finding you cannot audit is a finding you cannot act on.
+Every row in the table traces back to a line of source. A finding you cannot
+audit is a finding you cannot act on.
 
 <Note>
-  AIROM is the AI-asset counterpart to software-dependency scanning — but the
-  output is an AIBOM, and the unit of trust is the evidence attached to each
-  component.
+  AIROM is the AI-asset counterpart to software-dependency scanning. The output
+  is an AIBOM, and the unit of trust is the evidence attached to each component.
 </Note>
 
 ## What it emits
 
-AIROM writes **CycloneDX 1.6 or 1.7 ML-BOM** with the evidence carried through
-into `evidence.occurrences[]` — the file/line provenance survives into the
-document itself, rather than being discarded at serialization time. It also
+AIROM writes **CycloneDX 1.6 or 1.7 ML-BOM** and carries the evidence through
+into `evidence.occurrences[]`. File and line provenance survives into the
+document itself rather than being discarded at serialization time. AIROM also
 emits **SARIF**, so the same findings render as annotations in a code-review UI.
 
 `json`, `yaml`, and a human `table` round out the formats. Any of them can be
@@ -85,10 +85,13 @@ airom scan . --fail-on "hosted-llm&confidence>=0.9"
 ```
 
 <Warning>
-  AIROM is pre-release (`v0.1.0-dev`, untagged). There are no prebuilt binaries
-  yet — install with `go install` or build from source. Live registry/daemon
-  image pulls and Kubernetes live-cluster mode are not wired up yet; use
-  `image --input <tarball>` and `k8s --manifests <dir>` instead.
+  AIROM is early software. Expect rough edges.
+
+  Two source modes are not implemented yet. Live registry and daemon image
+  pulls are unavailable, so pass a saved archive with `image --input <tarball>`.
+  Live-cluster scanning is unavailable, so pass manifests with
+  `k8s --manifests <dir>`. Both flags report the limitation in their own
+  `--help`.
 </Warning>
 
 ## Next

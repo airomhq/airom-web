@@ -28,7 +28,7 @@ Confidence is a **grouped noisy-OR** over the occurrences behind a component. Th
     ```
 
     The bonus is capped at 0.15. Seeing the same thing twenty times with one detector is only
-    marginally better evidence than seeing it twice — the sightings are not independent.
+    marginally better evidence than seeing it twice, because the sightings are not independent.
   </Step>
   <Step title="Noisy-OR across methods">
     Reduce the groups to a per-method maximum, then combine across **methods**:
@@ -50,7 +50,7 @@ Confidence is a **grouped noisy-OR** over the occurrences behind a component. Th
 <Note>
 The 0.99 clamp is a statement of epistemics, not a fudge factor. Static analysis reads what the
 code *says*, not what it *does*. Only a digest matched against known weights lets AIROM assert
-certainty — that is the one v1 path to 1.0.
+certainty, which is the one v1 path to 1.0.
 </Note>
 
 The multiplication runs in sorted method order deliberately. Float multiplication is not
@@ -69,8 +69,8 @@ The SDK type `airom.Confidence` offers a `Band()` helper that buckets a score in
 
 <Warning>
 Bands are a convenience for consumers of the Go SDK. No AIROM output emits them: they are not
-stored, not a field in any format, not shown in the table (which prints the float — `0.87`), and
-not usable in a `--fail-on` expression. The float is the real value — compare against it, not
+stored, not a field in any format, not shown in the table (which prints the float, `0.87`), and
+not usable in a `--fail-on` expression. The float is the real value, so compare against it, not
 against a band name.
 </Warning>
 
@@ -86,12 +86,12 @@ What it does:
 
 - Keeps every component at or above the threshold.
 - **Always keeps the `application` root**, so the output still identifies what was scanned.
-- Drops relationships whose endpoints did not both survive — no dangling edges.
+- Drops relationships whose endpoints did not both survive, so there are no dangling edges.
 - Leaves assembly untouched. Re-run without the flag and everything is back.
 
 <Warning>
 `--min-confidence` is a per-run setting, not a per-output one. It applies to **every** output of
-that run — a `-o table -o json=airom.json` run writes the same filtered set to both. If you want
+that run, so a `-o table -o json=airom.json` run writes the same filtered set to both. If you want
 a quiet table and a complete archival document, run the export a second time without the flag.
 </Warning>
 
@@ -106,7 +106,7 @@ Two detection paths are responsible:
 
 | Path | Confidence | Why it fires falsely |
 |---|---|---|
-| Extension-only dataset detection | 0.6 | A `.csv` or `.jsonl` that looks structurally right becomes a `dataset` component — whether or not it has anything to do with AI. Any repo with exported data will light up. |
+| Extension-only dataset detection | 0.6 | A `.csv` or `.jsonl` that looks structurally right becomes a `dataset` component whether or not it has anything to do with AI. Any repo with exported data will light up. |
 | Keyword-only `ai-config` | 0.5 | A `temperature` or `top_p` key in any YAML or TOML becomes an `ai-config` component. Plenty of non-AI configs use those words. |
 
 These sightings are honest about themselves: they carry the `filename` and `config-analysis`
@@ -115,7 +115,7 @@ silently dropped dataset is worse than a noisy one. But on a repo that is not AI
 will dominate the component count.
 
 **The practical filter is `--min-confidence 0.8`.** It clears both classes while keeping
-anything corroborated by an independent method — a `.parquet` file confirmed by its magic bytes
+anything corroborated by an independent method, such as a `.parquet` file confirmed by its magic bytes
 scores 0.8 on binary analysis alone and survives; a `.csv` matched only by its extension does
 not.
 
@@ -124,7 +124,7 @@ airom fs . --min-confidence 0.8
 ```
 
 If you want a stricter view still, narrow what runs rather than what prints. `--select` takes an
-include/exclude expression whose tokens are **detector IDs** — so you can drop the dataset
+include/exclude expression whose tokens are **detector IDs**, so you can drop the dataset
 detector outright:
 
 ```bash title="Scan without the dataset detector"
@@ -134,7 +134,7 @@ airom fs . --select "-dataset/file"
 <Note>
 Selection is per detector, not per rule pack. The low-confidence `ai-config` rules live inside
 the `ruleengine` detector alongside every other rule, so there is no `--select` token that drops
-just those — `--min-confidence` is the tool for that class of noise.
+just those. `--min-confidence` is the tool for that class of noise.
 </Note>
 
 Every token must match a registered detector ID or tag, or the run fails with a usage error
@@ -155,7 +155,7 @@ airom fs . --fail-on "hosted-llm&confidence>=0.9"
 `--min-confidence` and `--fail-on` are fully independent. `--min-confidence` shapes the
 document; `--fail-on` decides the exit status, and it evaluates against the **complete,
 unfiltered** inventory. Raising `--min-confidence` to quiet the table will not weaken your CI
-gate — put the confidence threshold in the `--fail-on` expression itself if that is what you
+gate. Put the confidence threshold in the `--fail-on` expression itself if that is what you
 want to gate on.
 
 <CardGroup cols={2}>

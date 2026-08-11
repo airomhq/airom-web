@@ -18,7 +18,7 @@ flags  >  AIROM_* environment variables  >  .airom.yaml  >  built-in defaults
 <Steps>
   <Step title="Flags">
     An explicitly-set flag always wins. A flag you did not pass does not shadow a
-    lower layer — its default only fills a key nothing else provided.
+    lower layer. Its default only fills a key nothing else provided.
   </Step>
   <Step title="AIROM_* environment variables">
     Beat the config file. This is the CI layer: set once in the job environment.
@@ -54,13 +54,13 @@ AIROM_IGNORE="**/fixtures/**,**/*.example.py"
 ```
 
 <Note>
-  The list-valued keys are `output`, `rules`, and `ignore` — the three repeatable
+  The list-valued keys are `output`, `rules`, and `ignore`, the three repeatable
   `stringArray` flags. Every other key takes a single scalar.
 </Note>
 
 ## .airom.yaml
 
-Discovered in the working directory. Keys mirror flag names exactly — the flag
+Discovered in the working directory. Keys mirror flag names exactly, so the flag
 `--min-confidence` is the key `min-confidence`.
 
 ```yaml title=".airom.yaml"
@@ -131,7 +131,7 @@ parallel-images: false     # k8s --parallel-images
 ```
 
 <Warning>
-  These keys are global in the configuration file — they are not scoped per
+  These keys are global in the configuration file. They are not scoped per
   command. An `input:` key in `.airom.yaml` applies to `airom image` in that
   directory, and `airom image my-ref:latest` will then fail, because a reference
   and `--input` are mutually exclusive regardless of which layer supplied the
@@ -143,7 +143,7 @@ parallel-images: false     # k8s --parallel-images
 An unrecognized key in `.airom.yaml`, or an unrecognized `AIROM_*` variable, is a
 fatal configuration error (exit `2`). It is never a silent no-op.
 
-```yaml title="A typo — this is an error, not a no-op"
+```yaml title="A typo: this is an error, not a no-op"
 parallels: 8    # not "parallel"
 ```
 
@@ -157,7 +157,7 @@ worse than no gate at all, because you would believe you had one.
 
 <Tip>
   Values are strictly typed too. `AIROM_EXIT_CODE=one` or `min-confidence: high`
-  fails with a precise error rather than coercing to zero — which would quietly
+  fails with a precise error rather than coercing to zero, which would quietly
   delete your gate.
 </Tip>
 
@@ -175,7 +175,7 @@ worse than no gate at all, because you would believe you had one.
     `-q` and `-v` are mutually exclusive when both are passed on the command
     line. An explicit `-v` overrides a `quiet` from the environment or the file,
     and an explicit `-q` overrides a `verbose` from the environment or the file.
-    If both come from the environment or the file, `quiet` wins — less noise is
+    If both come from the environment or the file, `quiet` wins, because less noise is
     the safe default.
   </Accordion>
 
@@ -186,7 +186,7 @@ worse than no gate at all, because you would believe you had one.
     | `fail-on` alone              | Policy active, exit code `1` on a match. |
     | `fail-on` + `exit-code: N`   | Policy active, exit code `N`. `N=0` reports matches without failing. |
     | `exit-code: N` alone (N > 0) | Fail on **any** component, with code `N`. |
-    | `exit-code: 0` alone         | No gate — same as unset. |
+    | `exit-code: 0` alone         | No gate. Same as unset. |
 
     `exit-code` must be in `[0,255]`.
   </Accordion>

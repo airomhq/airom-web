@@ -98,7 +98,7 @@ Components typed `data` also carry a `data[]` facet: `dataset` → `data[].type:
 
 ## modelCard
 
-A `modelCard` is emitted for `machine-learning-model` components — but only when
+A `modelCard` is emitted for `machine-learning-model` components, but only when
 there is something to put in it. If AIROM knows no task, no architecture, no
 model card, and no `trained-on` edge, the key is absent rather than empty.
 
@@ -140,10 +140,10 @@ Model facts with no native CycloneDX slot become namespaced properties:
 `airom:model.contextLength`, `airom:model.format`, `airom:model.baseModel`, and
 `airom:pickle.risk` / `airom:pickle.imports` for static pickle-walk findings.
 
-## `vulnerabilities[]` — the risk overlay
+## `vulnerabilities[]`: the risk overlay
 
-[Artifact risks](/concepts/risks) — a poisoned pickle, a Keras `Lambda` layer, an
-unsafe-load call site — project into the top-level `vulnerabilities[]` array. Each is a
+[Artifact risks](/concepts/risks) such as a poisoned pickle, a Keras `Lambda` layer, or an
+unsafe-load call site project into the top-level `vulnerabilities[]` array. Each is a
 non-CVE `id` (e.g. `AIROM-RISK-PICKLE-IMPORT`) with `source.name: airom`,
 `ratings[].method: other` (**AIROM claims no CVSS**), and `affects[].ref` pointing at the
 affected component's `bom-ref`.
@@ -160,7 +160,7 @@ affected component's `bom-ref`.
 ]
 ```
 
-## `definitions` / `declarations` — the compliance overlay
+## `definitions` and `declarations`: the compliance overlay
 
 When you pass `--compliance`, the [framework mapping](/concepts/compliance) projects into
 CycloneDX's native attestation model: `definitions.standards[]` declares the framework and
@@ -182,7 +182,7 @@ its `requirements[]` (controls), and `declarations` records AIROM as a first-par
 ```
 
 A **manual** control emits its `claim` and `attestation.map` entry with **no
-`conformance.score`** — AIROM never asserts a figure it cannot back with evidence.
+`conformance.score`**. AIROM never asserts a figure it cannot back with evidence.
 
 ## Evidence
 
@@ -216,14 +216,14 @@ and `additionalContext` (the snippet) when known. A whole-file sighting omits
 `line` entirely rather than claiming line 0.
 
 `identity[]` is what AIROM concluded and why. Note that identity entries can
-disagree — a low-confidence competing `concludedValue` sits alongside the
+disagree. A low-confidence competing `concludedValue` sits alongside the
 winning one rather than being silently discarded.
 
 AIROM's 8 detection methods map to CycloneDX evidence techniques by identical
 string, with one exception: `config-analysis` has no enum value, so it degrades
 to `technique: "other"` with `value: "config-analysis"` as a recovery marker.
 
-## `dependencies[]` — what AIROM will and won't claim
+## `dependencies[]`: what AIROM will and won't claim
 
 The writer maps `depends-on` edges to `dependencies[] {ref, dependsOn}`, and
 root edges naturally reference the `metadata.component` bom-ref.
@@ -253,7 +253,7 @@ them.
 
 ## purl and hashes
 
-Local weight files get real purls and SHA-256 hashes — their identity *is* their
+Local weight files get real purls and SHA-256 hashes, because their identity *is* their
 bytes:
 
 ```json
@@ -271,8 +271,8 @@ bytes:
 
 <Warning>
 Hosted API models get **no purl**, deliberately. Minting
-`pkg:generic/openai/gpt-4.1` would misuse the spec — `pkg:generic` is reserved
-for bare files — and would pollute purl-keyed consumers such as
+`pkg:generic/openai/gpt-4.1` would misuse the spec, since `pkg:generic` is reserved
+for bare files, and it would pollute purl-keyed consumers such as
 Dependency-Track. A hosted model's identity travels as `bom-ref` +
 `airom:model.provider` + `airom:model.id`. This will be revisited if purl
 standardizes an AI type.

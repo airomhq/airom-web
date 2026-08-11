@@ -5,7 +5,7 @@ icon: "github"
 ---
 
 A complete GitHub Actions setup for AIROM: install it, scan the checkout, publish SARIF
-to GitHub Code Scanning, upload the AIBOM as a build artifact, and — optionally — fail
+to GitHub Code Scanning, upload the AIBOM as a build artifact, and optionally fail
 the build on a policy.
 
 <Note>
@@ -62,7 +62,7 @@ jobs:
             airom.cdx.json
 ```
 
-That workflow never fails on findings — it reports. AIROM exits `0` whether it finds
+That workflow never fails on findings; it reports. AIROM exits `0` whether it finds
 nothing or forty components. See [exit codes](/ci/exit-codes).
 
 <Warning>
@@ -80,12 +80,12 @@ puts that on `PATH`; without it you get `airom: command not found`.
   </Accordion>
   <Accordion title="-o sarif=airom.sarif" icon="file-code">
     `-o` is repeatable and takes `format[=path]`. Formats: `cyclonedx`, `json`, `sarif`,
-    `table`, `yaml`. Omitting `=path` sends that format to stdout — which is why `-o table`
+    `table`, `yaml`. Omitting `=path` sends that format to stdout, which is why `-o table`
     above still prints a human-readable summary to the job log while the machine formats go
     to files.
 
     AIROM's SARIF defaults to `level: "note"`, which is what GitHub Code Scanning renders.
-    `--sarif-strict-kinds` switches to spec-pure `kind: "informational"` — correct per the
+    `--sarif-strict-kinds` switches to spec-pure `kind: "informational"`, correct per the
     SARIF spec, but GitHub displays those differently. Leave it off for this workflow.
   </Accordion>
   <Accordion title="category: airom" icon="tag">
@@ -104,7 +104,7 @@ puts that on `PATH`; without it you get `airom: command not found`.
 ## Gating the build
 
 Add `--fail-on` when you want a policy violation to fail the job. Keep it on its own
-step so the SARIF upload runs first — a gated scan still writes all of its output before
+step so the SARIF upload runs first. A gated scan still writes all of its output before
 the gate is evaluated.
 
 ```yaml title="Report first, then gate"
@@ -141,7 +141,7 @@ upload step, so results still reach Code Scanning when the gate trips.
 ### Report on a PR, fail on main
 
 `--exit-code 0` evaluates the policy and still writes every output, but never fails the
-build — so a pull request gets the SARIF results without a red check, while `main` gates.
+build, so a pull request gets the SARIF results without a red check while `main` gates.
 
 ```yaml title="Policy from the workflow context"
       - name: Scan
@@ -170,14 +170,14 @@ values are comma-separated.
 ```
 
 Precedence is flags > `AIROM_*` > `.airom.yaml` > defaults. Unknown keys and unknown
-`AIROM_*` variables fail loudly — a typo never silently does nothing. Committing an
+`AIROM_*` variables fail loudly, so a typo never silently does nothing. Committing an
 `.airom.yaml` at the repo root keeps CI and local runs identical.
 
 ## Scanning other targets
 
 <Tabs>
   <Tab title="Repository">
-    Scanning the checkout with `fs` is usually what you want in CI — the working tree is
+    Scanning the checkout with `fs` is usually what you want in CI, because the working tree is
     already there. Use `repo` when you need git provenance, or to scan a different
     repository.
 
@@ -187,7 +187,7 @@ Precedence is flags > `AIROM_*` > `.airom.yaml` > defaults. Unknown keys and unk
     ```
   </Tab>
   <Tab title="Container image">
-    Live registry and daemon pulls are **not wired yet** — they fail with a clear error.
+    Live registry and daemon pulls are **not wired yet**; they fail with a clear error.
     Scan an image you built in the same job by saving it to a tarball first.
 
     ```yaml
@@ -211,7 +211,7 @@ Precedence is flags > `AIROM_*` > `.airom.yaml` > defaults. Unknown keys and unk
         run: airom k8s --manifests ./deploy --offline
     ```
 
-    Each referenced image is then scanned — but because live registry and daemon pulls are
+    Each referenced image is then scanned, but because live registry and daemon pulls are
     not wired yet, images that are not available locally are reported as unscannable
     warnings rather than inventoried. To get an AIBOM for one, save it to a tarball and run
     `airom image --input`.
@@ -220,7 +220,7 @@ Precedence is flags > `AIROM_*` > `.airom.yaml` > defaults. Unknown keys and unk
 
 <Note>
 `--offline` asserts that the run touches no network. `fs`, a local `repo` path, and
-`image --input` perform no network access regardless — the flag states the intent
+`image --input` perform no network access regardless. The flag states the intent
 explicitly in the job, which is worth doing in an air-gapped or egress-restricted runner.
 </Note>
 
@@ -233,7 +233,7 @@ pin a commit now:
 go install github.com/airomhq/airom/cmd/airom@<commit-or-tag>
 ```
 
-`airom version` prints the version, commit, and build date — the same `ToolInfo` recorded
+`airom version` prints the version, commit, and build date, the same `ToolInfo` recorded
 in every AIBOM AIROM produces. Print it in CI so an artifact is always traceable to a
 build.
 

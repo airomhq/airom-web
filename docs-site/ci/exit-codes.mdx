@@ -13,12 +13,12 @@ opt-in decision you make with `--fail-on` and `--exit-code`.
 | Code | Meaning |
 |------|---------|
 | `0` | The scan completed. **Findings are not failures.** A scan that discovers 40 AI components still exits `0`. |
-| `<n>` | The opt-in CI gate matched. `<n>` is the `--exit-code` value — `1` by default when a policy is active. |
+| `<n>` | The opt-in CI gate matched. `<n>` is the `--exit-code` value, which defaults to `1` when a policy is active. |
 | `2` | Fatal error: invalid flags or configuration, or source acquisition failed (unreadable path, clone failure, image acquisition failure). |
 
 <Note>
 Everything downstream of source acquisition **degrades instead of failing**. Detector
-errors, unreadable files, and corrupt headers become `Unknown` records in the output —
+errors, unreadable files, and corrupt headers become `Unknown` records in the output,
 they never change the exit code. A partial inventory is still a successful scan.
 </Note>
 
@@ -32,7 +32,7 @@ build for you.
 
 <Steps>
   <Step title="Scan and report (no gate)">
-    ```bash title="Report only — always exits 0"
+    ```bash title="Report only, always exits 0"
     airom fs . -o table
     ```
   </Step>
@@ -60,7 +60,7 @@ build for you.
 | `--fail-on <expr> --exit-code N` (N > 0) | Policy active; a match exits `N`. |
 | `--fail-on <expr> --exit-code 0` | Policy is evaluated, all output is still written, and the run exits `0` on a match. |
 | `--exit-code N` alone (N > 0) | **Fail on any component.** Equivalent to a policy that matches every discovered component. |
-| `--exit-code 0` alone | No gate — identical to leaving it unset. |
+| `--exit-code 0` alone | No gate. Identical to leaving it unset. |
 
 `--exit-code` must be in `[0,255]`; anything else is a configuration error (exit `2`).
 
@@ -85,7 +85,7 @@ comparison = "confidence" OP number     ; OP: >= <= > < =
 
 `&` binds tighter than `|`, so `a|b&c` reads as `a | (b & c)`. Whitespace around tokens
 is ignored. A dangling `&` or `|` is a configuration error (exit `2`). A `--fail-on` that
-is empty or all whitespace sets no policy at all — it is not an error, and it does not
+is empty or all whitespace sets no policy at all. It is not an error, and it does not
 gate.
 
 ### Each clause must be satisfied by a single component
@@ -96,14 +96,14 @@ component is a hosted LLM **and** that same component has confidence ≥ 0.9."* 
 high-confidence."
 
 <Info>
-The `application` root component — the scan target itself — is never eligible to match a
+The `application` root component, the scan target itself, is never eligible to match a
 policy. It is the thing you scanned, not a finding.
 </Info>
 
 ### Terms
 
 <ParamField path="ident" type="ComponentKind">
-  A [component kind](/concepts/aibom) — `hosted-llm`, `local-model-file`,
+  A [component kind](/concepts/aibom): `hosted-llm`, `local-model-file`,
   `embedding-model`, `framework`, `library`, `vector-db`, `prompt`, `dataset`,
   `ai-config`, `infra`, `service`, `rag-pipeline`, `application`.
 </ParamField>
@@ -117,10 +117,10 @@ policy. It is the thing you scanned, not a finding.
 
 <ParamField path="compliance" type="compliance | compliance:framework[:control]">
   Fires on a [compliance](/concepts/compliance) **gap** (a manual control is not a failure;
-  a met is a pass). `compliance:gap` — any gap; `compliance:<framework>` — a gap in that
-  framework; `compliance:<framework>:<control>` — that control is a gap. It is
+  a met is a pass). `compliance:gap` matches any gap, `compliance:<framework>` a gap in that
+  framework, and `compliance:<framework>:<control>` that specific control. It is
   inventory-level, so it cannot be `&`-combined with a component term (use `|`), and it
-  requires `--compliance` to have been given — gating on a framework you never evaluated is
+  requires `--compliance` to have been given, because gating on a framework you never evaluated is
   a configuration error, not a silent pass. Like every selector it evaluates the full
   assembly, so `--min-confidence` never relaxes it.
 </ParamField>
@@ -128,7 +128,7 @@ policy. It is the thing you scanned, not a finding.
 <ParamField path="confidence OP number" type="comparison">
   Compares the component's confidence against a bound in `[0,1]`. Operators: `>=`, `<=`,
   `>`, `<`, `=`. A bound outside `[0,1]` is a configuration error. Bare `confidence`
-  with no operator is rejected — it is almost always a typo.
+  with no operator is rejected, because it is almost always a typo.
 </ParamField>
 
 ## Worked examples
@@ -164,7 +164,7 @@ Quote the expression. Both `&` and `|` are shell metacharacters:
 airom fs . --fail-on "local-model-file|hosted-llm&confidence>=0.8"
 ```
 
-You can also set the policy through the config layers — flags beat env vars beat
+You can also set the policy through the config layers: flags beat env vars beat
 `.airom.yaml`:
 
 <CodeGroup>

@@ -51,7 +51,7 @@ merged, and executed, see [Rules Overview](/rules/overview).
 
 - Packs live under `rules/<category>/`.
 - **One pack file per provider.** `rules/models/openai.yaml`, never
-  `rules/models/all-providers.yaml` — monoliths are merge-conflict hotspots and defeat
+  `rules/models/all-providers.yaml`. Monoliths are merge-conflict hotspots and defeat
   CODEOWNERS routing.
 - The `pack:` field must equal the filename stem: `openai.yaml` implies `pack: openai`.
 - Fixtures live in `rules/<category>/testdata/<pack>/`.
@@ -63,7 +63,7 @@ merged, and executed, see [Rules Overview](/rules/overview).
 </ParamField>
 
 <ParamField path="version" type="integer" required>
-  Must be ≥ 1. **Informational only** — cache invalidation is driven by the content hash
+  Must be ≥ 1. **Informational only**: cache invalidation is driven by the content hash
   of the effective compiled ruleset, never by this number. Bump it as a human-readable
   change marker.
 </ParamField>
@@ -103,7 +103,7 @@ The prefix before `/` must equal the pack name.
 Rule IDs are a public API surface. The ID becomes the occurrence detector ID
 (`rules/openai/model-literal`), which is the SARIF `ruleId` and part of SARIF
 `partialFingerprints`. Renaming one breaks downstream suppressions. Duplicates are
-rejected at startup — a duplicate never silently shadows.
+rejected at startup, so a duplicate never silently shadows.
 </Warning>
 
 ### `kind`
@@ -128,7 +128,7 @@ python · javascript · typescript · go · java · rust · csharp · kotlin
 
 This is part of the compiled selector, evaluated before any content work.
 
-### `keywords` — mandatory
+### `keywords` (mandatory)
 
 Literal substrings, matched against the file's code and string regions by a single
 Aho–Corasick trie built over *all* packs' keywords at startup. A rule's regex executes
@@ -136,7 +136,7 @@ Aho–Corasick trie built over *all* packs' keywords at startup. A rule's regex 
 
 Both the keyword and the scanned buffer are folded before the trie runs: ASCII letters are
 lowercased, and runs of whitespace collapse to a single space. The gate is therefore
-case- and whitespace-insensitive. That only *widens* the candidate set — the rule's regex
+case- and whitespace-insensitive. That only *widens* the candidate set; the rule's regex
 still runs over the original, position-preserving bytes and enforces the exact semantics.
 
 This is the load-bearing performance invariant, so it is enforced rather than
@@ -164,7 +164,7 @@ Practical consequences:
 
 ### `pattern`
 
-A Go [RE2](https://github.com/google/re2/wiki/Syntax) regex — no backtracking, no
+A Go [RE2](https://github.com/google/re2/wiki/Syntax) regex, so no backtracking and no
 lookaround, linear-time by construction. Compiled once at startup; a non-compiling
 pattern fails lint.
 
@@ -173,7 +173,7 @@ the occurrence and is referenceable as `${name}` in any template.
 
 Two cross-referencing rules are enforced in both directions:
 
-- **Every named group must be referenced** — by a claim template, by a relation's
+- **Every named group must be referenced**, whether by a claim template, by a relation's
   `from_field`, or by being `model`, which the assembler consumes semantically. An
   unreferenced group is a lint error: it is either dead weight or a typo.
 - **Every `${var}` must name an existing named group.**
@@ -186,18 +186,18 @@ YAML tip: use single-quoted scalars for patterns and double a literal single quo
 ### `regions`
 
 Which classified regions the pattern may match: any subset of `code` and `string`
-(default: both). There is deliberately **no `comment` value** — comment regions are never
+(default: both). There is deliberately **no `comment` value**, because comment regions are never
 scanned, not even by the keyword prefilter.
 
 | Matching | Use |
 |---|---|
-| Model-ID literals | `[code, string]` or `[string]` — the ID is a quoted literal |
+| Model-ID literals | `[code, string]` or `[string]`. The ID is a quoted literal |
 | Import/call shapes | `[code]` |
-| JS/TS module specifiers | `[code, string]` — `from "openai"` is a *string* region |
+| JS/TS module specifiers | `[code, string]`. `from "openai"` is a *string* region |
 
 ### `claim`
 
-The templated component claim. The assembler — never the rule — normalizes names, mints
+The templated component claim. The assembler, never the rule, normalizes names, mints
 identity, dedups, merges, and computes final confidence.
 
 | Subfield | Required | Notes |
@@ -211,7 +211,7 @@ hashes do not apply to pattern matches.
 
 ### `relations`
 
-Edges are first-class rule output — no Go needed to claim a relationship.
+Edges are first-class rule output. No Go is needed to claim a relationship.
 
 ```yaml
 relations:
@@ -234,14 +234,14 @@ group or a `capture_params` name.
 
 <Note>
 Resolution happens in the assembler *after* all components exist. A hint that matches no
-component becomes a warning in the scan stats — **never a phantom node, never a guessed
+component becomes a warning in the scan stats. There is **never a phantom node, never a guessed
 edge**. This is the same refusal that keeps CycloneDX `dependencies[]` empty rather than
 fabricated.
 </Note>
 
 ### `capture_params`
 
-Same-call-site generation-parameter capture — the highest-precision layer of the
+Same-call-site generation-parameter capture, the highest-precision layer of the
 AI-config binding story.
 
 ```yaml
@@ -259,33 +259,33 @@ capture_params:
 Captured bindings land on the occurrence. The assembler promotes them into
 provenance-carrying bound params on a model's facet **only when the same occurrence also
 carries a `model` binding**. Two call sites with different temperatures stay two separate
-bound params — nothing is averaged or guessed.
+bound params. Nothing is averaged or guessed.
 
 ### `confidence`
 
-Float in `(0, 0.99]` — the confidence of **one sighting by this rule alone**.
+Float in `(0, 0.99]`, the confidence of **one sighting by this rule alone**.
 
 | Range | Use |
 |---|---|
 | `0.85–0.9` | A provider-distinctive model-ID literal in a `model=` / `model:` position |
-| `0.6–0.75` | An SDK import or call-site shape — tells you the library is present, not which model |
+| `0.6–0.75` | An SDK import or call-site shape. Tells you the library is present, not which model |
 | `≤ 0.5` | Weak contextual hints |
 
 <Warning>
 Rules cannot assert `1.0`. Certainty is reserved for hash-comparison against known
-weights. Corroboration is the assembler's job — grouped noisy-OR across detection methods
-— so calibrate the single sighting honestly. Repetition cannot launder into certainty:
+weights. Corroboration is the assembler's job, using grouped noisy-OR across detection
+methods, so calibrate the single sighting honestly. Repetition cannot launder into certainty:
 twelve sightings of one 0.85 rule assemble to roughly 0.87, not 0.999.
 </Warning>
 
 ## A complete pack
 
-This is a full, working pack — it passes `airom rules lint` and `airom rules test` as
+This is a full, working pack. It passes `airom rules lint` and `airom rules test` as
 written. Rule one claims the model from a literal; rule two claims the SDK, links it to
 the model with a `uses` edge, and captures generation params at the call site.
 
 ```yaml title="rules/models/acme.yaml"
-# rules/models/acme.yaml — Acme hosted models (one provider per file).
+# rules/models/acme.yaml. Acme hosted models, one provider per file.
 pack: acme
 version: 1
 rules:
@@ -294,13 +294,13 @@ rules:
     kind: hosted-llm
     provider: acme
     languages: [python, javascript, typescript]
-    keywords: ["acme-"]                     # Aho-Corasick prefilter — MANDATORY
+    keywords: ["acme-"]                     # Aho-Corasick prefilter, MANDATORY
     pattern: '\bmodel["'']?\s*[:=]\s*["''](?P<model>acme-[\w.\-]+)["'']'
     regions: [code, string]
     claim: { name: "${model}" }
     confidence: 0.85
 
-  # SDK call shape: acme.generate(...) — claims the library and the uses edge.
+  # SDK call shape: acme.generate(...). Claims the library and the uses edge.
   - id: acme/generate-call
     kind: library
     provider: acme
@@ -324,7 +324,7 @@ components exist.
 
 ## Fixtures
 
-Every rule ships **at least one positive and at least one negative case** — lint-enforced.
+Every rule ships **at least one positive and at least one negative case**, and lint enforces it.
 Annotations use the host language's comment syntax (`#` or `//`):
 
 ```
@@ -337,7 +337,7 @@ one code line below them. A trailing annotation (code first, comment after) bind
 **that** line.
 
 ```python title="rules/models/testdata/acme/usage.py"
-"""Acme usage fixture — positive and negative cases."""
+"""Acme usage fixture: positive and negative cases."""
 import acme
 
 # airom: acme/generate-call
@@ -363,7 +363,7 @@ airom rules test rules/models/acme.yaml
 rules/models/acme.yaml: OK (4 expectation(s) checked)
 ```
 
-Fixtures are found by convention — a pack at `rules/models/acme.yaml` uses
+Fixtures are found by convention. A pack at `rules/models/acme.yaml` uses
 `rules/models/testdata/acme/`. Failures print with file, line, rule ID, and reason, and
 the command exits non-zero.
 
@@ -383,7 +383,7 @@ pack: the whole set must load and compile, and every pack's fixtures must pass.
 <AccordionGroup>
   <Accordion title="Structure and identity">
     1. `pack` matches the filename stem; one provider per file. **Checked for the embedded
-       packs only** — at startup and by `go test ./rules/...`. An overlay you pass to
+       packs only**, at startup and by `go test ./rules/...`. An overlay you pass to
        `--rules` or `airom rules lint` may be named anything; the naming rule is a
        repository convention there, not a machine check.
     2. Every rule `id` is well-formed and globally unique across all packs and layers.
@@ -408,7 +408,7 @@ pack: the whole set must load and compile, and every pack's fixtures must pass.
 </AccordionGroup>
 
 Items 2–9 are also validated at **startup**, for every layer, on every run. A violation
-aborts before scanning with the offending pack, rule, and reason — a broken rule fails
+aborts before scanning with the offending pack, rule, and reason. A broken rule fails
 loudly at launch rather than silently under-reporting mid-scan.
 
 ## When a rule isn't enough

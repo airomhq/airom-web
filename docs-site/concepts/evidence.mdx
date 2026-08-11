@@ -12,7 +12,7 @@ The rule is simple. If AIROM cannot point at the thing, AIROM does not claim the
 
 ## The Occurrence
 
-An `Occurrence` is one sighting of a component by one detector — the answer to "why is this in
+An `Occurrence` is one sighting of a component by one detector. It answers "why is this in
 my AIBOM?".
 
 <ParamField path="location" type="Location">
@@ -27,14 +27,14 @@ my AIBOM?".
 </ParamField>
 
 <ParamField path="method" type="DetectionMethod">
-  How this sighting was made — one of the eight methods below. The method is a property of the
+  How this sighting was made, using one of the eight methods below. The method is a property of the
   sighting, not of the detector: one detector can report different methods for different files.
   `dataset/file` reports `binary-analysis` for a Parquet file it confirmed by magic bytes, and
   `filename` for a `.csv` it recognized by extension alone.
 </ParamField>
 
 <ParamField path="confidence" type="number">
-  Belief in [0,1] for **this sighting alone**. Not the component's confidence — see
+  Belief in [0,1] for **this sighting alone**. This is not the component's confidence; see
   [confidence](/concepts/confidence) for how the engine combines them.
 </ParamField>
 
@@ -84,7 +84,7 @@ AI Bill of Materials — /tmp/my-ai-app
 ## Contested identity is kept
 
 Two detectors can disagree. A version read from a lockfile and a version read from a code
-comment are both real observations of the codebase — and the losing one is the interesting one,
+comment are both real observations of the codebase, and the losing one is the interesting one,
 because a mismatch between a lockfile and a comment is exactly what you want to see.
 
 AIROM never silently drops the loser. Each contested field is preserved as an `IdentityClaim`:
@@ -106,8 +106,8 @@ AIROM never silently drops the loser. Each contested field is preserved as an `I
   The methods that support the claim.
 </ParamField>
 
-The highest-confidence version claim becomes the component's `version`. Every claim — winner
-included — is retained in `evidence.identity[]`.
+The highest-confidence version claim becomes the component's `version`. Every claim is
+retained in `evidence.identity[]`, including the winner.
 
 <Note>
 A version from a lockfile (0.95) beats one from a code comment (0.3). The comment's claim stays
@@ -129,11 +129,11 @@ translation table. `config-analysis` is the sole exception.
 | `hash-comparison` | Digest match against known weights. | `hash-comparison` |
 | `config-analysis` | Reads YAML, TOML, env files, Dockerfiles. | `other` |
 | `filename` | Identifies by path or extension alone. | `filename` |
-| `attestation` | Reserved for v2 — Sigstore / in-toto verification. | `attestation` |
+| `attestation` | Reserved for v2: Sigstore / in-toto verification. | `attestation` |
 
 <Info>
 `config-analysis` is the one method with no same-named CycloneDX enum value, so it maps to
-`other` and sets a recovery marker (`methods[].value: "config-analysis"`) — the exact method is
+`other` and sets a recovery marker (`methods[].value: "config-analysis"`), so the exact method is
 always recoverable from the emitted document. The CycloneDX values `instrumentation` and
 `dynamic-analysis` are reserved for a future runtime-probing mode and are never emitted today.
 </Info>
@@ -146,7 +146,7 @@ to the same. Every other method is capped. See [confidence](/concepts/confidence
 <Tabs>
   <Tab title="Native (json / yaml)">
     Lossless. `evidence.occurrences[]` and `evidence.identity[]` in full, plus relationship
-    evidence — the call sites proving each edge. The native formats are the only place edge
+    evidence, the call sites proving each edge. The native formats are the only place edge
     evidence survives.
 
     ```bash title="Full-fidelity output"
@@ -173,7 +173,7 @@ to the same. Every other method is capped. See [confidence](/concepts/confidence
     `region.snippet.text` from the snippet, and `logicalLocations[].name` from the symbol.
     Whole-file sightings omit `region` entirely.
 
-    Findings are informational — an AIBOM entry is an inventory fact, not a defect — so results
+    Findings are informational. An AIBOM entry is an inventory fact, not a defect, so results
     carry `level: "note"` by default. `--sarif-strict-kinds` emits spec-pure
     `kind: "informational"` with `level` omitted instead.
 
@@ -184,10 +184,11 @@ to the same. Every other method is capped. See [confidence](/concepts/confidence
 </Tabs>
 
 <Note>
-These three are the only projections there are: `table` reports each component's primary
-`path:line` and an occurrence count (`--wide` expands the full list). SPDX is not an output format today — the SPDX 3.0.1 AI profile is reserved for
-v2, and it has no model for evidence, so evidence will remain a native / CycloneDX / SARIF
-property when it lands.
+These three are the evidence-bearing projections: `table` reports each component's primary
+`path:line` and an occurrence count (`--wide` expands the full list). AIROM also writes
+[SPDX 3.0.1](/output/formats), but SPDX has no model for an occurrence, so no `file:line`
+evidence survives into it. Each package states its occurrence count and nothing more.
+Evidence remains a native, CycloneDX and SARIF property.
 </Note>
 
 ## Reading the evidence

@@ -5,7 +5,7 @@ icon: "shield-check"
 ---
 
 SARIF puts AI inventory where engineers already look: the code-scanning tab, the
-PR annotation, the IDE problems pane. AIROM emits SARIF 2.1.0 — one rule per
+PR annotation, the IDE problems pane. AIROM emits SARIF 2.1.0, with one rule per
 detector, one result per occurrence.
 
 ```bash title="Emit SARIF"
@@ -15,7 +15,7 @@ airom scan . -o sarif=scan.sarif
 <Note>
 AIROM's SARIF results are **inventory, not alerts**. A `hosted-llm` result says
 "this file references gpt-4.1," not "this is a vulnerability." That is why the
-default level is `note` — see [Levels](#levels-note-vs-informational).
+default level is `note`. See [Levels](#levels-note-vs-informational).
 </Note>
 
 ## Document shape
@@ -49,7 +49,7 @@ same `ToolInfo` that `airom version` prints and that every AIBOM carries.
 ## Rules: one per detector
 
 Each distinct detector that produced an occurrence becomes one rule. The
-`ruleId` is the detector ID itself — stable, so a rule keeps its identity across
+`ruleId` is the detector ID itself. It is stable, so a rule keeps its identity across
 runs and releases.
 
 ```json title="a rule"
@@ -65,12 +65,12 @@ runs and releases.
 }
 ```
 
-`name` is the detector ID in UpperCamelCase — every non-alphanumeric character is
+`name` is the detector ID in UpperCamelCase, with every non-alphanumeric character
 a word boundary, so `rules/openai/model-literal` becomes
 `RulesOpenaiModelLiteral`. `airom:method` carries the detection method
 (`source-code-analysis`, `binary-analysis`, `manifest-analysis`, …).
 
-Rules are sorted by ID. Only detectors that actually fired appear — the rule list
+Rules are sorted by ID. Only detectors that actually fired appear, so the rule list
 describes the run, not the catalog. Use `airom detectors list` for the catalog.
 
 ## Results: one per occurrence
@@ -116,7 +116,7 @@ result for one component), `airom:kind`, `airom:confidence` and
 `airom:occurrence.confidence` as JSON numbers, plus `airom:provider`,
 `airom:purl` and `airom:pickle.risk` when known.
 
-The scan-root application component produces no results — it is metadata, not a
+The scan-root application component produces no results. It is metadata, not a
 finding. A whole-file sighting emits a `physicalLocation` with no `region`
 rather than claiming line 0.
 
@@ -133,7 +133,7 @@ airom scan . -o sarif=scan.sarif
 ```json
 { "level": "note" }
 ```
-GitHub Code Scanning ignores `kind: "informational"` results — they never appear
+GitHub Code Scanning ignores `kind: "informational"` results, so they never appear
 in the UI. `level: "note"` renders. The default is chosen so the output is
 useful where it is actually consumed.
 </Tab>
@@ -161,10 +161,10 @@ strict flag sets `kind` and omits `level`.
 
 ## Risk results
 
-Inventory results are informational, but [artifact risks](/concepts/risks) are not —
+Inventory results are informational, but [artifact risks](/concepts/risks) are not.
 they are the one thing in a SARIF projection meant to fail a review. Each risk becomes a
 dedicated `risk/<slug>` rule (e.g. `risk/pickle-import`) whose result carries a real
-severity `level` — `error` for high, `warning` for medium — and a `security-severity`
+They carry a severity `level`, `error` for high and `warning` for medium, plus a `security-severity`
 property so GitHub Code Scanning files it under **Security**, not a note. A poisoned
 checkpoint then surfaces as a security alert on the pull request that introduced it,
 anchored at the artifact's `file:line`.
@@ -189,7 +189,7 @@ The line number is deliberately **not** in the recipe. Insert twenty lines above
 a `model="gpt-4.1"` literal and the fingerprint is unchanged, so GitHub tracks
 it as the same finding instead of closing one alert and opening another. Code
 motion does not churn your alert history. Moving the reference to a different
-file *does* produce a new fingerprint — that is a genuinely different sighting.
+file *does* produce a new fingerprint, because that is a genuinely different sighting.
 </Tip>
 
 ## Roots and provenance
@@ -199,8 +199,8 @@ emitted only when the target is a real path: always for a directory scan, and fo
 a repo scan only when the target is a local worktree.
 
 For a remote repo there is no local root to anchor to, so `SRCROOT` is omitted.
-Independently of that, whenever the scan knows a git remote — a local worktree
-with a remote configured, or a remote URL — provenance travels as:
+Independently of that, whenever the scan knows a git remote, either a local worktree
+with a remote configured or a remote URL, provenance travels as:
 
 ```json
 "versionControlProvenance": [
@@ -213,7 +213,7 @@ with a remote configured, or a remote URL — provenance travels as:
 
 ## Unknowns are not results
 
-A file AIROM could not fully process is not a finding — it is a gap in the scan,
+A file AIROM could not fully process is not a finding. It is a gap in the scan,
 and it surfaces as a notification rather than being silently dropped or
 misfiled as a result.
 
@@ -251,7 +251,7 @@ that finished is a scan that succeeded.
 </Step>
 
 <Step title="Scan and emit SARIF">
-Findings are not failures — `airom scan` exits `0` no matter how much it finds,
+Findings are not failures. `airom scan` exits `0` no matter how much it finds,
 so the upload step always runs.
 </Step>
 

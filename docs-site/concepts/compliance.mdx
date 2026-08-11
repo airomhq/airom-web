@@ -1,6 +1,6 @@
 ---
 title: "Compliance mapping"
-description: "Map the AIBOM onto an AI-governance framework's controls — met / gap / manual, with the file:line evidence behind every verdict, as native CycloneDX attestations."
+description: "Map the AIBOM onto an AI-governance framework's controls as met, gap, or manual, with the file:line evidence behind every verdict, as native CycloneDX attestations."
 icon: "clipboard-check"
 ---
 
@@ -10,7 +10,7 @@ evidence behind the verdict, projecting the result into the CycloneDX attestatio
 
 <Warning>
 **A mapping, never a certification.** Most AI-governance frameworks are largely
-organizational *process* — policy, documentation, human oversight, post-market monitoring —
+organizational *process*: policy, documentation, human oversight, and post-market monitoring.
 that a static code scan cannot verify. AIROM marks those controls **manual** and emits **no
 score** for them: it never asserts a conformance figure it cannot back. An `evidence_of`
 "met" points at the concrete components that satisfy it; a `gap_if` "met" asserts the
@@ -39,11 +39,11 @@ is deterministic.
 |-------|---------|-------|----------|
 | `met` | an `evidence_of` expression matched (or a `gap_if` did not) | `1.0` | the matching components |
 | `gap` | a `gap_if` expression matched (or an `evidence_of` did not) | `0.0` | the counter-evidence components |
-| `manual` | not automatable — requires human attestation | *(none)* | — |
+| `manual` | not automatable; requires human attestation | *(none)* | n/a |
 
 A control declares exactly one mapping directive: `evidence_of: <expr>`, `gap_if: <expr>`, or
-`manual: true`. `<expr>` is a subset of the [`--fail-on`](/ci/exit-codes) grammar — a
-component kind, `*`, or a risk selector, joined by `|`/`&` — so "the AIBOM inventories the AI
+`manual: true`. `<expr>` is a subset of the [`--fail-on`](/ci/exit-codes) grammar: a
+component kind, `*`, or a risk selector, joined by `|`/`&`. So "the AIBOM inventories the AI
 methods" maps to the presence of model/framework components, and "security is evaluated"
 maps to the [artifact-risk overlay](/concepts/risks) via `gap_if: risk`.
 
@@ -51,10 +51,10 @@ maps to the [artifact-risk overlay](/concepts/risks) via `gap_if: risk`.
 
 <Tabs>
   <Tab title="CycloneDX">
-    The spec-native home — two blocks:
+    The spec-native home, in two blocks:
 
-    - `definitions.standards[]` — the framework and its `requirements[]` (controls).
-    - `declarations` — AIROM as a first-party `assessor`, one `claim` + `attestation.map[]`
+    - `definitions.standards[]`: the framework and its `requirements[]` (controls).
+    - `declarations`: AIROM as a first-party `assessor`, one `claim` plus `attestation.map[]`
       entry per control, with a graded `conformance.score` (**omitted for manual**). Evidence
       points at the component `bom-ref`s.
 
@@ -66,7 +66,7 @@ maps to the [artifact-risk overlay](/concepts/risks) via `gap_if: risk`.
     reproduce.
   </Tab>
   <Tab title="Report (Markdown)">
-    A human-readable report: per framework a summary line (`N controls — X met, Y gap, Z
+    A human-readable report. Per framework it prints a summary line (`N controls: X met, Y gap, Z
     manual`) and a table of every control with its state and evidence.
 
     ```bash title="A Markdown compliance report"
@@ -74,14 +74,14 @@ maps to the [artifact-risk overlay](/concepts/risks) via `gap_if: risk`.
     ```
   </Tab>
   <Tab title="Native (json / yaml)">
-    `inventory.compliance[]` — `{framework, name, version, controls[]}`, each control
+    `inventory.compliance[]` holds `{framework, name, version, controls[]}`, each control
     `{id, title, state, score, rationale, evidence[], counterEvidence[]}`.
   </Tab>
 </Tabs>
 
 ## Gating in CI
 
-`--fail-on` gates on a **gap** — a manual control is not a failure, a met is a pass:
+`--fail-on` gates on a **gap**. A manual control is not a failure, and a met is a pass:
 
 | Selector | Fires when |
 |----------|-----------|
@@ -94,27 +94,27 @@ airom scan . --compliance nist-ai-rmf --exit-code 1 --fail-on "compliance:gap"
 ```
 
 <Warning>
-The gate evaluates the **full assembled inventory**, like every `--fail-on` selector —
+The gate evaluates the **full assembled inventory**, like every `--fail-on` selector,
 `--min-confidence` reshapes the emitted report but never the gate. A run can therefore fail
 on a gap the filtered report shows as met: a CI gate you could bypass by hiding
 low-confidence components would be no gate at all. A compliance selector is inventory-level,
 so it cannot be `&`-combined (use `|`), and referencing compliance in `--fail-on` requires
-`--compliance` — gating on a framework you never evaluated is a configuration error.
+`--compliance`. Gating on a framework you never evaluated is a configuration error.
 </Warning>
 
 ## Frameworks
 
-- **`nist-ai-rmf`** — NIST AI Risk Management Framework 1.0. The inventory/documentation
+- **`nist-ai-rmf`**: NIST AI Risk Management Framework 1.0. The inventory and documentation
   subcategories (MAP) are auto-evaluated from the AIBOM, security/resilience (MEASURE-2.7)
   maps to the risk overlay, and the governance subcategories (GOVERN, MANAGE) are `manual`.
-- **`owasp-agentic`** — OWASP Agentic AI, Threats and Mitigations. These threats are
+- **`owasp-agentic`**: OWASP Agentic AI, Threats and Mitigations. These threats are
   overwhelmingly runtime/behavioral (agent memory, tools, privileges, goals), which a static
   scan cannot observe, so nearly all are `manual`. The one AIROM speaks to directly is **T11
-  (Unexpected RCE and Code Attacks)**, mapped to the artifact-risk overlay — the honest
+  (Unexpected RCE and Code Attacks)**, mapped to the artifact-risk overlay, the honest
   breadth of `manual` marks where static analysis stops.
 
 <Info>
-The mapping stays **deterministic and offline** — the frameworks are static data, no LLM, no
+The mapping stays **deterministic and offline**: the frameworks are static data, with no LLM and no
 network. Adding a framework is an embedded-YAML PR; adding a control is one entry.
 </Info>
 

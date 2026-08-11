@@ -26,7 +26,7 @@ verbatim. No legend is needed: anyone who reads a manifest already reads
 `~0.2.0` as a range and `4.28.4` as a version.
 
 What AIROM will **not** do is print `0.2.0` for `~0.2.0`. That is the range's
-lower bound, not a version anybody verified is installed — and printing it
+lower bound, not a version anybody verified is installed, and printing it
 makes a guess indistinguishable from a fact.
 
 <Note>
@@ -62,7 +62,7 @@ Lockfiles read today:
 A lockfile holds the full transitive closure, which is deliberate: an AI package
 pulled in by something else is still AI running in your application, and it is
 exactly the kind you did not know you had. The AI catalog is what keeps this
-from becoming a dependency dump — a lockfile of two thousand packages yields
+from becoming a dependency dump. A lockfile of two thousand packages yields
 the handful that are AI.
 
 ## What counts as a range
@@ -76,9 +76,9 @@ AIROM follows each ecosystem's own rule rather than guessing from the text.
 | `openai>=1.40.0` | PyPI | constraint |
 | `"openai": "4.28.4"` | npm | version `4.28.4` |
 | `"openai": "^4.28.4"` | npm | constraint |
-| `openai = "1.40.0"` | Poetry | **constraint** — Poetry expands this to `^1.40.0` |
-| `async-openai = "0.23"` | Cargo | **constraint** — Cargo expands this to `^0.23` |
-| `v1.2.3` | Go | version — MVS resolves exactly |
+| `openai = "1.40.0"` | Poetry | **constraint**. Poetry expands this to `^1.40.0` |
+| `async-openai = "0.23"` | Cargo | **constraint**. Cargo expands this to `^0.23` |
+| `v1.2.3` | Go | version. MVS resolves exactly |
 | `<version>0.35.0</version>` | Maven | version |
 
 ## Why this matters more than the display
@@ -96,12 +96,12 @@ OSV.dev; commit a lockfile or scan a deployed environment to resolve them
 ```
 
 Reporting zero vulnerabilities against an unresolved range would be worse than
-useless — the lower bound is usually an old release, so it invents advisories
+useless, because the lower bound is usually an old release, so it invents advisories
 already patched while hiding ones introduced later in the range.
 
 <Tip>
   If your scan shows ranges where you expected versions, commit your lockfile.
-  Failing that, [scan the deployed artifact](/scanning/container-images) — a
+  Failing that, [scan the deployed artifact](/scanning/container-images). A
   container or virtualenv carries installed metadata, which is stronger evidence
   than any lockfile.
 </Tip>

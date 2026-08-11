@@ -10,7 +10,7 @@ icon: "folder-tree"
 airom fs ./my-ai-app
 ```
 
-The path must be a directory. Single-file scanning is not supported — point AIROM at the containing directory. A path that cannot be read at all is a fatal error (exit code 2); unreadable files *below* the root degrade to `Unknown` records and the scan continues.
+The path must be a directory. Single-file scanning is not supported, so point AIROM at the containing directory. A path that cannot be read at all is a fatal error (exit code 2); unreadable files *below* the root degrade to `Unknown` records and the scan continues.
 
 <Note>
   `airom scan ./my-ai-app` resolves to the same thing: `scan` tries an existing local path first. Use `dir:` to force it.
@@ -22,7 +22,7 @@ The path must be a directory. Single-file scanning is not supported — point AI
 | --- | --- |
 | Regular files | Walked and offered to the detectors. |
 | Directories | Descended, unless an ignore rule prunes them. |
-| Symlinks | Never followed — which also forecloses traversal cycles. |
+| Symlinks | Never followed, which also forecloses traversal cycles. |
 | Sockets, devices, other non-regular files | Skipped, never read. |
 
 Paths in the output are root-relative and slash-separated, regardless of platform.
@@ -41,7 +41,7 @@ Four layers decide whether a path is walked. They are evaluated in this order:
     Standard gitignore syntax with the usual nested, per-directory semantics. A `.gitignore` in a subdirectory scopes its patterns to that subtree.
   </Step>
   <Step title=".airomignore">
-    Same syntax, same nested semantics, read *after* `.gitignore` in each directory — so it is applied on top and can re-include (`!`) what `.gitignore` excluded. Use it for AIROM-specific exclusions you don't want in `.gitignore`.
+    Same syntax, same nested semantics, read *after* `.gitignore` in each directory, so it is applied on top and can re-include (`!`) what `.gitignore` excluded. Use it for AIROM-specific exclusions you don't want in `.gitignore`.
   </Step>
   <Step title="--ignore globs">
     Repeatable doublestar globs matched against root-relative paths, applied on top of the ignore-file stack. An invalid glob is a startup error, not a silent no-op.
@@ -52,7 +52,7 @@ Four layers decide whether a path is walked. They are evaluated in this order:
 airom fs . --ignore '**/fixtures/**' --ignore 'testdata/**'
 ```
 
-A glob that targets a directory prunes the directory itself, not just its contents — `**/fixtures/**` will not descend into `fixtures/`.
+A glob that targets a directory prunes the directory itself, not just its contents. `**/fixtures/**` will not descend into `fixtures/`.
 
 <AccordionGroup>
   <Accordion title="Case folding on macOS and Windows">
@@ -62,7 +62,7 @@ A glob that targets a directory prunes the directory itself, not just its conten
     POSIX character classes (e.g. `[[:digit:]]`) are not supported in ignore patterns by the underlying matcher. Use plain gitignore globs instead.
   </Accordion>
   <Accordion title="Ignored files are never read">
-    An ignored path is excluded from both walk phases. A detector that queries files by glob during the project phase sees exactly what the walk saw — it can never reach behind an ignore rule.
+    An ignored path is excluded from both walk phases. A detector that queries files by glob during the project phase sees exactly what the walk saw, so it can never reach behind an ignore rule.
   </Accordion>
 </AccordionGroup>
 
@@ -73,8 +73,8 @@ module is compiled into a compressed PYZ appended to the bootloader, so there is
 no `.py`, no `.pyc`, and usually no `dist-info` anywhere on disk. Import rules
 and manifest detectors both find exactly nothing.
 
-AIROM reads the archive itself — the CArchive cookie at EOF, its table of
-contents, and the PYZ module list — and reports the AI packages inside. The
+AIROM reads the archive itself: the CArchive cookie at EOF, its table of
+contents, and the PYZ module list. It then reports the AI packages inside. The
 version comes from whichever of three sources can answer, and the evidence says
 which:
 
@@ -82,7 +82,7 @@ which:
 | --- | --- |
 | A `dist-info` `METADATA` bundled into the archive | 0.97 |
 | A PEP 440 literal in the module's own `__version__` | 0.90 |
-| Neither — reported anyway, version unknown | 0.80 |
+| Neither; reported anyway, version unknown | 0.80 |
 
 That third row is deliberate. The package is demonstrably in the binary, and
 staying silent about it would read as absence. Some packages ship no metadata at
@@ -90,8 +90,8 @@ all, so the `__version__` path is the only way they can ever be versioned.
 
 <Note>
   No code object is ever unmarshaled. Only the handful of `marshal` types a PYZ
-  directory can contain are implemented, and everything else — `TYPE_CODE` above
-  all — is refused. Version strings are recovered from decompressed bytes
+  directory can contain are implemented, and everything else is refused, `TYPE_CODE`
+  above all. Version strings are recovered from decompressed bytes
   instead. `marshal` on untrusted input is a code-execution surface, and a
   scanner that reads other people's executables must not be the thing that runs
   them.
@@ -112,8 +112,8 @@ PostgreSQL extension: it shows up in DDL, and otherwise only as files the
 server installation left on disk. A host running it has no manifest entry and
 no import for a source rule to match.
 
-AIROM reads the extension's own control file — `share/extension/vector.control`
-— which names the version outright, and the loadable module beside it:
+AIROM reads the extension's own control file, `share/extension/vector.control`,
+which names the version outright, and the loadable module beside it:
 
 | Evidence | Confidence | Supplies a version |
 | --- | --- | --- |
@@ -128,7 +128,7 @@ it, rather than three partial findings.
 <Note>
   `default_version` is the version **installed on disk**. A database created
   before an upgrade keeps running the older one until `ALTER EXTENSION ...
-  UPDATE`, so the two can differ — the evidence string says so rather than
+  UPDATE`, so the two can differ. The evidence string says so rather than
   implying the running database was inspected.
 </Note>
 
@@ -141,7 +141,7 @@ extension from.
 Peak memory is a function of these caps, never of the size of the tree.
 
 <ParamField path="--max-file-size" type="string" default="1m">
-  Full-content read cap for text detectors. Accepts `k`/`m`/`g` suffixes. Header-only binary parsers (GGUF, safetensors, …) are exempt — a 40 GB model file still costs only a header read.
+  Full-content read cap for text detectors. Accepts `k`/`m`/`g` suffixes. Header-only binary parsers (GGUF, safetensors, …) are exempt, so a 40 GB model file still costs only a header read.
 </ParamField>
 
 <ParamField path="--io-budget" type="string" default="256m">
@@ -178,7 +178,7 @@ Extension-only dataset detection and keyword-only `ai-config` detection are deli
 airom fs . --min-confidence 0.8 -o json=aibom.json
 ```
 
-`--min-confidence` is a presentation-layer filter — it changes what is emitted, not what was detected. See [/concepts/confidence](/concepts/confidence).
+`--min-confidence` is a presentation-layer filter. It changes what is emitted, not what was detected. See [/concepts/confidence](/concepts/confidence).
 
 ## Example
 
@@ -215,5 +215,5 @@ AI Bill of Materials — /tmp/my-ai-app
 ```
 
 <Tip>
-  Findings are not failures. `airom fs` exits 0 whether it finds seven components or none. To fail a build on what it finds, use `--fail-on` — see [/reference/cli](/reference/cli).
+  Findings are not failures. `airom fs` exits 0 whether it finds seven components or none. To fail a build on what it finds, use `--fail-on`. See [/reference/cli](/reference/cli).
 </Tip>
