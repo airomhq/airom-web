@@ -1,13 +1,27 @@
+<!--
+  Favicon. This is a reduction of the AIROM mark, not a copy of it.
+
+  The stroke-only mark used in the page header and the docs lockup does not
+  survive a browser tab. At 16px the two receding ridges (26% and 55%) fade to
+  nothing and the geometry only fills the middle third of the canvas, so it
+  reads as a faint caret rather than a logo.
+
+  Two changes fix that, and only here:
+    - the ridges are set on a filled tile, so the icon has a solid silhouette
+      and a guaranteed contrast ratio whatever colour the browser paints its
+      tab strip. The source mark relied on prefers-color-scheme, which a tab
+      bar does not reliably match: a browser in light mode with a dark tab
+      strip would render near-black strokes on near-black.
+    - the geometry is scaled to fill the tile and the receding ridges are
+      lifted to 40% and 70%, so all three survive at 16px.
+
+  Geometry, proportions and stacking order are otherwise the mark's own.
+-->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="AIROM">
-  <style>
-    .ridge { fill: none; stroke: #101216; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
-    .inner { stroke: #4338ca; }
-    @media (prefers-color-scheme: dark) {
-      .ridge { stroke: #eceff6; }
-      .inner { stroke: #8b93ff; }
-    }
-  </style>
-  <path class="ridge" d="M3.2 23.5 L16 10.7 L28.8 23.5" opacity="0.26"/>
-  <path class="ridge" d="M6.6 18.9 L16 9.5 L25.4 18.9" opacity="0.55"/>
-  <path class="ridge inner" d="M10 14.5 L16 8.5 L22 14.5"/>
+  <rect width="32" height="32" rx="7" fill="#4F46E5"/>
+  <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4.5 26 L16 14.5 L27.5 26" opacity="0.40"/>
+    <path d="M4.5 20 L16 8.5 L27.5 20" opacity="0.70"/>
+    <path d="M9 14 L16 7 L23 14"/>
+  </g>
 </svg>
