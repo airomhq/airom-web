@@ -20,12 +20,12 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 W, H = 1200, 630
 
-BG = (12, 14, 19)
-FG = (232, 234, 240)
-MUTED = (154, 163, 178)
+BG = (7, 11, 24)
+FG = (236, 239, 246)
+MUTED = (154, 164, 187)
 ACCENT = (139, 147, 255)
 INDIGO = (79, 70, 229)
-BORDER = (35, 40, 51)
+BORDER = (27, 36, 56)
 
 OUT = pathlib.Path(__file__).resolve().parents[1] / "og.png"
 
@@ -66,28 +66,29 @@ def rounded(draw: ImageDraw.ImageDraw, box, radius, **kw) -> None:
 
 
 def mark(draw: ImageDraw.ImageDraw, x: int, y: int, size: int) -> None:
-    """The AIROM mark: an 'A' over the evidence baseline, matching favicon.svg."""
-    s = size / 32.0
-    rounded(draw, (x, y, x + size, y + size), radius=int(7 * s), fill=INDIGO)
+    """The AIROM mark: three nested ridges, matching www/favicon.svg.
 
-    # Outer triangle of the 'A', then the counter punched back out in the
-    # background colour — the same two-path construction as the SVG.
-    draw.polygon(
-        [(x + 16 * s, y + 7 * s), (x + 23 * s, y + 22 * s), (x + 19.6 * s, y + 22 * s),
-         (x + 18.3 * s, y + 19.1 * s), (x + 13.7 * s, y + 19.1 * s),
-         (x + 12.4 * s, y + 22 * s), (x + 9 * s, y + 22 * s)],
-        fill=(255, 255, 255),
-    )
-    draw.polygon(
-        [(x + 14.9 * s, y + 16.4 * s), (x + 17.1 * s, y + 16.4 * s), (x + 16 * s, y + 13.6 * s)],
-        fill=INDIGO,
-    )
-    rounded(
-        draw,
-        (x + 9 * s, y + 24 * s, x + 23 * s, y + 25.8 * s),
-        radius=int(0.9 * s),
-        fill=(203, 203, 235),
-    )
+    The canvas is flat RGB with no alpha, so the two receding ridges are
+    pre-blended against the background rather than drawn translucent. Pillow
+    has no round line caps either, so each vertex is stamped with a circle of
+    the stroke's radius to match the SVG's stroke-linecap="round".
+    """
+    s = size / 32.0
+    w = max(1, round(3.2 * s))
+    r = w / 2.0
+
+    def blend(fg, bg, a):
+        return tuple(round(b + a * (f - b)) for f, b in zip(fg, bg))
+
+    def ridge(points, colour):
+        pts = [(x + px * s, y + py * s) for px, py in points]
+        draw.line(pts, fill=colour, width=w, joint="curve")
+        for cx, cy in pts:
+            draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=colour)
+
+    ridge([(3.2, 23.5), (16, 10.7), (28.8, 23.5)], blend(FG, BG, 0.26))
+    ridge([(6.6, 18.9), (16, 9.5), (25.4, 18.9)], blend(FG, BG, 0.55))
+    ridge([(10, 14.5), (16, 8.5), (22, 14.5)], ACCENT)
 
 
 def main() -> None:
@@ -105,8 +106,8 @@ def main() -> None:
 
     pad = 84
 
-    mark(d, pad, pad - 6, 60)
-    d.text((pad + 78, pad + 6), "AIROM", font=font("bold", 42), fill=FG)
+    mark(d, pad, pad - 10, 64)
+    d.text((pad + 84, pad + 6), "AIROM", font=font("bold", 42), fill=FG)
 
     d.text(
         (pad, 224),

@@ -381,15 +381,16 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
 <header>
   <div class="wrap nav">
     <a class="brand" href="/">
-      <svg viewBox="0 0 32 32" role="img" aria-label="AIROM">
-        <rect width="32" height="32" rx="7" fill="#4F46E5"/>
-        <path d="M16 7 L23 22 H19.6 L18.3 19.1 H13.7 L12.4 22 H9 L16 7 Z M14.9 16.4 H17.1 L16 13.6 Z" fill="#fff"/>
-        <rect x="9" y="24" width="14" height="1.8" rx="0.9" fill="#fff" opacity="0.75"/>
+      <svg viewBox="0 0 32 32" role="img" aria-label="AIROM" fill="none"
+        stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3.2 23.5 L16 10.7 L28.8 23.5" stroke="currentColor" opacity="0.26"/>
+        <path d="M6.6 18.9 L16 9.5 L25.4 18.9" stroke="currentColor" opacity="0.55"/>
+        <path d="M10 14.5 L16 8.5 L22 14.5" stroke="var(--accent)"/>
       </svg>
       AIROM
     </a>
     <nav class="nav-links">
-      <a href="#evidence" class="hide-sm">Why</a>
+      <a href="#evidence" class="hide-sm">Evidence</a>
       <a href="#features" class="hide-sm">Features</a>
       <a href="#security" class="hide-sm">Security</a>
       <a href="https://docs.airom.dev">Docs</a>
@@ -409,10 +410,11 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
     <div class="eyebrow mono">AI Bill of Materials scanner</div>
     <h1>Find the AI in your code, <span class="hl">and prove it.</span></h1>
     <p class="lede">
-      AIROM scans a filesystem, git repo, container image or Kubernetes workload and
-      generates an <strong>AI Bill of Materials</strong> — the models, prompts, datasets,
-      embeddings, vector databases and frameworks your software actually uses — with
-      <strong>file:line evidence</strong> behind every entry.
+      AIROM scans filesystems, Git repositories, container images, and Kubernetes
+      workloads. It produces an <strong>AI Bill of Materials</strong>: the models, prompts,
+      datasets, embeddings, vector databases, and frameworks your software actually uses.
+      Every entry records the <strong>file and line</strong> it was found at, and the rule
+      that found it.
     </p>
 
     <div class="install">
@@ -420,8 +422,8 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
       <button class="copy" data-copy="pip install airom" type="button">Copy</button>
     </div>
     <p class="meta">
-      macOS · Linux · Windows · Apache 2.0 —
-      <a href="https://docs.airom.dev/installation">Homebrew, Go install and signed binaries →</a>
+      macOS · Linux · Windows · Apache 2.0.
+      <a href="https://docs.airom.dev/installation">Homebrew, Go install, and signed binaries →</a>
     </p>
 
     <div class="cta-row">
@@ -466,27 +468,30 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
 <section id="evidence">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow mono">Evidence first</div>
-      <h2>Sooner or later, someone asks why</h2>
+      <div class="eyebrow mono">Evidence</div>
+      <h2>An inventory says what. Evidence says why.</h2>
       <p class="q">“Your AIBOM says this service uses <code>gpt-4.1</code>. Why? Where?”</p>
       <p style="margin-top:16px">
-        Most tools can’t answer. They describe a model you named in a registry, or they never
-        look at your code. Every component AIROM emits carries the proof.
+        Most tools cannot answer that. They report a model you registered somewhere, or they
+        never read your code. AIROM records how it found each component, and where. Every
+        component carries four things:
       </p>
     </div>
 
     <div class="evidence">
       <dl>
-        <div class="row"><dt>Occurrences</dt><dd>Every sighting — <code>file:line</code>, the matched snippet, and the enclosing function or class when known.</dd></div>
-        <div class="row"><dt>Detection method</dt><dd>Which technique found it: source-code analysis, AST fingerprint, manifest analysis, binary analysis, hash comparison, config analysis, or filename.</dd></div>
-        <div class="row"><dt>Confidence</dt><dd>A calibrated 0–1 score, on the component and on each individual occurrence.</dd></div>
-        <div class="row"><dt>Detector ID</dt><dd>The stable rule that fired, e.g. <code>rules/openai/model-literal</code>.</dd></div>
+        <div class="row"><dt>Occurrences</dt><dd>Every place the component was seen. Each records <code>file:line</code>, the matched snippet, and the enclosing function or class where AIROM can determine it.</dd></div>
+        <div class="row"><dt>Detection method</dt><dd>How it was found: source-code analysis, AST fingerprint, manifest analysis, binary analysis, hash comparison, config analysis, or filename.</dd></div>
+        <div class="row"><dt>Confidence</dt><dd>A calibrated score from 0 to 1, recorded on the component and on each occurrence separately.</dd></div>
+        <div class="row"><dt>Detector ID</dt><dd>The rule that fired, such as <code>rules/openai/model-literal</code>. Identifiers stay stable across releases, so you can audit or suppress a specific rule.</dd></div>
       </dl>
     </div>
 
     <p style="color:var(--fg-muted); margin:28px 0 0; max-width:64ch">
-      That lands as CycloneDX <code>evidence.occurrences[]</code> — the field other AIBOM tools
-      leave empty. Every row is a claim you can walk back to a line of source.
+      All of it is written into CycloneDX <code>evidence.occurrences[]</code>, a field most AIBOM
+      tools leave empty. AIROM is equally explicit about what it does not know. A version it
+      cannot resolve stays empty instead of being guessed, and a model missing from the
+      lifecycle catalog carries no claim rather than a quiet “supported”.
     </p>
     <div class="stats">
       <div class="stat"><div class="n">143</div><div class="l">detection rules</div></div>
@@ -502,41 +507,41 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
 <section id="features">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow mono">Beyond inventory</div>
-      <h2>An inventory is the floor</h2>
-      <p>These are the things you can do once you have one.</p>
+      <div class="eyebrow mono">Assess and gate</div>
+      <h2>Risk, vulnerabilities, and CI checks</h2>
+      <p>The same scan feeds security review and pull-request gating.</p>
     </div>
 
     <div class="grid grid-3">
       <a class="cell" href="https://docs.airom.dev/concepts/risks">
         <span class="mono">Offline</span>
         <h3>Risk detection</h3>
-        <p>Load-time code-execution surfaces — pickle imports, Keras Lambda layers, GGUF template gadgets, unsafe <code>torch.load</code> — as CycloneDX vulnerabilities and SARIF.</p>
+        <p>Finds code-execution surfaces that fire when a model file is loaded: pickle imports, Keras Lambda layers, GGUF template gadgets, and unsafe <code>torch.load</code> calls. Findings are written as CycloneDX vulnerabilities and SARIF.</p>
       </a>
       <a class="cell" href="https://docs.airom.dev/concepts/cve">
         <span class="mono">On by default</span>
         <h3>CVE overlay</h3>
-        <p>Your AI dependencies against OSV.dev, with real CVSS scores and a fail-closed gate. Refuses under <code>--offline</code> rather than reporting a quiet nothing.</p>
+        <p>Matches the AI dependencies AIROM inventoried against OSV.dev and reports real CVSS scores. The gate fails closed: under <code>--offline</code> it refuses to run rather than reporting zero findings.</p>
       </a>
       <a class="cell" href="https://docs.airom.dev/concepts/eol">
         <span class="mono">Dated &amp; sourced</span>
         <h3>Model lifecycle</h3>
-        <p>Hosted models matched against a curated catalog of provider retirement announcements. Nothing inferred from naming patterns.</p>
+        <p>Checks hosted models against a curated catalog of provider retirement announcements. Every entry is dated and cites the provider page it came from, and nothing is inferred from naming patterns.</p>
       </a>
       <a class="cell" href="https://docs.airom.dev/concepts/compliance">
         <span class="mono">No invented scores</span>
         <h3>Compliance mapping</h3>
-        <p>NIST AI RMF and OWASP Agentic controls as CycloneDX attestations — met, gap, or manual, each linked to the evidence behind it.</p>
+        <p>Maps findings to NIST AI RMF and OWASP Agentic controls, emitted as CycloneDX attestations. Each control is marked met, gap, or manual, and links to the evidence behind that verdict.</p>
       </a>
       <a class="cell" href="https://docs.airom.dev/reference/cli">
         <span class="mono">Per-PR control</span>
         <h3>AIBOM diff</h3>
-        <p>The semantic delta between two scans, so AI becomes a pull-request gate. Refuses to gate across tooling drift rather than blaming a PR for a rule change.</p>
+        <p>Reports the semantic difference between two scans, so a new model or framework surfaces in the pull request that introduced it. It refuses to gate when the two scans came from different tooling versions.</p>
       </a>
       <a class="cell" href="https://docs.airom.dev/rules/updates">
         <span class="mono">ed25519-verified</span>
         <h3>Signed rule updates</h3>
-        <p>New frameworks and fresh retirement dates reach you without a new binary, over a signed update channel. Scans themselves never fetch.</p>
+        <p>Delivers new framework detection and updated retirement dates over an ed25519-signed channel, without shipping a new binary. Scanning never fetches rules; updates are an explicit command.</p>
       </a>
     </div>
   </div>
@@ -563,7 +568,7 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
   <div class="wrap" style="text-align:center">
     <h2 style="margin-bottom:16px">Scan something</h2>
     <p style="color:var(--fg-muted); max-width:52ch; margin:0 auto 32px">
-      One command, one static binary. No agent, no daemon, no account, no telemetry.
+      One command and a single static binary. No agent, no daemon, no account, no telemetry.
     </p>
     <div class="cta-row" style="justify-content:center">
       <a class="btn btn-primary" href="https://docs.airom.dev/quickstart">Get started</a>
@@ -579,14 +584,15 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
     <div class="foot-grid">
       <div class="foot-col foot-about">
         <a class="brand" href="/">
-          <svg viewBox="0 0 32 32" role="img" aria-label="AIROM">
-            <rect width="32" height="32" rx="7" fill="#4F46E5"/>
-            <path d="M16 7 L23 22 H19.6 L18.3 19.1 H13.7 L12.4 22 H9 L16 7 Z M14.9 16.4 H17.1 L16 13.6 Z" fill="#fff"/>
-            <rect x="9" y="24" width="14" height="1.8" rx="0.9" fill="#fff" opacity="0.75"/>
-          </svg>
+          <svg viewBox="0 0 32 32" role="img" aria-label="AIROM" fill="none"
+        stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3.2 23.5 L16 10.7 L28.8 23.5" stroke="currentColor" opacity="0.26"/>
+        <path d="M6.6 18.9 L16 9.5 L25.4 18.9" stroke="currentColor" opacity="0.55"/>
+        <path d="M10 14.5 L16 8.5 L22 14.5" stroke="var(--accent)"/>
+      </svg>
           AIROM
         </a>
-        <p>An open-source AI Bill of Materials scanner. Every claim carries the evidence behind it.</p>
+        <p>An open-source AI Bill of Materials scanner. Every finding links back to the source that produced it.</p>
       </div>
       <div class="foot-col">
         <h4>Docs</h4>
@@ -614,7 +620,7 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
     </div>
     <div class="foot-bottom">
       <span>Apache License 2.0 · © AIROM contributors</span>
-      <span>Early but real — expect rough edges. <a href="https://github.com/airomhq/airom/blob/main/docs/project-status.md">Known gaps →</a></span>
+      <span>Early but real. Expect rough edges. <a href="https://github.com/airomhq/airom/blob/main/docs/project-status.md">Known gaps →</a></span>
     </div>
   </div>
 </footer>
