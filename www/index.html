@@ -36,7 +36,8 @@
   --accent: #4338ca;
   --accent-fg: #ffffff;
   --accent-soft: #eef0fe;
-  --grid: rgba(16, 18, 22, 0.045);
+  --grid: rgba(67, 56, 202, 0.045);
+  --grid-major: rgba(67, 56, 202, 0.085);
   --ok: #0f7a4d;
   --warn: #a35c00;
   --radius: 6px;
@@ -146,6 +147,25 @@ header {
    settles into a visible lattice. */
 .hero::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
+  /* Light mode gets a blueprint grid where dark gets a starfield. Stars on a
+     white page read as dust; a fine measured grid reads as a technical
+     drawing, which is what this tool produces. Two pitches so the eye gets a
+     minor and a major division, like graph paper. */
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px),
+    linear-gradient(to right, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-major) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+  mask-image: radial-gradient(100% 62% at 50% 0%, #000 18%, transparent 72%);
+  -webkit-mask-image: radial-gradient(100% 62% at 50% 0%, #000 18%, transparent 72%);
+}
+
+/* Dark swaps the grid for the starfield. Positions are generated once with a
+   fixed seed and pasted in, so it is the same sky every build and no JS draws
+   a background. Three tile sizes sharing no common factor, so the repeat never
+   settles into a visible lattice. */
+:root[data-theme="dark"] .hero::before {
   background-image:
     radial-gradient(1px 1px at 34px 78px, rgba(255,255,255,0.46), transparent 100%),
     radial-gradient(1px 1px at 222px 120px, rgba(255,255,255,0.39), transparent 100%),
@@ -228,16 +248,98 @@ header {
     690px 690px,
     690px 690px,
     690px 690px;
-  /* Fade downward so the field never collides with the scan panel. */
   mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 88%);
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 88%);
-  opacity: 0;
 }
-/* Dark only — a starfield on a white page reads as dust on the screen. */
-:root[data-theme="dark"] .hero::before { opacity: 1; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) .hero::before { opacity: 1; }
+  :root:not([data-theme]) .hero::before {
+  background-image:
+    radial-gradient(1px 1px at 34px 78px, rgba(255,255,255,0.46), transparent 100%),
+    radial-gradient(1px 1px at 222px 120px, rgba(255,255,255,0.39), transparent 100%),
+    radial-gradient(1px 1px at 8px 184px, rgba(255,255,255,0.54), transparent 100%),
+    radial-gradient(1px 1px at 35px 171px, rgba(255,255,255,0.38), transparent 100%),
+    radial-gradient(1px 1px at 33px 34px, rgba(255,255,255,0.37), transparent 100%),
+    radial-gradient(1px 1px at 124px 220px, rgba(255,255,255,0.38), transparent 100%),
+    radial-gradient(1px 1px at 242px 122px, rgba(255,255,255,0.5), transparent 100%),
+    radial-gradient(1px 1px at 199px 23px, rgba(255,255,255,0.53), transparent 100%),
+    radial-gradient(1px 1px at 135px 165px, rgba(255,255,255,0.5), transparent 100%),
+    radial-gradient(1px 1px at 182px 209px, rgba(255,255,255,0.3), transparent 100%),
+    radial-gradient(1px 1px at 234px 54px, rgba(255,255,255,0.42), transparent 100%),
+    radial-gradient(1px 1px at 46px 243px, rgba(255,255,255,0.33), transparent 100%),
+    radial-gradient(1px 1px at 198px 235px, rgba(255,255,255,0.45), transparent 100%),
+    radial-gradient(1px 1px at 94px 205px, rgba(255,255,255,0.42), transparent 100%),
+    radial-gradient(1px 1px at 226px 219px, rgba(255,255,255,0.37), transparent 100%),
+    radial-gradient(1px 1px at 160px 123px, rgba(255,255,255,0.5), transparent 100%),
+    radial-gradient(1px 1px at 238px 106px, rgba(255,255,255,0.33), transparent 100%),
+    radial-gradient(1px 1px at 231px 100px, rgba(255,255,255,0.51), transparent 100%),
+    radial-gradient(1px 1px at 248px 116px, rgba(255,255,255,0.31), transparent 100%),
+    radial-gradient(1px 1px at 182px 254px, rgba(255,255,255,0.53), transparent 100%),
+    radial-gradient(1px 1px at 124px 187px, rgba(255,255,255,0.32), transparent 100%),
+    radial-gradient(1px 1px at 106px 90px, rgba(255,255,255,0.47), transparent 100%),
+    radial-gradient(1.4px 1.4px at 228px 181px, rgba(255,255,255,0.75), transparent 100%),
+    radial-gradient(1.4px 1.4px at 357px 404px, rgba(255,255,255,0.43), transparent 100%),
+    radial-gradient(1.4px 1.4px at 310px 84px, rgba(255,255,255,0.5), transparent 100%),
+    radial-gradient(1.4px 1.4px at 200px 123px, rgba(255,255,255,0.72), transparent 100%),
+    radial-gradient(1.4px 1.4px at 289px 64px, rgba(255,255,255,0.56), transparent 100%),
+    radial-gradient(1.4px 1.4px at 13px 205px, rgba(255,255,255,0.56), transparent 100%),
+    radial-gradient(1.4px 1.4px at 28px 162px, rgba(255,255,255,0.45), transparent 100%),
+    radial-gradient(1.4px 1.4px at 236px 347px, rgba(255,255,255,0.53), transparent 100%),
+    radial-gradient(1.4px 1.4px at 137px 135px, rgba(255,255,255,0.66), transparent 100%),
+    radial-gradient(1.4px 1.4px at 404px 407px, rgba(255,255,255,0.61), transparent 100%),
+    radial-gradient(1.4px 1.4px at 289px 102px, rgba(255,255,255,0.49), transparent 100%),
+    radial-gradient(1.4px 1.4px at 144px 4px, rgba(255,255,255,0.67), transparent 100%),
+    radial-gradient(1.9px 1.9px at 92px 660px, rgba(255,255,255,0.71), transparent 100%),
+    radial-gradient(1.9px 1.9px at 223px 24px, rgba(255,255,255,0.79), transparent 100%),
+    radial-gradient(1.9px 1.9px at 577px 54px, rgba(255,255,255,0.58), transparent 100%),
+    radial-gradient(1.9px 1.9px at 483px 265px, rgba(255,255,255,0.9), transparent 100%),
+    radial-gradient(1.9px 1.9px at 558px 279px, rgba(255,255,255,0.59), transparent 100%),
+    radial-gradient(1.9px 1.9px at 242px 216px, rgba(255,255,255,0.69), transparent 100%);
+  background-size:
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px;
+    mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 88%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 88%);
+  }
 }
+
 
 /* The glow. Trivy's sits high and wide behind the headline; same scale here,
    tinted to AIROM's indigo rather than its cyan, and layered so the falloff is
@@ -246,11 +348,29 @@ header {
   content: ""; position: absolute; left: 50%; top: -420px;
   width: min(1500px, 150vw); height: 900px;
   transform: translateX(-50%); pointer-events: none;
+  z-index: 0;
   background:
     radial-gradient(45% 45% at 50% 50%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%),
     radial-gradient(70% 60% at 50% 55%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 72%);
 }
-.hero > * { position: relative; z-index: 1; }
+
+/* Light mode alone gets a large echo of the mark's ridges behind the hero.
+   On the dark canvas the starfield already occupies that role and the two
+   together read as clutter. */
+.hero .hero-ridge {
+  position: absolute; right: -40px; top: 118px; width: min(620px, 52vw);
+  aspect-ratio: 640 / 260; pointer-events: none; z-index: 1;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20640%20260%22%20fill%3D%22none%22%20stroke%3D%22%234338ca%22%20stroke-width%3D%222.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M20%20240%20L320%2040%20L620%20240%22%20opacity%3D%220.30%22%2F%3E%3Cpath%20d%3D%22M92%20240%20L320%2088%20L548%20240%22%20opacity%3D%220.45%22%2F%3E%3Cpath%20d%3D%22M164%20240%20L320%20136%20L476%20240%22%20opacity%3D%220.62%22%2F%3E%3C%2Fsvg%3E");
+  opacity: 0.9;
+  mask-image: linear-gradient(to bottom, #000 34%, transparent 94%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 34%, transparent 94%);
+}
+:root[data-theme="dark"] .hero .hero-ridge { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .hero .hero-ridge { display: none; }
+}
+@media (max-width: 900px) { .hero .hero-ridge { display: none; } }
+.hero > * { position: relative; z-index: 2; }
 
 h1 {
   font-size: clamp(2.5rem, 6.4vw, 4.3rem); line-height: 1.02;
@@ -406,6 +526,7 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
 <main id="main">
 
 <div class="hero">
+  <div class="hero-ridge" aria-hidden="true"></div>
   <div class="wrap">
     <div class="eyebrow mono">AI Bill of Materials scanner</div>
     <h1>Find the AI in your code, <span class="hl">and prove it.</span></h1>
