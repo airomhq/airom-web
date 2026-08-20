@@ -679,7 +679,7 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>No model execution, ever.</strong> Weights are identified by magic bytes and bounded header parsing. Nothing is loaded, deserialized, or run.</span></li>
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Fuzzed parsers.</strong> Every binary header parser is fuzzed in CI and must return errors, never panic.</span></li>
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>No surprise network access.</strong> <code>--offline</code> asserts it globally.</span></li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Signed releases.</strong> <code>CGO_ENABLED=0</code>, cosign-signed, shipping an SBOM and a self-scanned AIBOM.</span></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Signed releases.</strong> <code>CGO_ENABLED=0</code>, reproducible, checksummed, and keyless-cosign-signed.</span></li>
     </ul>
   </div>
 </section>
