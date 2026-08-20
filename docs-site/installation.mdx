@@ -96,8 +96,8 @@ fish_add_path (go env GOPATH)/bin
 
 Every tagged release publishes cosign-signed, `CGO_ENABLED=0` static binaries for
 all supported platforms on the [releases
-page](https://github.com/airomhq/airom/releases), each with a checksum and its
-own SBOM. Download, verify, and drop the binary on your `PATH`. There is no
+page](https://github.com/airomhq/airom/releases), with a `checksums.txt` covering
+all of them. Download, verify, and drop the binary on your `PATH`. There is no
 runtime and nothing else to install.
 
 ## Build from source
