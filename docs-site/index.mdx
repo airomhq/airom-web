@@ -24,7 +24,7 @@ AIROM records that for every component it emits. Each one carries four fields:
 | --- | --- |
 | **Occurrences** | Every sighting: `file:line`, the matched snippet, and the enclosing function or class when known |
 | **Detection method** | How it was found. One of `source-code-analysis`, `ast-fingerprint`, `manifest-analysis`, `binary-analysis`, `hash-comparison`, `config-analysis`, `filename`. An eighth method, `attestation`, is a reserved slot for v2 |
-| **Confidence** | A calibrated score from 0 to 1, recorded on the component and on each occurrence |
+| **Confidence** | An evidence-weighted score from 0 to 1, recorded on the component and on each occurrence |
 | **Detector ID** | The rule that fired, such as `rules/openai/model-literal`. Identifiers stay stable across releases |
 
 Every row in the table traces back to a line of source. A finding you cannot

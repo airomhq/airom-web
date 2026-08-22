@@ -271,10 +271,14 @@ Float in `(0, 0.99]`, the confidence of **one sighting by this rule alone**.
 | `0.6–0.75` | An SDK import or call-site shape. Tells you the library is present, not which model |
 | `≤ 0.5` | Weak contextual hints |
 
+These bands are evidence weights, not measured precision. Pick the band by how
+distinctive the evidence is; proving the numbers is the benchmark's job, not the
+rule author's.
+
 <Warning>
 Rules cannot assert `1.0`. Certainty is reserved for hash-comparison against known
 weights. Corroboration is the assembler's job, using grouped noisy-OR across detection
-methods, so calibrate the single sighting honestly. Repetition cannot launder into certainty:
+methods, so score the single sighting honestly. Repetition cannot launder into certainty:
 twelve sightings of one 0.85 rule assemble to roughly 0.87, not 0.999.
 </Warning>
 

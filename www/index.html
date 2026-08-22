@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://airom.dev/">
 <meta property="og:title" content="AIROM — Find the AI in your code, and prove it">
-<meta property="og:description" content="Open-source AI Bill of Materials scanner. Every component carries the file:line it was seen at, the technique that found it, and a calibrated confidence score.">
+<meta property="og:description" content="Open-source AI Bill of Materials scanner. Every component carries the file:line it was seen at, the technique that found it, and an evidence-weighted confidence score.">
 <meta property="og:image" content="https://airom.dev/og.png">
 <meta name="twitter:card" content="summary_large_image">
 
@@ -603,7 +603,7 @@ footer { border-top: 1px solid var(--border); padding: 60px 0 70px; background: 
       <dl>
         <div class="row"><dt>Occurrences</dt><dd>Every place the component was seen. Each records <code>file:line</code>, the matched snippet, and the enclosing function or class where AIROM can determine it.</dd></div>
         <div class="row"><dt>Detection method</dt><dd>How it was found: source-code analysis, AST fingerprint, manifest analysis, binary analysis, hash comparison, config analysis, or filename.</dd></div>
-        <div class="row"><dt>Confidence</dt><dd>A calibrated score from 0 to 1, recorded on the component and on each occurrence separately.</dd></div>
+        <div class="row"><dt>Confidence</dt><dd>An evidence-weighted score from 0 to 1, recorded on the component and on each occurrence separately.</dd></div>
         <div class="row"><dt>Detector ID</dt><dd>The rule that fired, such as <code>rules/openai/model-literal</code>. Identifiers stay stable across releases, so you can audit or suppress a specific rule.</dd></div>
       </dl>
     </div>

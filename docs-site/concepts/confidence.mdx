@@ -4,8 +4,18 @@ description: "How AIROM scores a component, why it clamps at 0.99, and how to fi
 icon: "gauge"
 ---
 
-Every component carries a **confidence**: a calibrated belief in [0,1] that the component is
-really there and really identified as claimed.
+Every component carries a **confidence**: an evidence-weighted score in [0,1] that the
+component is really there and really identified as claimed.
+
+<Note>
+  **Weighted, not calibrated.** Per-sighting scores are assigned by rule and
+  detector authors from how distinctive the evidence is, then combined as
+  described below. The result is ordinal: a 0.9 rests on stronger evidence than
+  a 0.6. It is not a calibrated probability: no study yet establishes that
+  findings scored 0.85 are correct 85% of the time. Read the number as evidence
+  strength, and treat any tool that claims statistical calibration without a
+  published benchmark with suspicion, this one included.
+</Note>
 
 Two rules govern it:
 
