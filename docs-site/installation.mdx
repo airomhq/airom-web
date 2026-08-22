@@ -8,7 +8,7 @@ AIROM is a single static binary built with `CGO_ENABLED=0`. There are no
 runtime dependencies and no shared libraries to chase.
 
 <Note>
-  **AIROM is at `v0.4.0`.** It includes the AI-native risk overlay, a default-on
+  **AIROM is at `v0.4.1`.** It includes the AI-native risk overlay, a default-on
   CVE overlay backed by OSV.dev, a default-on [model lifecycle
   overlay](/concepts/eol), compliance framework mapping, [test-scope
   filtering](/concepts/test-scope), [SPDX 3.0.1 and OpenVEX
@@ -20,6 +20,12 @@ runtime dependencies and no shared libraries to chase.
   the result still resolves. Both are opt-in and off by default. This is the
   first thing AIROM writes to your tree; anything it cannot pin from a declared
   manifest is reported with a reason rather than edited.
+
+  **Upgrade from `v0.4.0`.** In that release the fix flags could also be set
+  from a checked-in `.airom.yaml`, so a repository could make a plain scan
+  rewrite your manifests. `v0.4.1` refuses them from anywhere but the command
+  line. If you scanned an untrusted tree with `v0.4.0`, check `git status` for
+  manifest edits you did not ask for.
 
   The `airom` command is on [PyPI](https://pypi.org/project/airom/).
   Cosign-signed static binaries for every supported platform ship on the
@@ -59,7 +65,7 @@ toolchain.
 go install github.com/airomhq/airom/cmd/airom@latest
 ```
 
-`@latest` resolves to the newest release tag (`v0.4.0` today).
+`@latest` resolves to the newest release tag (`v0.4.1` today).
 
 ### Put it on your PATH
 
@@ -164,9 +170,9 @@ What you see depends on how you installed:
 <Tabs>
   <Tab title="pip / pipx">
     ```text
-    airom 0.4.0
-      commit: f73bc42
-      built:  2026-08-21T15:54:43+05:30
+    airom 0.4.1
+      commit: e4d2d65
+      built:  2026-08-22T18:26:51+05:30
       go:     go1.26.5 (darwin/arm64)
     ```
 
@@ -198,7 +204,7 @@ What you see depends on how you installed:
 
     `make` stamps the version from `git describe --tags --always --dirty`. On a
     commit after the latest tag that resolves to something like
-    `v0.4.0-4-g0fb8a93`, with `-dirty` appended if your working tree has
+    `v0.4.1-4-g0fb8a93`, with `-dirty` appended if your working tree has
     uncommitted changes.
   </Tab>
 </Tabs>
