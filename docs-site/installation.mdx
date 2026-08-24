@@ -8,7 +8,7 @@ AIROM is a single static binary built with `CGO_ENABLED=0`. There are no
 runtime dependencies and no shared libraries to chase.
 
 <Note>
-  **AIROM is at `v0.4.1`.** It includes the AI-native risk overlay, a default-on
+  **AIROM is at `v0.4.2`.** It includes the AI-native risk overlay, a default-on
   CVE overlay backed by OSV.dev, a default-on [model lifecycle
   overlay](/concepts/eol), compliance framework mapping, [test-scope
   filtering](/concepts/test-scope), [SPDX 3.0.1 and OpenVEX
@@ -20,6 +20,14 @@ runtime dependencies and no shared libraries to chase.
   the result still resolves. Both are opt-in and off by default. This is the
   first thing AIROM writes to your tree; anything it cannot pin from a declared
   manifest is reported with a reason rather than edited.
+
+  New in `v0.4.2`: every scan carries an **assurance account** saying what it
+  could not prove (files excluded, reads truncated at the size cap, which
+  overlays actually ran), and `airom bench` measures detection against a
+  public [benchmark corpus](https://github.com/airomhq/airom-bench). Local
+  model files are also named differently now: a GGUF takes the name its own
+  header declares, and weights files drop the serialization extension, so
+  `airom diff` shows them as removed+added once across the `v0.4.1` line.
 
   **Upgrade from `v0.4.0`.** In that release the fix flags could also be set
   from a checked-in `.airom.yaml`, so a repository could make a plain scan
@@ -65,7 +73,7 @@ toolchain.
 go install github.com/airomhq/airom/cmd/airom@latest
 ```
 
-`@latest` resolves to the newest release tag (`v0.4.1` today).
+`@latest` resolves to the newest release tag (`v0.4.2` today).
 
 ### Put it on your PATH
 
@@ -170,9 +178,9 @@ What you see depends on how you installed:
 <Tabs>
   <Tab title="pip / pipx">
     ```text
-    airom 0.4.1
-      commit: e4d2d65
-      built:  2026-08-22T18:26:51+05:30
+    airom 0.4.2
+      commit: f84939e
+      built:  2026-08-24T10:59:36+05:30
       go:     go1.26.5 (darwin/arm64)
     ```
 
@@ -204,7 +212,7 @@ What you see depends on how you installed:
 
     `make` stamps the version from `git describe --tags --always --dirty`. On a
     commit after the latest tag that resolves to something like
-    `v0.4.1-4-g0fb8a93`, with `-dirty` appended if your working tree has
+    `v0.4.2-4-g0fb8a93`, with `-dirty` appended if your working tree has
     uncommitted changes.
   </Tab>
 </Tabs>
