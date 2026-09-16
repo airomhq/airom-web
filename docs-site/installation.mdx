@@ -8,7 +8,7 @@ AIROM is a single static binary built with `CGO_ENABLED=0`. There are no
 runtime dependencies and no shared libraries to chase.
 
 <Note>
-  **AIROM is at `v0.4.4`.** It includes the AI-native risk overlay, a default-on
+  **AIROM is at `v0.4.5`.** It includes the AI-native risk overlay, a default-on
   CVE overlay backed by OSV.dev, a default-on [model lifecycle
   overlay](/concepts/eol), compliance framework mapping, [test-scope
   filtering](/concepts/test-scope), [SPDX 3.0.1 and OpenVEX
@@ -79,7 +79,7 @@ toolchain.
 go install github.com/airomhq/airom/cmd/airom@latest
 ```
 
-`@latest` resolves to the newest release tag (`v0.4.4` today).
+`@latest` resolves to the newest release tag (`v0.4.5` today).
 
 ### Put it on your PATH
 
@@ -184,10 +184,10 @@ What you see depends on how you installed:
 <Tabs>
   <Tab title="pip / pipx">
     ```text
-    airom 0.4.4
-      commit: aa56852
-      built:  2026-08-24T14:20:29+05:30
-      go:     go1.26.5 (darwin/arm64)
+    airom 0.4.5
+      commit: ec3a847
+      built:  2026-09-16T14:37:41+05:30
+      go:     go1.26.8 (darwin/arm64)
     ```
 
     The wheel ships a fully version-stamped binary, so a pip or pipx install
@@ -218,7 +218,7 @@ What you see depends on how you installed:
 
     `make` stamps the version from `git describe --tags --always --dirty`. On a
     commit after the latest tag that resolves to something like
-    `v0.4.4-4-g0fb8a93`, with `-dirty` appended if your working tree has
+    `v0.4.5-4-g0fb8a93`, with `-dirty` appended if your working tree has
     uncommitted changes.
   </Tab>
 </Tabs>
