@@ -8,7 +8,7 @@ AIROM is a single static binary built with `CGO_ENABLED=0`. There are no
 runtime dependencies and no shared libraries to chase.
 
 <Note>
-  **AIROM is at `v0.4.5`.** It includes the AI-native risk overlay, a default-on
+  **AIROM is at `v0.4.6`.** It includes the AI-native risk overlay, a default-on
   CVE overlay backed by OSV.dev, a default-on [model lifecycle
   overlay](/concepts/eol), compliance framework mapping, [test-scope
   filtering](/concepts/test-scope), [SPDX 3.0.1 and OpenVEX
@@ -20,6 +20,16 @@ runtime dependencies and no shared libraries to chase.
   the result still resolves. Both are opt-in and off by default. This is the
   first thing AIROM writes to your tree; anything it cannot pin from a declared
   manifest is reported with a reason rather than edited.
+
+  **`v0.4.6` changes how a fetched rule bundle applies.** Until v0.4.5 a bundle
+  installed by `airom rules update` was used *instead of* the packs built into
+  the binary; now it layers over them, merged by rule ID. If you run
+  `rules update`, upgrade: a bundle that does not carry a pack no longer removes
+  that pack's detection. With a bundle installed, `rulesVersion` now reads
+  `builtin+v0.1.9` rather than `v0.1.9`, since both layers answer. The same
+  release stops `litellm` and `instructor` appearing as two components (one with
+  a version, one with a provider) — regenerate if you archived an AIBOM of a
+  tree using either.
 
   **`v0.4.4` fixes CycloneDX schema validity.** v0.4.2 and v0.4.3 emitted
   `evidence.identity[].field: "versionConstraint"`, which is not in the spec's
@@ -72,14 +82,14 @@ it targets before it is published.
 
 ## go install
 
-Requires **Go 1.25 or newer**. Reach for this if you already have a Go
+Requires **Go 1.26 or newer** (every golang.org/x module the scanner depends on now needs it; Go 1.25 is out of support). Reach for this if you already have a Go
 toolchain.
 
 ```bash title="Install"
 go install github.com/airomhq/airom/cmd/airom@latest
 ```
 
-`@latest` resolves to the newest release tag (`v0.4.5` today).
+`@latest` resolves to the newest release tag (`v0.4.6` today).
 
 ### Put it on your PATH
 
@@ -184,9 +194,9 @@ What you see depends on how you installed:
 <Tabs>
   <Tab title="pip / pipx">
     ```text
-    airom 0.4.5
-      commit: ec3a847
-      built:  2026-09-16T14:37:41+05:30
+    airom 0.4.6
+      commit: ad4c6e2
+      built:  2026-09-18T15:31:39+05:30
       go:     go1.26.8 (darwin/arm64)
     ```
 
@@ -218,7 +228,7 @@ What you see depends on how you installed:
 
     `make` stamps the version from `git describe --tags --always --dirty`. On a
     commit after the latest tag that resolves to something like
-    `v0.4.5-4-g0fb8a93`, with `-dirty` appended if your working tree has
+    `v0.4.6-4-g0fb8a93`, with `-dirty` appended if your working tree has
     uncommitted changes.
   </Tab>
 </Tabs>
