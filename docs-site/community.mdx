@@ -1,0 +1,50 @@
+---
+title: "Community"
+description: "Where to ask questions, report a bug, request detection for a framework, or contribute."
+icon: "users"
+---
+
+AIROM is developed in the open at [airomhq/airom](https://github.com/airomhq/airom).
+
+## Where to go
+
+<CardGroup cols={2}>
+  <Card title="Report a bug" icon="bug" href="https://github.com/airomhq/airom/issues">
+    Open an issue. A scan that produced the wrong answer is most useful with the command you
+    ran and the output you got.
+  </Card>
+  <Card title="Ask a question" icon="message-circle" href="https://github.com/airomhq/airom/issues">
+    Issues are the place for now. There is no separate forum, and pointing you at one that
+    does not exist would waste your time.
+  </Card>
+  <Card title="Request detection" icon="radar" href="https://github.com/airomhq/airom-rules/issues">
+    Missing a framework, provider or vector store? Detection lives in rule packs, so this is
+    usually a small, fast change.
+  </Card>
+  <Card title="Report a security issue" icon="shield" href="https://github.com/airomhq/airom/security">
+    Use GitHub's private advisory flow rather than a public issue.
+  </Card>
+</CardGroup>
+
+## Contributing detection
+
+The fast-moving surface — model ids, provider SDKs, frameworks — is YAML rule packs rather
+than Go, so adding a provider is a rules change, not a release:
+
+```bash
+airom dev new-rulepack fireworks          # scaffolds the pack and fixture stubs
+airom rules lint rules/models/fireworks.yaml
+airom rules test rules/models/fireworks.yaml
+```
+
+Every rule needs at least one positive and one negative fixture; lint fails without them.
+See [Writing rules](/rules/writing-rules) for the full contract.
+
+## Before you file
+
+- **Check the ledger.** [project-status.md](https://github.com/airomhq/airom/blob/main/docs/project-status.md)
+  lists what is deliberately not done yet, so you can tell a gap from a bug.
+- **Include the version.** `airom version` prints the release, the commit and the Go
+  toolchain it was built with.
+- **Say which rules answered.** Every document records `rulesVersion` and `rulesHash`; a
+  finding can differ between two machines if one has fetched a newer rule bundle.

@@ -2,11 +2,11 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "AIROM",
-  "description": "Open-source AI Bill of Materials (AIBOM) scanner \u2014 inventory AI models, datasets, prompts, embeddings, vector DBs & RAG pipelines across code, containers & Kubernetes, with file:line evidence, load-time risk detection, and NIST AI RMF / OWASP compliance mapping. Emits CycloneDX, SARIF, JSON.",
+  "description": "Open-source AI Bill of Materials (AIBOM) scanner — inventory AI models, datasets, prompts, embeddings, vector DBs & RAG pipelines across code, containers & Kubernetes, with file:line evidence, load-time risk detection, and NIST AI RMF / OWASP compliance mapping. Emits CycloneDX, SARIF, JSON.",
   "colors": {
-    "primary": "#4F46E5",
-    "light": "#818CF8",
-    "dark": "#4338CA"
+    "primary": "#3B82F6",
+    "light": "#60A5FA",
+    "dark": "#2563EB"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -19,7 +19,8 @@
             "pages": [
               "index",
               "quickstart",
-              "installation"
+              "installation",
+              "examples"
             ]
           },
           {
@@ -33,7 +34,9 @@
               "concepts/risks",
               "concepts/cve",
               "concepts/eol",
-              "concepts/compliance"
+              "concepts/compliance",
+              "concepts/open-source-aibom-scanner",
+              "concepts/ai-supply-chain-security"
             ]
           },
           {
@@ -74,6 +77,12 @@
               "reference/cli",
               "reference/configuration"
             ]
+          },
+          {
+            "group": "Project",
+            "pages": [
+              "community"
+            ]
           }
         ]
       }
@@ -81,6 +90,10 @@
   },
   "navbar": {
     "links": [
+      {
+        "label": "Home",
+        "href": "https://airom.dev/"
+      },
       {
         "label": "Architecture",
         "href": "https://github.com/airomhq/airom/blob/main/docs/ARCHITECTURE.md"

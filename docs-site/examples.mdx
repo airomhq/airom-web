@@ -1,0 +1,81 @@
+---
+title: "Examples"
+description: "Worked examples: scan a project, emit several formats at once, gate a build, and diff a pull request."
+icon: "square-terminal"
+---
+
+Short, copyable recipes. Each one is a real command — run `airom <command> --help` to see
+every flag it accepts.
+
+## Scan a project and read it
+
+```bash
+pip install airom
+airom scan .
+```
+
+The default output is a table. Add `--stats` for the scan's own coverage account: what it
+walked, what it skipped, and which overlays actually ran.
+
+## Emit several formats from one pass
+
+`-o` is repeatable and takes `format[=path]`, so one scan produces every artifact you need:
+
+```bash
+airom scan . \
+  -o cyclonedx=aibom.cdx.json \
+  -o spdx=aibom.spdx.json \
+  -o sarif=airom.sarif \
+  -o json=aibom.json
+```
+
+Available formats: `compliance`, `cyclonedx`, `json`, `sarif`, `spdx`, `table`, `vex`, `yaml`.
+Use `--format <name>` when you want exactly one, written to stdout.
+
+<Note>
+  CycloneDX defaults to spec 1.6. Pass `--cdx-version 1.7` if your consumer expects it.
+</Note>
+
+## Gate a build
+
+A policy match is a verdict, not a crash: the scan succeeded and the document is complete.
+
+```bash
+airom scan . --exit-code 1 --fail-on "risk:high|cve:critical"
+```
+
+The grammar composes over kind, confidence, risk, CVE severity, lifecycle state and
+compliance gaps — for example `--fail-on "hosted-llm&confidence>=0.9"`, or
+`--fail-on "eol:before:2026-12-31"` to fail when anything you ship depends on a model that
+retires before your next release train. See [exit codes](/ci/exit-codes).
+
+## Diff a pull request
+
+```bash
+airom scan . -o json=head.json
+airom diff base.json head.json
+```
+
+The delta is keyed by stable component id, so it reports what actually changed rather than
+what moved. It refuses to gate when the two documents came from different tooling, rather
+than blaming a pull request for a rule-set change.
+
+## Scan something other than a directory
+
+```bash
+airom repo https://github.com/org/app        # a git URL, or a local worktree
+airom image --input app.tar                  # docker save -o app.tar <ref>
+airom k8s --manifests ./deploy               # Kubernetes workload manifests
+```
+
+## Keep detection current without upgrading
+
+Rule packs and the model lifecycle catalogs ship through a signed channel, so new
+frameworks and new retirement dates reach you without a new binary:
+
+```bash
+airom rules update
+```
+
+See [Rule updates](/rules/updates) for how verification works, and `--no-cached-rules` to
+pin a scan to the packs compiled into your binary.

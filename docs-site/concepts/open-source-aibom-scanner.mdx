@@ -1,0 +1,55 @@
+---
+title: "Open-Source AIBOM Scanner"
+description: "What it means that AIROM is open source: the detectors are readable, the rules are data, and every finding can be traced to the code that produced it."
+icon: "folder-git-2"
+---
+
+AIROM is an open-source AI Bill of Materials scanner, licensed **Apache-2.0**. That is a
+claim about verifiability, not just about price: an AIBOM is only worth as much as your
+ability to check it, and checking it means reading the thing that produced it.
+
+## What you can actually inspect
+
+<CardGroup cols={2}>
+  <Card title="The scanner" icon="folder-git-2" href="https://github.com/airomhq/airom">
+    The whole pipeline — sources, detectors, the assembler, every writer.
+  </Card>
+  <Card title="The rule packs" icon="file-code" href="https://github.com/airomhq/airom-rules">
+    Detection for the fast-moving surface is YAML data, not Go. Read a rule, or write one.
+  </Card>
+  <Card title="The benchmark" icon="ruler" href="https://github.com/airomhq/airom-bench">
+    A labelled corpus with published precision and recall, so detection quality is measured
+    rather than asserted.
+  </Card>
+  <Card title="The honest ledger" icon="scale" href="https://github.com/airomhq/airom/blob/main/docs/project-status.md">
+    What works, and what it deliberately does not do yet.
+  </Card>
+</CardGroup>
+
+## Why it matters for an inventory
+
+Every component AIROM reports carries the detector that produced it. Because that detector
+is public, a finding you doubt is a finding you can trace:
+
+```bash
+airom scan . --format json | jq '.components[0].evidence.occurrences[0].detectorId'
+```
+
+The id you get back — `rules/openai/model-literal`, say — names a rule you can open and
+read. A scanner that cannot be inspected asks you to take its inventory on trust; this one
+does not.
+
+## Running it entirely offline
+
+A scan never reaches the network. Two features do, and both are optional and explicit: the
+CVE overlay queries OSV.dev, and `airom rules update` fetches a signed rule bundle. Use
+`--offline` to refuse both.
+
+```bash
+airom scan . --offline
+```
+
+<Note>
+  The rule-update channel is signed with ed25519 and verified against a key compiled into
+  the binary. See [Rule updates](/rules/updates).
+</Note>

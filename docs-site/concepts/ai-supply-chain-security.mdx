@@ -1,0 +1,50 @@
+---
+title: "AI Supply Chain Security"
+description: "Where an AIBOM fits in AI supply chain security, what an inventory can answer, and what it deliberately cannot."
+icon: "shield"
+---
+
+Software supply chain security rests on knowing what you ship. For conventional
+dependencies, an SBOM answers that. For AI, most of what matters is never installed as a
+package: a hosted model id in an API call, a dataset path in a config file, a prompt
+template in source, a vector store behind an environment variable.
+
+An AIBOM closes that gap — and an AIBOM without evidence just moves the trust problem
+somewhere else.
+
+## Questions an inventory can answer
+
+| Question | What answers it |
+|---|---|
+| Which models does this service call, and from where in the code? | Component inventory with `file:line` [evidence](/concepts/evidence) |
+| Which third parties receive our data? | The `provider` on each hosted model component |
+| Are we depending on a model that is being retired? | The [model lifecycle overlay](/concepts/eol), dated and sourced |
+| Do our AI dependencies carry known vulnerabilities? | The [CVE overlay](/concepts/cve) against OSV.dev |
+| Does anything we load execute code at load time? | [Risk detection](/concepts/risks) on weights files |
+| What changed in this pull request? | `airom diff base.json head.json` |
+
+## What this does not do
+
+Being explicit about the boundary is part of the point.
+
+- **It is a static scanner.** It reads code, manifests, images and manifests-on-disk. It
+  does not observe a running system, so a model called only at runtime through a value it
+  cannot see is a model it will not report.
+- **It does not score your compliance.** The [compliance mapping](/concepts/compliance)
+  marks controls met, gap, or manual against a framework's own text. There is no invented
+  percentage, because a number nobody can substantiate is worse than no number.
+- **Absence is not health.** A component AIROM does not report is one it did not find, which
+  is not the same as one that is not there. The scan's own
+  assurance account says what it could not cover.
+
+## A practical starting point
+
+Put it in CI, emit SARIF so findings land where your team already reviews them, and gate on
+what you actually care about:
+
+```bash
+airom scan . --exit-code 1 --fail-on "risk:high|cve:critical" -o sarif=airom.sarif
+```
+
+See [GitHub Actions](/ci/github-actions) for the full workflow, and
+[exit codes](/ci/exit-codes) for what each status means.
