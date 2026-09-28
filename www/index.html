@@ -6,6 +6,9 @@
 <title>AIROM — Know what's inside your AI stack</title>
 <meta name="description" content="Open-source AI Bill of Materials (AIBOM) scanner. Discover the models, datasets, prompts, embeddings, vector databases, RAG components and frameworks your software actually uses — with file:line evidence behind every finding. CycloneDX, SPDX 3.0.1, SARIF, OpenVEX.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link rel="canonical" href="https://airom.dev/">
 
 <meta property="og:type" content="website">
@@ -34,8 +37,8 @@
 :root {
   --bg: #ffffff;
   --bg-raised: #f8fafc;
-  --bg-overlay: #f1f5f9;
-  --bg-sunken: #f8fafc;
+  --bg-overlay: #ffffff;
+  --bg-sunken: #f1f5f9;
   --bg-code: #f6f8fb;
   --border: #e2e8f0;
   --border-strong: #cbd5e1;
@@ -45,18 +48,22 @@
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
   --accent-soft: rgba(37, 99, 235, 0.08);
-  --accent-fg: #ffffff;
-  --ok: #15803d;
-  --warn: #a16207;
+  --ok: #16a34a;
+  --warn: #d97706;
   --crit: #dc2626;
+  --ok-soft: rgba(22, 163, 74, 0.1);
+  --warn-soft: rgba(217, 119, 6, 0.1);
+  --crit-soft: rgba(220, 38, 38, 0.1);
   --grid: rgba(37, 99, 235, 0.05);
   --shadow-lg: 0 24px 48px -24px rgba(15, 23, 42, 0.18);
 
-  --radius: 6px;
+  --radius-sm: 2px;
+  --radius: 4px;
+  --radius-md: 6px;
   --radius-lg: 8px;
   --maxw: 1200px;
-  --mono: "SFMono-Regular", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  --sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", SFMono-Regular, Consolas, monospace;
+  --sans: Inter, -apple-system, "Segoe UI", ui-sans-serif, system-ui, Roboto, Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -74,10 +81,12 @@
     --accent: #3b82f6;
     --accent-hover: #60a5fa;
     --accent-soft: rgba(59, 130, 246, 0.12);
-    --accent-fg: #020617;
     --ok: #22c55e;
     --warn: #eab308;
     --crit: #ef4444;
+    --ok-soft: rgba(34, 197, 94, 0.12);
+    --warn-soft: rgba(234, 179, 8, 0.12);
+    --crit-soft: rgba(239, 68, 68, 0.12);
     --grid: rgba(148, 163, 184, 0.06);
     --shadow-lg: 0 24px 48px -24px rgba(0, 0, 0, 0.6);
   }
@@ -97,10 +106,12 @@
   --accent: #3b82f6;
   --accent-hover: #60a5fa;
   --accent-soft: rgba(59, 130, 246, 0.12);
-  --accent-fg: #020617;
   --ok: #22c55e;
   --warn: #eab308;
   --crit: #ef4444;
+  --ok-soft: rgba(34, 197, 94, 0.12);
+  --warn-soft: rgba(234, 179, 8, 0.12);
+  --crit-soft: rgba(239, 68, 68, 0.12);
   --grid: rgba(148, 163, 184, 0.06);
   --shadow-lg: 0 24px 48px -24px rgba(0, 0, 0, 0.6);
 }
@@ -140,40 +151,62 @@ p { margin: 0; text-wrap: pretty; }
 svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 svg.i-sm { width: 14px; height: 14px; }
 
-/* ── nav ──────────────────────────────────────────────────────────────── */
-nav.top {
-  position: sticky; top: 0; z-index: 20;
-  background: var(--bg);
+/* ── header ───────────────────────────────────────────────────────────── */
+/* Unchanged from the previous site: the ridge mark, the 62px bar, the brand
+   hard left and the links pushed right off it. Scoped to header.site so the
+   hero — also a <header> — does not pick up the sticky bar's rules. */
+header.site {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid var(--border);
 }
-nav.top .row { display: flex; align-items: center; gap: 24px; height: 60px; }
-.brand { display: flex; align-items: center; gap: 10px; color: var(--fg); font-weight: 700; font-size: 17px; letter-spacing: 0.04em; }
+header.site .nav { display: flex; align-items: center; gap: 8px; height: 62px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; font-size: 18px; color: var(--fg); }
 .brand:hover { color: var(--fg); }
-.brand .tag {
-  font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
-  color: var(--fg-muted); border: 1px solid var(--border-strong); border-radius: 2px; padding: 1px 5px;
+.brand svg { width: 26px; height: 26px; display: block; }
+.nav-links { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+.nav-links a { padding: 8px 12px; text-decoration: none; color: var(--fg-muted); font-size: 14px; font-weight: 500; }
+.nav-links a:hover { color: var(--fg); }
+.nav-cta {
+  border: 1px solid var(--border-strong); border-radius: var(--radius);
+  padding: 8px 14px !important; color: var(--fg) !important;
+  font-family: var(--mono); font-size: 12px !important; letter-spacing: .1em; text-transform: uppercase;
 }
-.navlinks { display: flex; gap: 2px; flex: 1; }
-.navlinks a { padding: 6px 10px; border-radius: 4px; font-size: 14px; color: var(--fg-muted); }
-.navlinks a:hover { color: var(--fg); background: var(--bg-overlay); }
-.navtools { display: flex; align-items: center; gap: 8px; }
+.nav-cta:hover { border-color: var(--accent); color: var(--accent) !important; }
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center; margin-left: 6px;
+  width: 34px; height: 34px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: transparent; color: var(--fg-muted); cursor: pointer; padding: 0;
+}
+.icon-btn:hover { color: var(--fg); border-color: var(--border-strong); }
+.icon-btn svg { width: 16px; height: 16px; }
 
+/* Button: gap 6, 4px radius, weight 500, 14px icon. The three DS sizes are
+   sm 28 / default 32 / lg 36; the design overrides lg to 44px on the hero and
+   section CTAs and 48px on the closing one, so both overrides are named here
+   rather than repeated inline. */
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  height: 36px; padding: 0 16px; border-radius: var(--radius);
-  background: var(--accent); color: var(--accent-fg);
-  border: 1px solid var(--accent);
-  font-family: var(--sans); font-size: 14px; font-weight: 500; cursor: pointer;
-  transition: background 120ms ease-out, border-color 120ms ease-out;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 32px; padding: 0 12px; border-radius: var(--radius);
+  background: var(--accent); color: #fff; border: 1px solid transparent;
+  font-family: var(--sans); font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: background 120ms ease-out, border-color 120ms ease-out, color 120ms ease-out;
 }
-.btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--accent-fg); }
+.btn:hover { background: var(--accent-hover); color: #fff; }
+.btn svg.i { width: 14px; height: 14px; }
+.btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
 .btn-lg { height: 44px; padding: 0 20px; font-size: 15px; }
+.btn-xl { height: 48px; padding: 0 24px; font-size: 16px; }
+.btn-secondary { background: var(--bg-overlay); color: var(--fg); border-color: var(--border-strong); }
 .btn-outline { background: transparent; color: var(--fg); border-color: var(--border-strong); }
-.btn-outline:hover { background: var(--bg-overlay); color: var(--fg); border-color: var(--border-strong); }
+.btn-ghost { background: transparent; color: var(--fg-muted); border-color: transparent; }
+.btn-secondary:hover, .btn-outline:hover, .btn-ghost:hover { background: var(--bg-overlay); color: var(--fg); border-color: var(--border-strong); }
+.btn-ghost:hover { border-color: transparent; }
 .btn-icon {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px; padding: 0; border-radius: var(--radius);
-  background: transparent; border: 1px solid var(--border); color: var(--fg-muted); cursor: pointer;
+  width: 32px; height: 32px; padding: 0; border-radius: var(--radius);
+  background: transparent; border: 1px solid transparent; color: var(--fg-muted); cursor: pointer;
 }
 .btn-icon:hover { background: var(--bg-overlay); color: var(--fg); }
 
@@ -185,31 +218,85 @@ nav.top .row { display: flex; align-items: center; gap: 24px; height: 60px; }
 }
 
 /* ── sections ─────────────────────────────────────────────────────────── */
-section { border-bottom: 1px solid var(--border); }
-section > .wrap { padding: 80px 24px; }
-.sec-head { display: flex; flex-direction: column; gap: 14px; margin-bottom: 40px; }
-.sec-head h2 { font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; }
+/* Section rhythm is the design's: 112px bands, 120px for the one that sits on
+   the sunken surface, and every other band alternating so the page reads as
+   stripes rather than one flat column. */
+section { border-bottom: 1px solid var(--border); padding: 112px 0; scroll-margin-top: 62px; }
+section > .wrap { padding: 0 24px; }
+section.sunken { background: var(--bg-sunken); }
+section#evidence { padding: 120px 0; }
 
-.grid { display: grid; gap: 16px; }
-.g2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-.g3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-.g4 { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.sec-head { margin-bottom: 48px; }
+.sec-head .eyebrow { display: block; }
+.sec-head h2 {
+  margin: 14px 0 16px;
+  font-size: clamp(30px, 3.6vw, 42px); line-height: 1.12;
+  letter-spacing: -0.025em; font-weight: 600; max-width: 720px;
+}
+.sec-head .lede { margin: 0; font-size: 17px; line-height: 1.65; color: var(--fg-muted); max-width: 640px; }
 
-.card {
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
+/* ── three card treatments, because the design uses three ─────────────── */
+
+/* 1. Hairline grid (section 02): one bordered, rounded container whose cells
+      are separated by 1px of the border colour showing through the gap. */
+.cards-rule {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden;
+}
+.cards-rule .cell {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 28px 24px 32px; background: var(--bg);
+  transition: background 150ms ease-out, transform 150ms ease-out;
+}
+.cards-rule .cell:hover { background: var(--bg-raised); transform: translateY(-2px); }
+.cell .cap { display: flex; align-items: center; justify-content: space-between; }
+.cell .ico {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md); color: var(--accent);
+}
+.cell h3 { font-size: 17px; font-weight: 600; }
+.cell p { font-size: 14px; line-height: 1.55; color: var(--fg-muted); }
+
+/* 2. Rule items (section 09): a top hairline and text, no box at all. */
+.items {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 40px 32px;
+}
+.item {
   display: flex; flex-direction: column; gap: 10px;
+  padding-top: 20px; border-top: 1px solid var(--border-strong);
 }
-.card h3 { font-size: 16px; }
-.card p { font-size: 14px; color: var(--fg-muted); }
+.item .ico { color: var(--accent); }
+.item h3 { font-size: 16px; font-weight: 600; }
+.item p { font-size: 14px; line-height: 1.55; color: var(--fg-muted); }
+
+/* 3. Boxed cards (sections 01, 07, 10, 11). */
+.cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.cards.wide { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.cards.three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.card {
+  display: flex; flex-direction: column; gap: 16px;
+  padding: 28px 24px;
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--bg-raised);
+  transition: border-color 150ms ease-out, transform 150ms ease-out;
+}
+.card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.card h3 { font-size: 17px; font-weight: 600; }
+.card p { font-size: 14px; line-height: 1.55; color: var(--fg-muted); }
 .card .ico {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 34px; height: 34px; border-radius: var(--radius);
-  background: var(--accent-soft); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md); color: var(--accent);
 }
+.card.soft .ico { width: 40px; height: 40px; border: none; border-radius: var(--radius-md); background: var(--accent-soft); }
+.card.soft h3 { font-size: 18px; }
+.card.soft p { font-size: 15px; }
 .code-chip { font-family: var(--mono); font-size: 11px; color: var(--fg-faint); }
+
+@media (max-width: 720px) { .cards.three { grid-template-columns: 1fr; } }
 
 /* ── hero ─────────────────────────────────────────────────────────────── */
 header.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
@@ -241,14 +328,16 @@ header.hero .inner {
   overflow-x: auto;
 }
 .install .dollar { color: var(--fg-faint); user-select: none; }
-.copy {
+/* Scoped to the install box: `.copy` is also the JS hook on ordinary buttons
+   elsewhere, and unscoped these rules stripped those buttons' own styling. */
+.install .copy {
   display: flex; align-items: center; gap: 6px; padding: 0 14px;
   background: transparent; border: none; border-left: 1px solid var(--border);
   color: var(--fg-muted); font-family: var(--sans); font-size: 13px; cursor: pointer;
   transition: background 120ms ease-out;
 }
-.copy:hover { background: var(--bg-overlay); color: var(--fg); }
-.copy[data-copied] { color: var(--ok); }
+.install .copy:hover { background: var(--bg-overlay); color: var(--fg); }
+.install .copy[data-copied] { color: var(--ok); }
 </style>
 <style>
 /* ── the scan demo ────────────────────────────────────────────────────── */
@@ -264,14 +353,16 @@ header.hero .inner {
 }
 .panel-bar .cmd { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  height: 20px; padding: 0 7px; border-radius: 10px;
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 20px; padding: 0 6px; border-radius: var(--radius-sm);
   font-family: var(--sans); font-size: 11px; font-weight: 500; white-space: nowrap;
 }
-.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.badge-ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
-.badge-warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.badge svg.i { width: 12px; height: 12px; }
+.badge-ok { color: var(--ok); background: var(--ok-soft); }
+.badge-warn { color: var(--warn); background: var(--warn-soft); }
+.badge-crit { color: var(--crit); background: var(--crit-soft); }
 .badge-info { color: var(--accent); background: var(--accent-soft); }
+.badge-idle { color: var(--fg-faint); background: var(--bg-overlay); }
 .progress { height: 2px; background: var(--border); }
 .progress > span { display: block; height: 2px; width: 0; background: var(--accent); transition: width 420ms ease-out; }
 
@@ -302,10 +393,10 @@ header.hero .inner {
   align-items: center; gap: 10px; width: 100%; height: 34px; padding: 0 8px;
   background: transparent; border: none; border-left: 2px solid transparent;
   border-radius: 0 4px 4px 0; color: var(--fg);
-  font-family: var(--mono); font-size: 12px; text-align: left; cursor: pointer;
-  opacity: 0; transition: opacity 250ms ease-out, background 120ms ease-out;
+  font-family: var(--mono); font-size: 12px; text-align: left; cursor: default;
+  opacity: 0.4; transition: opacity 250ms ease-out, background 120ms ease-out;
 }
-.finding.shown { opacity: 1; }
+.finding.shown { opacity: 1; cursor: pointer; }
 .finding:hover { background: var(--bg-overlay); }
 .finding[aria-pressed="true"] { background: var(--accent-soft); border-left-color: var(--accent); }
 .finding .bar { height: 6px; border-radius: 1px; background: var(--bg-overlay); overflow: hidden; }
@@ -315,103 +406,257 @@ header.hero .inner {
   border-top: 1px solid var(--border); background: var(--bg-sunken);
   padding: 14px 16px; min-height: 176px;
 }
-.evidence .title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 13px; color: var(--fg-muted); }
-.evidence .title b { color: var(--fg); font-weight: 600; }
-.ev-grid { display: flex; flex-wrap: wrap; gap: 16px; }
-.ev-code {
-  flex: 1 1 240px; min-width: 0; margin: 0; padding: 10px 12px;
-  background: var(--bg-code); border: 1px solid var(--border); border-radius: var(--radius);
-  font-family: var(--mono); font-size: 12px; line-height: 1.8; overflow-x: auto;
-}
-.ev-code .ln { color: var(--fg-faint); user-select: none; display: inline-block; width: 22px; text-align: right; margin-right: 10px; }
-.ev-code .hl { background: var(--accent-soft); display: block; margin: 0 -12px; padding: 0 12px; border-left: 2px solid var(--accent); }
-.ev-meta { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
-.ev-group { display: flex; flex-direction: column; gap: 4px; }
-.ev-group .gh { display: flex; align-items: center; gap: 7px; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fg-muted); }
-.ev-group .n {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 16px; height: 16px; border-radius: 50%;
-  background: var(--accent-soft); color: var(--accent);
-  font-family: var(--mono); font-size: 10px; font-weight: 600;
-}
-.ev-row { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
-.ev-row span:first-child { color: var(--fg-muted); }
-.ev-row span:last-child { font-family: var(--mono); }
-.ev-empty { color: var(--fg-faint); font-size: 13px; }
+/* The demo's evidence pane is a key/value read-out, not a second code view:
+   the code view belongs to section 03, which has room for it. */
+.evidence .title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.evidence .title svg.i { width: 14px; height: 14px; color: var(--accent); }
+.evidence .title b { font-size: 13px; font-weight: 600; }
+.evidence .title .spacer { flex: 1; }
+.ev-kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px 24px; }
+.ev-kv > div { display: flex; gap: 10px; font-size: 12px; line-height: 1.5; min-width: 0; }
+.ev-kv > div > span:first-child { width: 72px; flex: none; color: var(--fg-muted); }
+.ev-kv > div > span:last-child { font-family: var(--mono); overflow-wrap: anywhere; }
+.ev-empty { display: flex; align-items: center; justify-content: center; gap: 8px; height: 148px; margin: 0; font-size: 13px; color: var(--fg-muted); }
+
+/* ── two-column section bodies ────────────────────────────────────────── */
+/* Four sections in the design are a copy column beside a live panel rather
+   than a heading over a grid; this is that layout. */
+.split { display: flex; flex-wrap: wrap; gap: 56px; align-items: center; }
+.split.g64 { gap: 64px; }
+.split.top { align-items: flex-start; }
+.copy-col { flex: 1 1 400px; min-width: 0; }
+.copy-col h2 { margin: 14px 0 16px; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.12; letter-spacing: -0.025em; font-weight: 600; }
+.copy-col p { margin: 0 0 16px; font-size: 17px; line-height: 1.65; color: var(--fg-muted); }
+.copy-col p.gap { margin-bottom: 28px; }
+.copy-col p.claim { margin: 0 0 24px; font-size: 19px; line-height: 1.5; font-weight: 500; color: var(--fg); }
 
 /* ── tabs ─────────────────────────────────────────────────────────────── */
-.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .tab {
-  padding: 8px 14px; background: transparent; border: none;
-  border-bottom: 2px solid transparent; color: var(--fg-muted);
-  font-family: var(--sans); font-size: 14px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 12px; margin-bottom: -1px;
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--fg-muted); font-family: var(--sans); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: color 120ms ease-out;
 }
 .tab:hover { color: var(--fg); }
-.tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
 
-.out-wrap { display: flex; flex-wrap: wrap; gap: 20px; }
-.out-code { flex: 1 1 380px; min-width: 0; }
-.out-code pre {
-  margin: 0; padding: 14px 16px; background: var(--bg-code);
-  border: 1px solid var(--border); border-radius: var(--radius);
-  font-family: var(--mono); font-size: 12.5px; line-height: 1.7; overflow-x: auto;
+/* ── 01 · the hidden dependency graph ─────────────────────────────────── */
+.graph { flex: 1 1 480px; min-width: 0; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px 20px 32px; }
+.graph-cap { text-align: center; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--fg-muted); margin-bottom: 20px; }
+.graph-stack { display: flex; flex-direction: column; align-items: center; }
+.gbox { padding: 10px 20px; min-width: 140px; text-align: center; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--bg-overlay); font-size: 14px; }
+.gline { width: 1px; background: var(--border-strong); }
+.graph-cols { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.graph-rule { position: absolute; top: 0; left: 16.66%; right: 16.66%; height: 1px; background: var(--border-strong); }
+.gcol { display: flex; flex-direction: column; align-items: center; }
+.gcol .gline { height: 20px; transition: background 300ms ease-out; }
+.gnode {
+  width: 100%; max-width: 150px; padding: 10px 8px; text-align: center;
+  border: 1px dashed var(--fg-faint); border-radius: var(--radius-md);
+  transition: border-color 300ms ease-out, background 300ms ease-out;
 }
-.out-list { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.gnode b { display: block; font-size: 14px; font-weight: 400; color: var(--fg-muted); }
+.gnode span { display: block; font-family: var(--mono); font-size: 11px; margin-top: 4px; color: var(--fg-faint); overflow-wrap: anywhere; }
+.graph.on .gcol .gline { background: var(--ok); }
+.graph.on .gnode { border-style: solid; border-color: var(--ok); background: var(--ok-soft); }
+.graph.on .gnode b { color: var(--fg); }
+.graph.on .gnode span { color: var(--ok); }
+.graph-legend { display: flex; gap: 20px; justify-content: center; margin-top: 28px; font-size: 12px; color: var(--fg-muted); flex-wrap: wrap; }
+.graph-legend > span { display: flex; align-items: center; gap: 8px; }
+.swatch { width: 14px; height: 10px; flex: none; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); }
+.swatch.dashed { border: 1px dashed var(--fg-faint); }
+.swatch.found { border: 1px solid var(--ok); }
+
+/* ── 03 · evidence ────────────────────────────────────────────────────── */
+.ev-head { display: flex; flex-wrap: wrap; gap: 24px 64px; align-items: flex-end; margin-bottom: 40px; }
+.ev-head > div:first-child { flex: 1 1 480px; }
+.ev-head h2 { margin: 14px 0 16px; font-size: clamp(32px, 4.2vw, 52px); line-height: 1.06; letter-spacing: -0.03em; font-weight: 700; }
+.ev-head p { margin: 0; font-size: 18px; line-height: 1.6; color: var(--fg-muted); max-width: 560px; }
+.ev-legend { display: flex; gap: 8px; flex-wrap: wrap; }
+.ev-legend > span {
+  display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px 0 6px;
+  border: 1px solid var(--border-strong); border-radius: var(--radius); font-size: 13px;
+}
+.numchip {
+  display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; flex: none;
+  border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--accent);
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+}
+.ev-panel { border: 1px solid var(--border-strong); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-raised); }
+.ev-panel > .tabs-wrap { padding: 0 12px; background: var(--bg-raised); }
+.ev-panel > .tabs-wrap .tabs { border-bottom: none; }
+.ev-body { display: flex; flex-wrap: wrap; border-top: 1px solid var(--border); }
+.ev-code-pane { flex: 1 1 460px; min-width: 0; background: var(--bg); }
+.ev-file {
+  display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px;
+  border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; color: var(--fg-muted);
+}
+.ev-lines { padding: 16px 0 24px; font-family: var(--mono); font-size: 14px; overflow-x: auto; }
+.ev-line { display: flex; align-items: center; height: 26px; border-left: 2px solid transparent; transition: background 200ms ease-out; }
+.ev-line .ln { width: 52px; flex: none; padding-right: 16px; text-align: right; color: var(--fg-faint); user-select: none; }
+.ev-line .src { flex: none; white-space: pre; }
+.ev-line .link { flex: 1; min-width: 24px; display: flex; align-items: center; margin-left: 16px; }
+.ev-line .link i { flex: 1; height: 0; border-top: 1px dashed transparent; }
+.ev-line .link u { width: 7px; height: 7px; border-radius: 50%; background: transparent; margin-right: -4px; }
+.ev-line.hl { background: var(--accent-soft); border-left-color: var(--accent); }
+.ev-line.hl .ln { color: var(--accent); }
+.ev-line.anchor .link i { border-top-color: var(--accent); }
+.ev-line.anchor .link u { background: var(--accent); }
+.tok-str { color: #34d399; }
+.tok-kw { color: #a78bfa; }
+.tok-dim { color: var(--fg-faint); }
+:root[data-theme="light"] .tok-str { color: #047857; }
+:root[data-theme="light"] .tok-kw { color: #6d28d9; }
+@media (prefers-color-scheme: light) { :root:not([data-theme]) .tok-str { color: #047857; } :root:not([data-theme]) .tok-kw { color: #6d28d9; } }
+.ev-meta {
+  flex: 1 1 340px; min-width: 0; border-left: 1px solid var(--border-strong);
+  padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 20px;
+}
+.ev-meta .cap { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--fg-muted); }
+.ev-meta .name-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.ev-meta .name-row svg.i { width: 20px; height: 20px; color: var(--accent); }
+.ev-meta .name-row b { font-size: 20px; font-weight: 600; }
+.ev-meta .mono-name { font-family: var(--mono); font-size: 14px; margin-top: 6px; }
+.ev-group { border-top: 1px solid var(--border); padding-top: 14px; }
+.ev-group .gh { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--fg-muted); }
+.ev-row { display: flex; gap: 12px; font-size: 14px; line-height: 1.9; }
+.ev-row > span:first-child { width: 80px; flex: none; color: var(--fg-muted); }
+.ev-row > span:last-child { font-family: var(--mono); overflow-wrap: anywhere; }
+.ev-note { margin: 16px 0 0; font-size: 13px; color: var(--fg-muted); }
+
+/* ── 04 · stages and output formats ───────────────────────────────────── */
+.stages { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 40px; }
+.stage-wrap { display: flex; align-items: center; gap: 8px; flex: 1 1 200px; }
+.stage {
+  flex: 1; display: flex; align-items: center; gap: 12px; padding: 16px;
+  border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-raised);
+  transition: border-color 300ms ease-out, background 300ms ease-out;
+}
+.stage svg.i { color: var(--fg-faint); transition: color 300ms ease-out; }
+.stage.lit svg.i { color: var(--accent); }
+.stage.on { border-color: var(--accent); background: var(--accent-soft); }
+.stage .n { font-family: var(--mono); font-size: 11px; color: var(--fg-muted); }
+.stage b { display: block; font-size: 14px; font-weight: 500; margin-top: 2px; }
+.stage-wrap > svg.i { width: 16px; height: 16px; color: var(--fg-faint); }
+
+.out-wrap { display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; }
+.out-panel { flex: 2 1 520px; min-width: 0; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-sunken); }
+.out-panel .tabs-wrap { padding: 0 12px; background: var(--bg-raised); border-bottom: 1px solid var(--border); }
+.out-panel .tabs-wrap .tabs { border-bottom: none; }
+.out-cmd { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 13px; }
+.out-cmd .dollar { color: var(--fg-faint); }
+.out-cmd .txt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.out-panel pre { margin: 0; padding: 20px 20px 24px; font-family: var(--mono); font-size: 13px; line-height: 1.65; overflow-x: auto; min-height: 340px; }
+.out-panel pre span { display: block; }
+.out-panel pre .k { color: var(--fg); }
+.out-panel pre .v { color: var(--fg-muted); }
+.out-list { flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.out-cap { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--fg-muted); margin-bottom: 4px; }
 .out-item {
-  padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius);
-  background: transparent; text-align: left; cursor: pointer; font-family: var(--sans);
-  display: flex; flex-direction: column; gap: 4px; color: var(--fg);
+  display: flex; flex-direction: column; gap: 6px; padding: 16px; text-align: left;
+  background: transparent; border: 1px solid var(--border); border-radius: var(--radius-md);
+  color: var(--fg); font-family: var(--sans); cursor: pointer; transition: background 100ms ease-out;
 }
-.out-item:hover { background: var(--bg-overlay); }
+.out-item:hover { background: var(--bg-raised); }
 .out-item[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
-.out-item b { font-size: 14px; }
-.out-item span { font-size: 13px; color: var(--fg-muted); }
+.out-item b { font-family: var(--mono); font-size: 14px; font-weight: 600; }
+.out-item span { font-size: 13px; line-height: 1.5; color: var(--fg-muted); }
 
-/* ── flows (pipeline / stages / targets) ──────────────────────────────── */
-.flow { display: flex; flex-wrap: wrap; gap: 10px; }
-.flow-step {
-  flex: 1 1 150px; min-width: 0;
-  display: flex; flex-direction: column; gap: 6px;
-  padding: 14px; border: 1px solid var(--border); border-radius: var(--radius);
-  background: var(--bg-raised);
+/* ── 05 · the terminal ────────────────────────────────────────────────── */
+.term { flex: 1.4 1 520px; min-width: 0; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-sunken); }
+.term-bar { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-bottom: 1px solid var(--border); background: var(--bg-raised); }
+.term-bar .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-strong); }
+.term-bar .path { flex: 1; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--fg-muted); }
+.term-bar .pad { width: 46px; }
+.term pre { margin: 0; padding: 20px 24px 28px; font-family: var(--mono); font-size: 14px; line-height: 1.7; min-height: 520px; overflow-x: auto; white-space: pre; }
+.term pre span { display: block; color: var(--fg-muted); }
+.term pre span.cmd, .term pre span.strong { color: var(--fg); font-weight: 600; }
+.term pre span.accent { color: var(--accent); }
+.term pre span.ok { color: var(--ok); }
+.caret { display: inline-block; width: 8px; height: 16px; vertical-align: text-bottom; background: var(--fg-muted); animation: airom-blink 1s steps(1) infinite; }
+@keyframes airom-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+/* ── 06 · the pipeline strip ──────────────────────────────────────────── */
+.strip {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0;
+  border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-raised);
 }
-.flow-step.hl { background: var(--accent-soft); border-color: var(--accent); }
-.flow-step .n { font-family: var(--mono); font-size: 11px; color: var(--fg-faint); }
-.flow-step b { font-size: 14px; }
-.flow-step span { font-size: 12.5px; color: var(--fg-muted); font-family: var(--mono); }
+.strip > div { padding: 24px 20px; border-right: 1px solid var(--border); }
+.strip > div:last-child { border-right: none; }
+.strip > div.hl { background: var(--accent-soft); }
+.strip .top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.strip .top svg.i { width: 20px; height: 20px; color: var(--fg-muted); }
+.strip > div.hl .top svg.i { color: var(--accent); }
+.strip .top .n { font-family: var(--mono); font-size: 11px; color: var(--fg-faint); }
+.strip b { font-size: 15px; font-weight: 600; }
+.strip span.sub { display: block; font-family: var(--mono); font-size: 12px; margin-top: 6px; color: var(--fg-muted); }
 
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
 .chip {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px;
-  font-size: 13px; color: var(--fg-muted); background: var(--bg-raised);
+  display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px;
+  border: 1px solid var(--border-strong); border-radius: var(--radius); font-size: 13px; color: var(--fg);
 }
+.chip svg.i { width: 14px; height: 14px; color: var(--fg-muted); }
 
-.stat-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-.stat {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius);
-  background: var(--bg-raised); font-size: 13px; color: var(--fg-muted);
+/* ── 07 · scan targets ────────────────────────────────────────────────── */
+.target { display: flex; flex-direction: column; align-items: stretch; }
+.target-box { flex: 1; padding: 28px 24px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-raised); transition: border-color 150ms ease-out; }
+.target-box:hover { border-color: var(--border-strong); }
+.target-head { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+.target-head svg.i { width: 20px; height: 20px; color: var(--accent); }
+.target-head b { font-size: 20px; font-weight: 600; }
+.target-flow { display: flex; flex-direction: column; align-items: center; font-family: var(--mono); font-size: 13px; }
+.target-flow .box { width: 100%; padding: 12px; text-align: center; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--bg); }
+.target-flow .mid { padding: 8px 16px; border-radius: var(--radius); background: var(--accent-soft); border: 1px solid var(--accent); color: var(--accent); font-weight: 600; letter-spacing: 0.06em; }
+.target-flow .out { width: 100%; padding: 12px; text-align: center; border: 1px solid var(--ok); border-radius: var(--radius); color: var(--ok); background: var(--ok-soft); }
+.target-stub { align-self: center; width: 1px; height: 32px; background: var(--border-strong); }
+.target-sum {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 24px;
+  padding: 18px 24px; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); background: var(--bg-raised);
 }
-.stat b { color: var(--fg); font-family: var(--mono); font-weight: 600; }
+.target-sum b { font-size: 15px; font-weight: 600; }
+.target-sum span { font-family: var(--mono); font-size: 13px; color: var(--fg-muted); }
+
+/* ── 08 · the repository panel ────────────────────────────────────────── */
+.repo { flex: 1 1 460px; min-width: 0; border: 1px solid var(--border-strong); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-raised); }
+.repo-bar { display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 14px; }
+.repo-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+.repo-stats > div { padding: 20px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.repo-stats .lbl { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--fg-muted); }
+.repo-stats .lbl svg.i { width: 14px; height: 14px; }
+.repo-stats .val { margin-top: 10px; font-family: var(--mono); font-size: 16px; }
+.repo-foot { display: flex; align-items: center; gap: 8px; padding: 12px 20px; font-size: 12px; color: var(--fg-muted); }
+.repo-foot svg.i { width: 14px; height: 14px; }
+
+/* ── 11 · the two install steps ───────────────────────────────────────── */
+.steps { flex: 1 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.step {
+  display: flex; align-items: center; gap: 16px; padding: 6px 6px 6px 20px;
+  border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--bg);
+}
+.step .n { font-family: var(--mono); font-size: 12px; color: var(--fg-faint); }
+.step code { flex: 1; min-width: 0; font-family: var(--mono); font-size: 16px; overflow-x: auto; }
+.step code .dollar { color: var(--fg-faint); user-select: none; }
+.step .copy-btn { height: 40px; padding: 0 14px; }
+
+/* ── the closing call to action ───────────────────────────────────────── */
+section#cta { padding: 140px 0 128px; }
+section#cta > .wrap { max-width: 900px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+section#cta h2 { margin: 0; font-size: clamp(36px, 5.4vw, 64px); line-height: 1.04; letter-spacing: -0.035em; font-weight: 700; }
+section#cta p { margin: 0; font-size: 19px; line-height: 1.55; color: var(--fg-muted); max-width: 620px; }
 
 /* ── footer ───────────────────────────────────────────────────────────── */
 footer { background: var(--bg-raised); }
-footer .wrap { padding: 48px 24px 40px; }
-.foot-grid {
-  display: grid; gap: 32px;
-  /* Explicit tracks, not `1.6fr repeat(auto-fit, …)`: an fr track cannot be
-     combined with auto-fit in one template, so that declaration is invalid and
-     the whole grid silently collapses to a single column. */
-  grid-template-columns: 1.6fr 1fr 1fr 1fr;
-}
-@media (max-width: 860px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 520px) { .foot-grid { grid-template-columns: 1fr; } }
-.foot-about p { font-size: 13.5px; color: var(--fg-muted); margin-top: 10px; max-width: 34ch; }
-.foot-col { display: flex; flex-direction: column; gap: 9px; }
-.foot-col h4 { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg-faint); font-weight: 600; }
-.foot-col a { font-size: 14px; color: var(--fg-muted); }
-.foot-col a:hover { color: var(--accent); }
+footer > .wrap { padding: 56px 24px 48px; }
+.foot-grid { display: flex; flex-wrap: wrap; gap: 40px 64px; }
+.foot-about { flex: 1 1 240px; display: flex; flex-direction: column; gap: 10px; }
+.foot-about p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--fg-muted); max-width: 280px; }
+.foot-col { flex: 0 1 180px; display: flex; flex-direction: column; gap: 10px; }
+.foot-col h4 { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--fg-muted); }
+.foot-col a { font-size: 14px; color: var(--fg); }
+.foot-col a:hover { color: var(--accent-hover); }
 .foot-base {
   display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between;
   margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--border);
@@ -419,9 +664,9 @@ footer .wrap { padding: 48px 24px 40px; }
 }
 
 @media (max-width: 720px) {
-  section > .wrap { padding: 56px 24px; }
+  section, section.sunken { padding: 56px 0; }
   header.hero .inner { padding: 56px 24px 64px; gap: 36px; }
-  .navlinks { display: none; }
+  .nav-links .hide-sm { display: none; }
   .finding { grid-template-columns: 72px minmax(0, 1fr) 68px; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -435,6 +680,14 @@ footer .wrap { padding: 48px 24px 40px; }
      keeps its zero-external-request property. Same 24px/stroke-2 geometry. -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></symbol>
+    <symbol id="i-pointer" viewBox="0 0 24 24"><path d="M9 9l5 12 1.8-5.2L21 14z"/><path d="M7.2 2.2 8 5.1M5.1 8 2.2 7.2M13.9 3.9 12 6M6 12l-2.1 1.9"/></symbol>
+    <symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-alert-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
+    <symbol id="i-circle-dashed" viewBox="0 0 24 24"><path d="M10.1 2.2a10 10 0 0 0-3.4 1.4M3.6 6.7a10 10 0 0 0-1.4 3.4M2.2 13.9a10 10 0 0 0 1.4 3.4M6.7 20.4a10 10 0 0 0 3.4 1.4M13.9 21.8a10 10 0 0 0 3.4-1.4M20.4 17.3a10 10 0 0 0 1.4-3.4M21.8 10.1a10 10 0 0 0-1.4-3.4M17.3 3.6a10 10 0 0 0-3.4-1.4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
     <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></symbol>
     <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></symbol>
     <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></symbol>
@@ -472,25 +725,30 @@ footer .wrap { padding: 48px 24px 40px; }
   </defs>
 </svg>
 
-<nav class="top">
-  <div class="wrap row">
-    <a class="brand" href="#top">AIROM <span class="tag">OSS</span></a>
-    <div class="navlinks">
-      <a href="#discover">Product</a>
-      <a href="#evidence">How it works</a>
-      <a href="https://docs.airom.dev/">Documentation</a>
-      <a href="https://github.com/airomhq/airom">GitHub</a>
-      <a href="https://github.com/airomhq/airom/issues">Community</a>
-    </div>
-    <div class="navtools">
-      <button class="btn-icon" id="theme" type="button" aria-label="Toggle light and dark theme">
-        <svg class="i i-sm sun"><use href="#i-sun"/></svg>
-        <svg class="i i-sm moon"><use href="#i-moon"/></svg>
+<header class="site">
+  <div class="wrap nav">
+    <a class="brand" href="/">
+      <svg viewBox="0 0 32 32" role="img" aria-label="AIROM" fill="none"
+        stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3.2 23.5 L16 10.7 L28.8 23.5" stroke="currentColor" opacity="0.26"/>
+        <path d="M6.6 18.9 L16 9.5 L25.4 18.9" stroke="currentColor" opacity="0.55"/>
+        <path d="M10 14.5 L16 8.5 L22 14.5" stroke="var(--accent)"/>
+      </svg>
+      AIROM
+    </a>
+    <nav class="nav-links">
+      <a href="#discover" class="hide-sm">Product</a>
+      <a href="#evidence" class="hide-sm">Evidence</a>
+      <a href="#trust" class="hide-sm">Security</a>
+      <a href="https://docs.airom.dev">Docs</a>
+      <a class="nav-cta" href="https://github.com/airomhq/airom">GitHub</a>
+      <button class="icon-btn" id="theme" type="button" aria-label="Toggle colour theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
       </button>
-      <a class="btn" href="https://docs.airom.dev/quickstart">Get started</a>
-    </div>
+    </nav>
   </div>
-</nav>
+</header>
 
 <header class="hero" id="top">
   <div class="gridbg" aria-hidden="true"></div>
@@ -519,7 +777,7 @@ airom scan ." aria-label="Copy install commands">
         <div class="panel-bar">
           <svg class="i i-sm"><use href="#i-terminal"/></svg>
           <span class="cmd">airom scan ./my-ai-application</span>
-          <span class="badge badge-info" id="scan-status">Scanning</span>
+          <span class="badge badge-info" id="scan-status"><svg class="i"><use href="#i-info"/></svg>Scanning</span>
           <button class="btn-icon" id="rescan" type="button" aria-label="Run the scan again" style="width:26px;height:26px;border-color:transparent">
             <svg class="i i-sm"><use href="#i-rotate"/></svg>
           </button>
@@ -532,7 +790,7 @@ airom scan ." aria-label="Copy install commands">
             <div class="list" id="findings"></div>
           </div>
         </div>
-        <div class="evidence" id="evidence">
+        <div class="evidence" id="demo-evidence">
           <p class="ev-empty">Select a finding to see the evidence behind it.</p>
         </div>
       </div>
@@ -540,27 +798,53 @@ airom scan ." aria-label="Copy install commands">
   </div>
 </header>
 <section id="problem">
-  <div class="wrap">
-    <div class="sec-head">
+  <div class="wrap split g64">
+    <div class="copy-col">
       <div class="eyebrow">01 · The problem</div>
       <h2>AI dependencies are hiding in plain sight.</h2>
-      <p class="lede">A model name passed to an API call, a dataset path in a YAML file, a prompt template in source: none of it appears in a dependency lock file. Package inventories describe the libraries you installed, not the AI your application actually uses.</p>
+      <p>Traditional software inventories list packages and versions. A modern AI application also depends on models, the providers that serve them, the datasets behind them, prompt templates, embedding models, and vector stores.</p>
+      <p class="gap">Many of these are referenced in code and configuration rather than declared as dependencies, so they don't show up in a package list.</p>
+      <p class="claim">AIROM turns this hidden AI dependency graph into a structured inventory.</p>
+      <button class="btn btn-secondary btn-lg" id="graph-toggle" type="button" aria-pressed="false">
+        <svg class="i"><use href="#i-search" id="graph-icon"/></svg><span>Scan this graph</span>
+      </button>
     </div>
-    <div class="grid g3">
-      <div class="card">
-        <span class="ico"><svg class="i"><use href="#i-package"/></svg></span>
-        <h3>In a package inventory</h3>
-        <p>Frameworks and SDKs you declared: <span class="code-chip">langchain</span>, <span class="code-chip">openai</span>. An SBOM already covers these.</p>
+
+    <div class="graph" id="graph">
+      <div class="graph-cap">AI APPLICATION</div>
+      <div class="graph-stack">
+        <div class="gbox">Frontend</div>
+        <div class="gline" style="height:24px"></div>
+        <div class="gbox">Application</div>
+        <div class="gline" style="height:20px"></div>
       </div>
-      <div class="card">
-        <span class="ico"><svg class="i"><use href="#i-search"/></svg></span>
-        <h3>Not declared as a package</h3>
-        <p>Hosted model ids, datasets, prompts, vector stores and RAG wiring, referenced in code and configuration rather than installed.</p>
+      <div class="graph-cols">
+        <div class="graph-rule" aria-hidden="true"></div>
+        <div class="gcol">
+          <div class="gline"></div>
+          <div class="gnode"><b>Models</b><span data-found="inference.py:42">not in package list</span></div>
+          <div class="gline"></div>
+          <div class="gnode"><b>Providers</b><span data-found="OpenAI API">not in package list</span></div>
+          <div class="gline"></div>
+          <div class="gnode"><b>Datasets</b><span data-found="manifest.yaml:8">not in package list</span></div>
+        </div>
+        <div class="gcol">
+          <div class="gline"></div>
+          <div class="gnode"><b>RAG</b><span data-found="rag.py:17">not in package list</span></div>
+          <div class="gline"></div>
+          <div class="gnode"><b>Vector DB</b><span data-found="rag.py:22">not in package list</span></div>
+        </div>
+        <div class="gcol">
+          <div class="gline"></div>
+          <div class="gnode"><b>Prompts</b><span data-found="prompts.py:5">not in package list</span></div>
+          <div class="gline"></div>
+          <div class="gnode"><b>Templates</b><span data-found="prompts.py:11">not in package list</span></div>
+        </div>
       </div>
-      <div class="card">
-        <span class="ico"><svg class="i"><use href="#i-list-tree"/></svg></span>
-        <h3>Discovered by AIROM</h3>
-        <p>Both, in one inventory, each entry carrying the file and line it was seen at and the detector that produced it.</p>
+      <div class="graph-legend">
+        <span><span class="swatch" aria-hidden="true"></span>In a package inventory</span>
+        <span><span class="swatch dashed" aria-hidden="true"></span>Not declared as a package</span>
+        <span><span class="swatch found" aria-hidden="true"></span>Discovered by AIROM</span>
       </div>
     </div>
   </div>
@@ -573,70 +857,106 @@ airom scan ." aria-label="Copy install commands">
       <h2>An inventory of every AI component, not just packages.</h2>
       <p class="lede">AIROM detects eight categories of AI components across source, configuration and manifests.</p>
     </div>
-    <div class="grid g4">
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-cpu"/></svg></span><span class="code-chip">model</span><h3>Models</h3><p>Discover models referenced directly or indirectly by applications.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-database"/></svg></span><span class="code-chip">dataset</span><h3>Datasets</h3><p>Identify datasets and training/data dependencies.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-message"/></svg></span><span class="code-chip">prompt</span><h3>Prompts</h3><p>Find prompts and prompt-related assets.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-binary"/></svg></span><span class="code-chip">embedding</span><h3>Embeddings</h3><p>Identify embedding models and embedding dependencies.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-layers"/></svg></span><span class="code-chip">vector_store</span><h3>Vector databases</h3><p>Discover vector stores used by AI applications.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-workflow"/></svg></span><span class="code-chip">rag</span><h3>RAG pipelines</h3><p>Identify retrieval-augmented generation components.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-package"/></svg></span><span class="code-chip">framework</span><h3>Frameworks &amp; SDKs</h3><p>Detect AI frameworks, libraries, and providers.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-server"/></svg></span><span class="code-chip">infrastructure</span><h3>Infrastructure</h3><p>Identify AI-related infrastructure and configuration.</p></div>
+    <div class="cards-rule">
+      <div class="cell"><div class="cap"><span class="ico"><svg class="i"><use href="#i-cpu"/></svg></span><span class="code-chip">model</span></div><h3>Models</h3><p>Discover models referenced directly or indirectly by applications.</p></div>
+      <div class="cell"><div class="cap"><span class="ico"><svg class="i"><use href="#i-database"/></svg></span><span class="code-chip">dataset</span></div><h3>Datasets</h3><p>Identify datasets and training/data dependencies.</p></div>
+      <div class="cell"><div class="cap"><span class="ico"><svg class="i"><use href="#i-message"/></svg></span><span class="code-chip">prompt</span></div><h3>Prompts</h3><p>Find prompts and prompt-related assets.</p></div>
+      <div class="cell"><div class="cap"><span class="ico"><svg class="i"><use href="#i-binary"/></svg></span><span class="code-chip">embedding</span></div><h3>Embeddings</h3><p>Identify embedding models and embedding dependencies.</p></div>
+      <div class="cell"><div class="cap"><span class="ico"><svg class="i"><use href="#i-layers"/></svg></span><span class="code-chip">vector_store</span></div><h3>Vector databases</h3><p>Discover vector stores used by AI applications.</p></div>
+      <div class="cell"><div class="cap"><span class="ico"><svg class="i"><use href="#i-workflow"/></svg></span><span class="code-chip">rag</span></div><h3>RAG pipelines</h3><p>Identify retrieval-augmented generation components.</p></div>
+      <div class="cell"><div class="cap"><span class="ico"><svg class="i"><use href="#i-package"/></svg></span><span class="code-chip">framework</span></div><h3>Frameworks &amp; SDKs</h3><p>Detect AI frameworks, libraries, and providers.</p></div>
+      <div class="cell"><div class="cap"><span class="ico"><svg class="i"><use href="#i-server"/></svg></span><span class="code-chip">infrastructure</span></div><h3>Infrastructure</h3><p>Identify AI-related infrastructure and configuration.</p></div>
     </div>
   </div>
 </section>
 
-<section id="evidence">
+<section id="evidence" class="sunken">
   <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">03 · Evidence first</div>
-      <h2>Every finding should have a reason.</h2>
-      <p class="lede">AIROM doesn't just tell you what it found. It shows where and why it found it: a source location, the detection method, and a confidence level you can act on.</p>
+    <div class="ev-head">
+      <div>
+        <div class="eyebrow">03 · Evidence first</div>
+        <h2>Every finding should have a reason.</h2>
+        <p>AIROM doesn't just tell you what it found. It shows where and why it found it.</p>
+      </div>
+      <div class="ev-legend">
+        <span><span class="numchip">1</span>Source location</span>
+        <span><span class="numchip">2</span>Detection method</span>
+        <span><span class="numchip">3</span>Confidence</span>
+      </div>
     </div>
-    <div class="tabs" role="tablist" aria-label="Evidence examples">
-      <button class="tab" role="tab" id="evtab-model" aria-selected="true" data-ev="model">Model</button>
-      <button class="tab" role="tab" id="evtab-embedding" aria-selected="false" data-ev="embedding">Embeddings</button>
-      <button class="tab" role="tab" id="evtab-vector" aria-selected="false" data-ev="vector">Vector database</button>
+
+    <div class="ev-panel">
+      <div class="tabs-wrap">
+        <div class="tabs" role="tablist" aria-label="Evidence examples">
+          <button class="tab" role="tab" aria-selected="true" data-ev="model">Model</button>
+          <button class="tab" role="tab" aria-selected="false" data-ev="embedding">Embeddings</button>
+          <button class="tab" role="tab" aria-selected="false" data-ev="vector">Vector database</button>
+        </div>
+      </div>
+      <div class="ev-body">
+        <div class="ev-code-pane">
+          <div class="ev-file"><svg class="i i-sm"><use href="#i-file-code"/></svg><span id="ev-file">app/inference.py</span></div>
+          <div class="ev-lines" id="ev-lines"></div>
+        </div>
+        <div class="ev-meta" id="ev-meta"></div>
+      </div>
     </div>
-    <div class="panel">
-      <div class="evidence" id="ev-static" style="min-height:200px"></div>
-    </div>
+    <p class="ev-note">Illustrative example. Detector identifiers and field names shown here are examples; see the <a href="https://docs.airom.dev/output/formats">documentation</a> for the current output schema.</p>
   </div>
 </section>
 
 <section id="output">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">04 · Output formats</div>
+      <div class="eyebrow">04 · AIBOM output</div>
       <h2>From discovery to an AI Bill of Materials.</h2>
-      <p class="lede">One scan, the formats your tooling already reads.</p>
+      <p class="lede">Findings become machine-readable output that other tools can consume, with evidence attached to each component.</p>
     </div>
+
+    <div class="stages" id="stages"></div>
+
     <div class="out-wrap">
-      <div class="out-list" id="fmt-list"></div>
-      <div class="out-code">
-        <div class="install" style="max-width:none;margin-bottom:10px">
-          <pre><span class="dollar">$ </span><span id="fmt-cmd">airom scan . --format cyclonedx</span></pre>
-          <button class="copy" type="button" id="fmt-copy" data-copy="airom scan . --format cyclonedx" aria-label="Copy the command">
-            <svg class="i i-sm"><use href="#i-copy"/></svg><span>Copy</span>
+      <div class="out-panel">
+        <div class="tabs-wrap">
+          <div class="tabs" role="tablist" aria-label="Output formats"></div>
+        </div>
+        <div class="out-cmd">
+          <span class="dollar">$</span><span class="txt" id="fmt-cmd">airom scan . --format cyclonedx</span>
+          <button class="btn btn-ghost btn-sm copy" type="button" id="fmt-copy" data-copy="airom scan . --format cyclonedx" aria-label="Copy the command">
+            <svg class="i"><use href="#i-copy"/></svg><span>Copy</span>
           </button>
         </div>
         <pre id="fmt-code"></pre>
+      </div>
+      <div class="out-list">
+        <div class="out-cap">OUTPUT FORMATS</div>
+        <div id="fmt-list" style="display:flex;flex-direction:column;gap:12px"></div>
       </div>
     </div>
   </div>
 </section>
 
 <section id="workflow">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">05 · How it works</div>
+  <div class="wrap split">
+    <div class="copy-col" style="flex:1 1 360px">
+      <div class="eyebrow">05 · Developer workflow</div>
       <h2>One command to see what's in your AI stack.</h2>
+      <p class="gap">Run AIROM against any project directory. Add a format flag when you need an AIBOM file instead of terminal output.</p>
+      <div class="hero-cta">
+        <button class="btn btn-lg copy" type="button" data-copy="airom scan ." aria-label="Copy the scan command">
+          <svg class="i"><use href="#i-copy"/></svg><span>Copy command</span>
+        </button>
+        <button class="btn btn-lg btn-outline" type="button" id="term-replay">
+          <svg class="i"><use href="#i-play"/></svg><span>Replay</span>
+        </button>
+      </div>
     </div>
-    <div class="flow">
-      <div class="flow-step"><span class="n">01</span><svg class="i"><use href="#i-file-code"/></svg><b>Source code</b><span>your repository</span></div>
-      <div class="flow-step hl"><span class="n">02</span><svg class="i"><use href="#i-search"/></svg><b>AIROM scan</b><span>airom scan .</span></div>
-      <div class="flow-step"><span class="n">03</span><svg class="i"><use href="#i-list-tree"/></svg><b>AI component inventory</b><span>components + evidence</span></div>
-      <div class="flow-step"><span class="n">04</span><svg class="i"><use href="#i-file-json"/></svg><b>AIBOM</b><span>CycloneDX / SARIF</span></div>
+    <div class="term" id="term">
+      <div class="term-bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="path">~/my-ai-application</span><span class="pad"></span>
+      </div>
+      <pre id="term-out"></pre>
     </div>
   </div>
 </section>
@@ -644,132 +964,168 @@ airom scan ." aria-label="Copy install commands">
 <section id="cicd">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">06 · CI/CD</div>
+      <div class="eyebrow">06 · Security &amp; CI/CD</div>
       <h2>Put AI visibility into your existing security workflow.</h2>
-      <p class="lede">AIROM runs as a command-line step, so it fits into any pipeline that can run a static binary.</p>
+      <p class="lede">Run AIROM as a step in your CI pipeline. Keep the AIBOM as a build artifact, and send SARIF results to any code scanning tool that accepts SARIF.</p>
     </div>
-    <div class="flow">
-      <div class="flow-step"><span class="n">01</span><svg class="i"><use href="#i-git"/></svg><b>Git push</b><span>commit / PR</span></div>
-      <div class="flow-step"><span class="n">02</span><svg class="i"><use href="#i-workflow"/></svg><b>CI</b><span>pipeline job</span></div>
-      <div class="flow-step hl"><span class="n">03</span><svg class="i"><use href="#i-search"/></svg><b>AIROM</b><span>airom scan .</span></div>
-      <div class="flow-step"><span class="n">04</span><svg class="i"><use href="#i-list-tree"/></svg><b>AI discovery</b><span>components + evidence</span></div>
-      <div class="flow-step"><span class="n">05</span><svg class="i"><use href="#i-file-json"/></svg><b>AIBOM / SARIF</b><span>build artifacts</span></div>
-      <div class="flow-step"><span class="n">06</span><svg class="i"><use href="#i-shield"/></svg><b>Security workflow</b><span>review / triage</span></div>
+    <div class="strip">
+      <div><div class="top"><svg class="i"><use href="#i-git"/></svg><span class="n">01</span></div><b>Git push</b><span class="sub">commit / PR</span></div>
+      <div><div class="top"><svg class="i"><use href="#i-workflow"/></svg><span class="n">02</span></div><b>CI</b><span class="sub">pipeline job</span></div>
+      <div class="hl"><div class="top"><svg class="i"><use href="#i-search"/></svg><span class="n">03</span></div><b>AIROM</b><span class="sub">airom scan .</span></div>
+      <div><div class="top"><svg class="i"><use href="#i-list-tree"/></svg><span class="n">04</span></div><b>AI discovery</b><span class="sub">components + evidence</span></div>
+      <div><div class="top"><svg class="i"><use href="#i-file-json"/></svg><span class="n">05</span></div><b>AIBOM / SARIF</b><span class="sub">build artifacts</span></div>
+      <div><div class="top"><svg class="i"><use href="#i-shield"/></svg><span class="n">06</span></div><b>Security workflow</b><span class="sub">review / triage</span></div>
     </div>
     <div class="chips">
-      <span class="chip"><svg class="i i-sm"><use href="#i-workflow"/></svg> CI/CD</span>
-      <span class="chip"><svg class="i i-sm"><use href="#i-git"/></svg> Pull requests</span>
-      <span class="chip"><svg class="i i-sm"><use href="#i-shield"/></svg> Security scanning</span>
-      <span class="chip"><svg class="i i-sm"><use href="#i-clipboard"/></svg> Compliance</span>
-      <span class="chip"><svg class="i i-sm"><use href="#i-list-tree"/></svg> Inventory</span>
+      <span class="chip"><svg class="i"><use href="#i-workflow"/></svg>CI/CD</span>
+      <span class="chip"><svg class="i"><use href="#i-git"/></svg>Pull requests</span>
+      <span class="chip"><svg class="i"><use href="#i-shield"/></svg>Security scanning</span>
+      <span class="chip"><svg class="i"><use href="#i-clipboard"/></svg>Compliance</span>
+      <span class="chip"><svg class="i"><use href="#i-list-tree"/></svg>Inventory</span>
     </div>
   </div>
 </section>
 
 <section id="targets">
   <div class="wrap">
-    <div class="sec-head">
+    <div class="sec-head" style="margin-bottom:48px">
       <div class="eyebrow">07 · Scan targets</div>
-      <h2>Scan more than source code.</h2>
+      <h2 style="margin-bottom:0">Scan more than source code.</h2>
     </div>
-    <div class="grid g3">
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-git"/></svg></span><h3>Repositories</h3><p><span class="code-chip">Git repository</span> → AI component inventory</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-container"/></svg></span><h3>Containers</h3><p><span class="code-chip">Container image</span> → AI dependencies</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-boxes"/></svg></span><h3>Kubernetes</h3><p><span class="code-chip">Kubernetes manifests</span> → AI infrastructure</p></div>
+    <div class="cards wide" style="margin-bottom:24px">
+      <div class="target">
+        <div class="target-box">
+          <div class="target-head"><svg class="i"><use href="#i-git"/></svg><b>Repositories</b></div>
+          <div class="target-flow">
+            <div class="box">Git repository</div><div class="gline" style="height:20px"></div>
+            <div class="mid">AIROM</div><div class="gline" style="height:20px"></div>
+            <div class="out">AI component inventory</div>
+          </div>
+        </div>
+        <div class="target-stub" aria-hidden="true"></div>
+      </div>
+      <div class="target">
+        <div class="target-box">
+          <div class="target-head"><svg class="i"><use href="#i-container"/></svg><b>Containers</b></div>
+          <div class="target-flow">
+            <div class="box">Container image</div><div class="gline" style="height:20px"></div>
+            <div class="mid">AIROM</div><div class="gline" style="height:20px"></div>
+            <div class="out">AI dependencies</div>
+          </div>
+        </div>
+        <div class="target-stub" aria-hidden="true"></div>
+      </div>
+      <div class="target">
+        <div class="target-box">
+          <div class="target-head"><svg class="i"><use href="#i-boxes"/></svg><b>Kubernetes</b></div>
+          <div class="target-flow">
+            <div class="box">Kubernetes manifests</div><div class="gline" style="height:20px"></div>
+            <div class="mid">AIROM</div><div class="gline" style="height:20px"></div>
+            <div class="out">AI infrastructure</div>
+          </div>
+        </div>
+        <div class="target-stub" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div class="target-sum">
+      <b>One AI component inventory</b>
+      <span>CycloneDX · SARIF · JSON · YAML</span>
     </div>
   </div>
 </section>
 
 <section id="open-source">
-  <div class="wrap">
-    <div class="sec-head">
+  <div class="wrap split top">
+    <div class="copy-col">
       <div class="eyebrow">08 · Open source</div>
       <h2>Built in the open.</h2>
-      <p class="lede">The scanner and its detectors are public. Read the code that produces every finding, or write a rule pack of your own.</p>
+      <p class="gap">AIROM is open source. Inspect it, run it locally, integrate it into your workflow, and contribute to its detection ecosystem.</p>
+      <div class="hero-cta">
+        <a class="btn btn-lg" href="https://github.com/airomhq/airom"><svg class="i"><use href="#i-git"/></svg>Explore the GitHub repository</a>
+        <a class="btn btn-lg btn-outline" href="https://docs.airom.dev/"><svg class="i"><use href="#i-book"/></svg>Read the documentation</a>
+      </div>
     </div>
-    <div class="hero-cta">
-      <a class="btn" href="https://github.com/airomhq/airom"><svg class="i i-sm"><use href="#i-git"/></svg> View the source</a>
-      <a class="btn btn-outline" href="https://github.com/airomhq/airom-rules">Rule bundles</a>
-    </div>
-    <div class="stat-row">
-      <span class="stat"><svg class="i i-sm"><use href="#i-star"/></svg> Stars <b>15</b></span>
-      <span class="stat"><svg class="i i-sm"><use href="#i-users"/></svg> Contributors <b>4</b></span>
-      <span class="stat"><svg class="i i-sm"><use href="#i-tag"/></svg> Latest <b>v0.4.7</b></span>
-      <span class="stat"><svg class="i i-sm"><use href="#i-scale"/></svg> License <b>Apache-2.0</b></span>
+    <div class="repo">
+      <div class="repo-bar"><svg class="i"><use href="#i-git"/></svg><span>github.com/airomhq/airom</span></div>
+      <div class="repo-stats">
+        <div><div class="lbl"><svg class="i"><use href="#i-star"/></svg>Stars</div><div class="val">15</div></div>
+        <div><div class="lbl"><svg class="i"><use href="#i-users"/></svg>Contributors</div><div class="val">4</div></div>
+        <div><div class="lbl"><svg class="i"><use href="#i-tag"/></svg>Latest</div><div class="val">v0.4.7</div></div>
+        <div><div class="lbl"><svg class="i"><use href="#i-scale"/></svg>License</div><div class="val">Apache-2.0</div></div>
+      </div>
+      <div class="repo-foot"><svg class="i"><use href="#i-info"/></svg>Counts are from the last site build; the repository is the live source.</div>
     </div>
   </div>
 </section>
 
 <section id="trust">
   <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">09 · Why teams trust it</div>
-      <h2>Built for engineers who need evidence.</h2>
+    <div class="sec-head" style="margin-bottom:48px">
+      <div class="eyebrow">09 · Technical foundations</div>
+      <h2 style="margin-bottom:0">Built for engineers who need evidence.</h2>
     </div>
-    <div class="grid g4">
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-folder"/></svg></span><h3>Open source</h3><p>The scanner and its detectors are public. Read the code that produces every finding.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-search"/></svg></span><h3>Evidence-backed findings</h3><p>Each component links to a file, line, detection method, detector and confidence level.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-braces"/></svg></span><h3>Machine-readable output</h3><p>Structured JSON and YAML for scripts, pipelines and downstream tooling.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-file-json"/></svg></span><h3>CycloneDX support</h3><p>Generate an AIBOM in the CycloneDX format alongside your existing SBOM process.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-shield"/></svg></span><h3>SARIF support</h3><p>Emit findings as SARIF for tools that read static analysis results.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-workflow"/></svg></span><h3>CI/CD integration</h3><p>Runs as a command-line step, so it fits into any pipeline that can run a static binary.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-repeat"/></svg></span><h3>Deterministic scanning</h3><p>Rule-based detectors produce the same findings for the same input.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-laptop"/></svg></span><h3>Local-first workflow</h3><p>Run it on your machine or your own CI runner, next to the code you scan.</p></div>
+    <div class="items">
+      <div class="item"><span class="ico"><svg class="i"><use href="#i-folder"/></svg></span><h3>Open source</h3><p>The scanner and its detectors are public. Read the code that produces every finding.</p></div>
+      <div class="item"><span class="ico"><svg class="i"><use href="#i-search"/></svg></span><h3>Evidence-backed findings</h3><p>Each component links to a file, line, detection method, detector and confidence level.</p></div>
+      <div class="item"><span class="ico"><svg class="i"><use href="#i-braces"/></svg></span><h3>Machine-readable output</h3><p>Structured JSON and YAML for scripts, pipelines and downstream tooling.</p></div>
+      <div class="item"><span class="ico"><svg class="i"><use href="#i-file-json"/></svg></span><h3>CycloneDX support</h3><p>Generate an AIBOM in the CycloneDX format alongside your existing SBOM process.</p></div>
+      <div class="item"><span class="ico"><svg class="i"><use href="#i-shield"/></svg></span><h3>SARIF support</h3><p>Emit findings as SARIF for tools that read static analysis results.</p></div>
+      <div class="item"><span class="ico"><svg class="i"><use href="#i-workflow"/></svg></span><h3>CI/CD integration</h3><p>Runs as a command-line step, so it fits into any pipeline that can run a static binary.</p></div>
+      <div class="item"><span class="ico"><svg class="i"><use href="#i-repeat"/></svg></span><h3>Deterministic scanning</h3><p>Rule-based detectors produce the same findings for the same input.</p></div>
+      <div class="item"><span class="ico"><svg class="i"><use href="#i-laptop"/></svg></span><h3>Local-first workflow</h3><p>Run it on your machine or your own CI runner, next to the code you scan.</p></div>
     </div>
   </div>
 </section>
 
 <section id="use-cases">
   <div class="wrap">
-    <div class="sec-head">
+    <div class="sec-head" style="margin-bottom:48px">
       <div class="eyebrow">10 · Use cases</div>
-      <h2>One inventory, four teams.</h2>
+      <h2 style="margin-bottom:0">One inventory, four teams.</h2>
     </div>
-    <div class="grid g4">
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-code"/></svg></span><h3>Developers</h3><p>Understand the AI components inside your application.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-shield"/></svg></span><h3>Security teams</h3><p>Discover AI dependencies and integrate findings into security workflows.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-network"/></svg></span><h3>Platform teams</h3><p>Standardize AI component visibility across repositories and environments.</p></div>
-      <div class="card"><span class="ico"><svg class="i"><use href="#i-clipboard"/></svg></span><h3>Compliance teams</h3><p>Generate structured AI inventory information with traceable evidence.</p></div>
+    <div class="cards">
+      <div class="card soft"><span class="ico"><svg class="i"><use href="#i-code"/></svg></span><h3>Developers</h3><p>Understand the AI components inside your application.</p></div>
+      <div class="card soft"><span class="ico"><svg class="i"><use href="#i-shield"/></svg></span><h3>Security teams</h3><p>Discover AI dependencies and integrate findings into security workflows.</p></div>
+      <div class="card soft"><span class="ico"><svg class="i"><use href="#i-network"/></svg></span><h3>Platform teams</h3><p>Standardize AI component visibility across repositories and environments.</p></div>
+      <div class="card soft"><span class="ico"><svg class="i"><use href="#i-clipboard"/></svg></span><h3>Compliance teams</h3><p>Generate structured AI inventory information with traceable evidence.</p></div>
     </div>
   </div>
 </section>
 
-<section id="docs">
-  <div class="wrap">
-    <div class="sec-head">
+<section id="docs" class="sunken">
+  <div class="wrap split">
+    <div class="copy-col" style="flex:1 1 360px">
       <div class="eyebrow">11 · Get started</div>
       <h2>Start scanning in minutes.</h2>
-      <p class="lede">Install from PyPI and run your first scan from the project root.</p>
+      <p class="gap">Install from PyPI and run your first scan from the project root.</p>
+      <a class="btn btn-lg" href="https://docs.airom.dev/quickstart"><svg class="i"><use href="#i-book"/></svg>Read the documentation</a>
     </div>
-    <div class="grid g2" style="align-items:start">
-      <div class="card">
-        <span class="code-chip">01</span>
-        <div class="install" style="max-width:none">
-          <pre><span class="dollar">$ </span>pip install airom</pre>
-          <button class="copy" type="button" data-copy="pip install airom" aria-label="Copy the install command"><svg class="i i-sm"><use href="#i-copy"/></svg><span>Copy</span></button>
-        </div>
+    <div class="steps">
+      <div class="step">
+        <span class="n">01</span>
+        <code><span class="dollar">$ </span>pip install airom</code>
+        <button class="btn btn-secondary copy copy-btn" type="button" data-copy="pip install airom" aria-label="Copy the install command">
+          <svg class="i"><use href="#i-copy"/></svg><span>Copy</span>
+        </button>
       </div>
-      <div class="card">
-        <span class="code-chip">02</span>
-        <div class="install" style="max-width:none">
-          <pre><span class="dollar">$ </span>airom scan .</pre>
-          <button class="copy" type="button" data-copy="airom scan ." aria-label="Copy the scan command"><svg class="i i-sm"><use href="#i-copy"/></svg><span>Copy</span></button>
-        </div>
+      <div class="step">
+        <span class="n">02</span>
+        <code><span class="dollar">$ </span>airom scan .</code>
+        <button class="btn btn-secondary copy copy-btn" type="button" data-copy="airom scan ." aria-label="Copy the scan command">
+          <svg class="i"><use href="#i-copy"/></svg><span>Copy</span>
+        </button>
       </div>
-    </div>
-    <div class="hero-cta" style="margin-top:24px">
-      <a class="btn btn-lg" href="https://docs.airom.dev/">Read the documentation <svg class="i i-sm"><use href="#i-arrow-right"/></svg></a>
     </div>
   </div>
 </section>
 
 <section id="cta" style="border-bottom:none">
-  <div class="wrap" style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px">
-    <h2 style="font-size:clamp(28px,3.6vw,40px)">Make your AI supply chain visible.</h2>
-    <p class="lede" style="text-align:center">Discover the models, data, prompts, frameworks, and infrastructure behind your AI applications.</p>
-    <div class="hero-cta" style="justify-content:center">
-      <a class="btn btn-lg" href="https://docs.airom.dev/quickstart">Get started <svg class="i i-sm"><use href="#i-arrow-right"/></svg></a>
-      <a class="btn btn-lg btn-outline" href="https://github.com/airomhq/airom"><svg class="i i-sm"><use href="#i-git"/></svg> View on GitHub</a>
+  <div class="wrap">
+    <h2>Make your AI supply chain visible.</h2>
+    <p>Discover the models, data, prompts, frameworks, and infrastructure behind your AI applications.</p>
+    <div class="hero-cta" style="justify-content:center;margin-top:8px">
+      <a class="btn btn-xl" href="https://docs.airom.dev/quickstart">Get started <svg class="i"><use href="#i-arrow-right"/></svg></a>
+      <a class="btn btn-xl btn-outline" href="https://github.com/airomhq/airom"><svg class="i"><use href="#i-git"/></svg> View on GitHub</a>
     </div>
   </div>
 </section>
@@ -897,28 +1253,16 @@ airom scan ." aria-label="Copy install commands">
   };
 
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-  function confBadge(c) { return c === "High" ? "badge-ok" : "badge-warn"; }
-
-  /* ── evidence renderer, shared by the hero panel and section 03 ────── */
-  function evidenceHTML(o) {
-    var code = o.code.map(function (l, i) {
-      var n = o.start + i;
-      var line = '<span class="ln">' + n + "</span>" + esc(l);
-      return o.hl.indexOf(n) !== -1 ? '<span class="hl">' + line + "</span>" : line;
-    }).join("\n");
-    var group = function (n, label, rows) {
-      return '<div class="ev-group"><div class="gh"><span class="n">' + n + "</span>" + label + "</div>" +
-        rows.map(function (r) { return '<div class="ev-row"><span>' + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span></div>"; }).join("") +
-        "</div>";
-    };
-    return '<div class="title"><svg class="i i-sm"><use href="#i-file-code"/></svg>' +
-      "<span>" + esc(o.file) + "</span> · <b>" + esc(o.name) + "</b>" +
-      '<span class="badge ' + confBadge(o.conf) + '" style="margin-left:auto">' + esc(o.conf) + "</span></div>" +
-      '<div class="ev-grid"><pre class="ev-code">' + code + "</pre>" +
-      '<div class="ev-meta">' + group(1, "Source location", o.loc) + group(2, "Detection method", o.det) +
-      '<div class="ev-group"><div class="gh"><span class="n">3</span>Confidence</div>' +
-      '<div class="ev-row"><span>Level</span><span>' + esc(o.conf) + "</span></div></div></div></div>";
+  var badgeIcon = { "badge-ok": "i-circle-check", "badge-warn": "i-alert-circle", "badge-crit": "i-alert-circle", "badge-info": "i-info", "badge-idle": "i-circle-dashed" };
+  function badge(cls, text, style) {
+    return '<span class="badge ' + cls + '"' + (style ? ' style="' + style + '"' : "") +
+      '><svg class="i"><use href="#' + badgeIcon[cls] + '"/></svg>' + esc(text) + "</span>";
   }
+  function setStatus(cls, text) {
+    statusEl.className = "badge " + cls;
+    statusEl.innerHTML = '<svg class="i"><use href="#' + badgeIcon[cls] + '"/></svg>' + esc(text);
+  }
+  function confBadge(c) { return c === "High" ? "badge-ok" : "badge-warn"; }
 
   /* ── hero scan demo ────────────────────────────────────────────────── */
   var treeEl = document.getElementById("tree");
@@ -926,7 +1270,7 @@ airom scan ." aria-label="Copy install commands">
   var countEl = document.getElementById("count");
   var barEl = document.getElementById("bar");
   var statusEl = document.getElementById("scan-status");
-  var evEl = document.getElementById("evidence");
+  var evEl = document.getElementById("demo-evidence");
   var timers = [];
 
   treeEl.innerHTML = TREE.map(function (n) {
@@ -936,105 +1280,268 @@ airom scan ." aria-label="Copy install commands">
   listEl.innerHTML = FINDINGS.map(function (f, i) {
     return '<button class="finding" type="button" aria-pressed="false" data-i="' + i + '">' +
       "<span>" + esc(f.type) + '</span><span class="bar"><span data-w="' + f.bar + '"></span></span>' +
-      '<span class="badge ' + confBadge(f.conf) + '">' + esc(f.conf) + "</span></button>";
+      badge("badge-idle", "Queued") + "</button>";
   }).join("");
 
   var findingEls = Array.prototype.slice.call(listEl.children);
   var nodeEls = Array.prototype.slice.call(treeEl.children);
 
+  function emptyEvidence() {
+    evEl.innerHTML = '<p class="ev-empty"><svg class="i i-sm"><use href="#i-pointer"/></svg>Select a finding to see its evidence</p>';
+  }
+
   function select(i) {
     findingEls.forEach(function (el, j) { el.setAttribute("aria-pressed", j === i ? "true" : "false"); });
     var f = FINDINGS[i];
-    evEl.innerHTML = evidenceHTML({
-      file: f.file, name: f.name, start: Math.max(1, f.line - 2), hl: [f.line],
-      code: ["# " + f.file, "", "# " + f.type + ": " + f.name, "#   provider: " + f.provider, "#   " + f.method],
-      loc: [["File", f.file], ["Line", String(f.line)]],
-      det: [["Method", f.method], ["Detector", f.detector]],
-      conf: f.conf
-    });
+    var rows = [
+      ["Provider", f.provider], [f.type, f.name], ["Source", f.file + ":" + f.line],
+      ["Detection", f.method], ["Detector", f.detector]
+    ];
+    evEl.innerHTML =
+      '<div class="title"><svg class="i"><use href="#i-search"/></svg><b>' + esc(f.type) + " detected</b>" +
+      '<span class="spacer"></span>' + badge(confBadge(f.conf), "Confidence: " + f.conf) + "</div>" +
+      '<div class="ev-kv">' + rows.map(function (r) {
+        return "<div><span>" + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span></div>";
+      }).join("") + "</div>";
     nodeEls.forEach(function (el) {
       el.classList.toggle("on", el.getAttribute("data-file") === f.file.split("/").pop());
     });
   }
-  findingEls.forEach(function (el, i) { el.addEventListener("click", function () { select(i); }); });
+  findingEls.forEach(function (el, i) {
+    el.addEventListener("click", function () { if (el.classList.contains("shown")) select(i); });
+  });
+
+  function markFound(i) {
+    var f = FINDINGS[i];
+    findingEls[i].classList.add("shown");
+    findingEls[i].querySelector(".bar > span").style.width = f.bar + "%";
+    findingEls[i].children[2].outerHTML = badge("badge-ok", "Found");
+  }
 
   function runScan() {
     timers.forEach(clearTimeout); timers = [];
-    findingEls.forEach(function (el) {
+    findingEls.forEach(function (el, i) {
       el.classList.remove("shown");
       el.setAttribute("aria-pressed", "false");
       el.querySelector(".bar > span").style.width = "0";
+      el.children[2].outerHTML = badge("badge-idle", "Queued");
     });
     nodeEls.forEach(function (el) { el.classList.remove("on"); });
-    countEl.textContent = "0";
-    evEl.innerHTML = '<p class="ev-empty">Select a finding to see the evidence behind it.</p>';
-    statusEl.textContent = "Scanning";
-    statusEl.className = "badge badge-info";
+    countEl.textContent = "0 / " + FINDINGS.length;
+    emptyEvidence();
+    setStatus("badge-info", "Scanning");
     barEl.style.width = "0";
 
     if (reduce) {
-      findingEls.forEach(function (el, i) {
-        el.classList.add("shown");
-        el.querySelector(".bar > span").style.width = FINDINGS[i].bar + "%";
-      });
-      countEl.textContent = String(FINDINGS.length);
+      FINDINGS.forEach(function (f, i) { markFound(i); });
+      countEl.textContent = FINDINGS.length + " / " + FINDINGS.length;
       barEl.style.width = "100%";
-      statusEl.textContent = "Complete";
-      statusEl.className = "badge badge-ok";
+      setStatus("badge-ok", "Complete");
       select(0);
       return;
     }
 
     FINDINGS.forEach(function (f, i) {
       timers.push(setTimeout(function () {
-        findingEls[i].classList.add("shown");
-        findingEls[i].querySelector(".bar > span").style.width = f.bar + "%";
-        countEl.textContent = String(i + 1);
+        markFound(i);
+        countEl.textContent = (i + 1) + " / " + FINDINGS.length;
         barEl.style.width = Math.round(((i + 1) / FINDINGS.length) * 100) + "%";
         var node = nodeEls.filter(function (el) { return el.getAttribute("data-file") === f.file.split("/").pop(); })[0];
         if (node) {
           node.classList.add("on");
           timers.push(setTimeout(function () { node.classList.remove("on"); }, 520));
         }
-      }, 380 + i * 420));
+      }, 380 + i * 700));
     });
     timers.push(setTimeout(function () {
-      statusEl.textContent = "Complete";
-      statusEl.className = "badge badge-ok";
+      setStatus("badge-ok", "Complete");
       select(0);
-    }, 380 + FINDINGS.length * 420 + 220));
+    }, 380 + FINDINGS.length * 700 + 220));
   }
   document.getElementById("rescan").addEventListener("click", runScan);
   runScan();
 
-  /* ── section 03: evidence tabs ─────────────────────────────────────── */
-  var evStatic = document.getElementById("ev-static");
+  /* ── 01 · the hidden dependency graph ──────────────────────────────── */
+  var graph = document.getElementById("graph");
+  var graphBtn = document.getElementById("graph-toggle");
+  var graphSubs = Array.prototype.slice.call(graph.querySelectorAll(".gnode span"));
+  var graphSubsOff = graphSubs.map(function (el) { return el.textContent; });
+  graphBtn.addEventListener("click", function () {
+    var on = !graph.classList.contains("on");
+    graph.classList.toggle("on", on);
+    graphBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    graphBtn.querySelector("span").textContent = on ? "Reset graph" : "Scan this graph";
+    graphBtn.querySelector("use").setAttribute("href", on ? "#i-rotate" : "#i-search");
+    graphSubs.forEach(function (el, i) {
+      el.textContent = on ? el.getAttribute("data-found") : graphSubsOff[i];
+    });
+  });
+
+  /* ── 03 · evidence, with the code lines linked to the read-out ─────── */
+  var KW = /^(?:from|import|def|return|with|as)$/;
+  function tokenize(line) {
+    var re = /("[^"]*"|\b(?:from|import|def|return|with|as)\b|#.*$)/g;
+    var out = "", last = 0, m;
+    while ((m = re.exec(line)) !== null) {
+      if (m.index > last) out += esc(line.slice(last, m.index));
+      var t = m[0];
+      var cls = t.charAt(0) === '"' ? "tok-str" : t.charAt(0) === "#" ? "tok-dim" : KW.test(t) ? "tok-kw" : "";
+      out += '<span class="' + cls + '">' + esc(t) + "</span>";
+      last = m.index + t.length;
+    }
+    if (last < line.length || !out) out += esc(line.slice(last) || " ");
+    return out;
+  }
+
+  var evFileEl = document.getElementById("ev-file");
+  var evLinesEl = document.getElementById("ev-lines");
+  var evMetaEl = document.getElementById("ev-meta");
+  var evIcon = { model: "i-cpu", embedding: "i-binary", vector: "i-layers" };
   var evTabs = Array.prototype.slice.call(document.querySelectorAll("[data-ev]"));
+
   function showEv(key) {
+    var o = EV[key];
     evTabs.forEach(function (t) { t.setAttribute("aria-selected", t.getAttribute("data-ev") === key ? "true" : "false"); });
-    evStatic.innerHTML = evidenceHTML(EV[key]);
+    evFileEl.textContent = o.file;
+    evLinesEl.innerHTML = o.code.map(function (l, i) {
+      var n = o.start + i;
+      var hl = n >= o.hl[0] && n <= o.hl[1];
+      var cls = "ev-line" + (hl ? " hl" : "") + (n === o.hl[0] ? " anchor" : "");
+      return '<div class="' + cls + '"><span class="ln">' + n + '</span><span class="src">' + tokenize(l) +
+        '</span><span class="link" aria-hidden="true"><i></i><u></u></span></div>';
+    }).join("");
+
+    var group = function (n, label, rows, extra) {
+      return '<div class="ev-group"><div class="gh"><span class="numchip">' + n + "</span>" + label + "</div>" +
+        rows.map(function (r) { return '<div class="ev-row"><span>' + esc(r[0]) + "</span><span>" + esc(r[1]) + "</span></div>"; }).join("") +
+        (extra || "") + "</div>";
+    };
+    evMetaEl.innerHTML =
+      '<div><div class="cap">AI COMPONENT</div>' +
+      '<div class="name-row"><svg class="i"><use href="#' + evIcon[key] + '"/></svg><b>' + esc(o.type) + "</b></div>" +
+      '<div class="mono-name">' + esc(o.name) + "</div></div>" +
+      group(1, "Source location", o.loc) +
+      group(2, "Detection method", o.det) +
+      group(3, "Confidence", [], badge(confBadge(o.conf), o.conf.toUpperCase(), "height:24px;font-size:12px;padding:0 8px"));
   }
   evTabs.forEach(function (t) { t.addEventListener("click", function () { showEv(t.getAttribute("data-ev")); }); });
   showEv("model");
 
-  /* ── section 04: output formats ────────────────────────────────────── */
-  var fmtList = document.getElementById("fmt-list");
-  var fmtCode = document.getElementById("fmt-code");
-  var fmtCmd = document.getElementById("fmt-cmd");
-  var fmtCopy = document.getElementById("fmt-copy");
+  /* ── 04 · the four stages, and the format switcher ─────────────────── */
+  var STAGES = [
+    ["Source code", "i-file-code"], ["AIROM scan", "i-search"],
+    ["AI component inventory", "i-list-tree"], ["AIBOM", "i-file-json"]
+  ];
+  var stagesEl = document.getElementById("stages");
+  stagesEl.innerHTML = STAGES.map(function (st, i) {
+    return '<div class="stage-wrap"><div class="stage" data-i="' + i + '">' +
+      '<svg class="i"><use href="#' + st[1] + '"/></svg>' +
+      '<div><div class="n">0' + (i + 1) + "</div><b>" + esc(st[0]) + "</b></div></div>" +
+      (i < STAGES.length - 1 ? '<svg class="i"><use href="#i-chevron-right"/></svg>' : "") + "</div>";
+  }).join("");
+  var stageEls = Array.prototype.slice.call(stagesEl.querySelectorAll(".stage"));
+  if (reduce) {
+    stageEls.forEach(function (el) { el.classList.add("lit"); });
+  } else {
+    var stage = 0;
+    var paintStages = function () {
+      stageEls.forEach(function (el, i) {
+        el.classList.toggle("on", i === stage);
+        el.classList.toggle("lit", i <= stage);
+      });
+    };
+    paintStages();
+    setInterval(function () { stage = (stage + 1) % STAGES.length; paintStages(); }, 1600);
+  }
+
+  var fmtTabsEl = document.querySelector(".out-panel .tabs");
+  var fmtListEl = document.getElementById("fmt-list");
+  var fmtCodeEl = document.getElementById("fmt-code");
+  var fmtCmdEl = document.getElementById("fmt-cmd");
+  var fmtCopyEl = document.getElementById("fmt-copy");
   var names = Object.keys(OUT);
-  fmtList.innerHTML = names.map(function (n) {
+
+  fmtTabsEl.innerHTML = names.map(function (n) {
+    return '<button class="tab" role="tab" aria-selected="false" data-fmt="' + n + '">' + n + "</button>";
+  }).join("");
+  fmtListEl.innerHTML = names.map(function (n) {
     return '<button class="out-item" type="button" aria-pressed="false" data-fmt="' + n + '"><b>' + n + "</b><span>" + esc(OUT[n].desc) + "</span></button>";
   }).join("");
-  var fmtEls = Array.prototype.slice.call(fmtList.children);
+
+  var fmtTimer = null;
   function showFmt(n) {
-    fmtEls.forEach(function (el) { el.setAttribute("aria-pressed", el.getAttribute("data-fmt") === n ? "true" : "false"); });
-    fmtCode.textContent = OUT[n].text;
-    fmtCmd.textContent = OUT[n].cmd;
-    fmtCopy.setAttribute("data-copy", OUT[n].cmd);
+    Array.prototype.slice.call(document.querySelectorAll("[data-fmt]")).forEach(function (el) {
+      var on = el.getAttribute("data-fmt") === n;
+      if (el.getAttribute("role") === "tab") el.setAttribute("aria-selected", on ? "true" : "false");
+      else el.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    fmtCmdEl.textContent = OUT[n].cmd;
+    fmtCopyEl.setAttribute("data-copy", OUT[n].cmd);
+    /* A key line reads as primary text, a value line as secondary — the same
+       two-tone treatment the design uses instead of full syntax colouring. */
+    var lines = OUT[n].text.split("\n");
+    fmtCodeEl.innerHTML = lines.map(function (l) {
+      var key = /^\s*"[^"]+":/.test(l) || /^\s*[a-zA-Z_-]+:/.test(l);
+      return '<span class="' + (key ? "k" : "v") + '">' + (esc(l) || " ") + "</span>";
+    }).join("");
+    var spans = Array.prototype.slice.call(fmtCodeEl.children);
+    clearInterval(fmtTimer);
+    if (reduce) return;
+    spans.forEach(function (sp) { sp.style.opacity = "0"; sp.style.transition = "opacity 200ms ease-out"; });
+    var k = 0;
+    fmtTimer = setInterval(function () {
+      if (k >= spans.length) { clearInterval(fmtTimer); return; }
+      spans[k].style.opacity = "1";
+      k += 1;
+    }, 40);
   }
-  fmtEls.forEach(function (el) { el.addEventListener("click", function () { showFmt(el.getAttribute("data-fmt")); }); });
+  Array.prototype.slice.call(document.querySelectorAll("[data-fmt]")).forEach(function (el) {
+    el.addEventListener("click", function () { showFmt(el.getAttribute("data-fmt")); });
+  });
   showFmt("CycloneDX");
+
+  /* ── 05 · the terminal, typed out when it scrolls into view ────────── */
+  var pad = function (k, v) {
+    var s = k; while (s.length < 20) s += " ";
+    var n = String(v); if (n.length < 2) n = " " + n;
+    return s + n;
+  };
+  var TERM = [
+    ["$ airom scan .", "cmd"], [" ", ""], ["Scanning project...", ""],
+    ["████████████████████ 100%", "accent"], [" ", ""],
+    ["AI components discovered: 18", "strong"], [" ", ""],
+    [pad("Models", 4), ""], [pad("Datasets", 2), ""], [pad("Prompts", 5), ""],
+    [pad("Embeddings", 2), ""], [pad("Vector stores", 2), ""], [pad("Frameworks", 3), ""],
+    [" ", ""], ["$ airom scan . --format cyclonedx", "cmd"], [" ", ""],
+    ["✓ AIBOM generated", "ok"], ["✓ Evidence included", "ok"], ["✓ Ready for CI/CD", "ok"]
+  ];
+  var termOut = document.getElementById("term-out");
+  var termTimer = null;
+  function paintTerm(n) {
+    termOut.innerHTML = TERM.slice(0, n).map(function (l) {
+      return '<span class="' + l[1] + '">' + esc(l[0]) + "</span>";
+    }).join("") + (reduce ? "" : '<span class="caret" aria-hidden="true"></span>');
+  }
+  function runTerm() {
+    clearInterval(termTimer);
+    if (reduce) return paintTerm(TERM.length);
+    var n = 0;
+    paintTerm(0);
+    termTimer = setInterval(function () {
+      if (n >= TERM.length) { clearInterval(termTimer); return; }
+      n += 1; paintTerm(n);
+    }, 160);
+  }
+  document.getElementById("term-replay").addEventListener("click", runTerm);
+  var termEl = document.getElementById("term");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      if (es[0].isIntersecting) { runTerm(); io.disconnect(); }
+    }, { threshold: 0.3 });
+    io.observe(termEl);
+  } else {
+    paintTerm(TERM.length);
+  }
 })();
 </script>
 </body>
