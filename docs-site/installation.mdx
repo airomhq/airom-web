@@ -8,7 +8,7 @@ AIROM is a single static binary built with `CGO_ENABLED=0`. There are no
 runtime dependencies and no shared libraries to chase.
 
 <Note>
-  **AIROM is at `v0.4.6`.** It includes the AI-native risk overlay, a default-on
+  **AIROM is at `v0.4.7`.** It includes the AI-native risk overlay, a default-on
   CVE overlay backed by OSV.dev, a default-on [model lifecycle
   overlay](/concepts/eol), compliance framework mapping, [test-scope
   filtering](/concepts/test-scope), [SPDX 3.0.1 and OpenVEX
@@ -20,6 +20,18 @@ runtime dependencies and no shared libraries to chase.
   the result still resolves. Both are opt-in and off by default. This is the
   first thing AIROM writes to your tree; anything it cannot pin from a declared
   manifest is reported with a reason rather than edited.
+
+  **`v0.4.7` restores lifecycle claims for pinned model snapshots, and finds
+  OpenAI's non-text models.** If you pin a dated snapshot — `gpt-5-2025-08-07`,
+  `o3-2025-04-16` — earlier versions reported no retirement information for it
+  at all, even though the catalog held that exact id with a shutdown date. Nine
+  OpenAI records were unreachable this way, and pinning a snapshot is what
+  providers recommend, so the models most at risk were the ones reporting no
+  risk. Nothing matched DALL·E, Sora, Whisper, the moderation models,
+  computer-use or the legacy completion bases either; they are detected now.
+  The lifecycle catalogs were also re-verified against both providers' pages
+  (2026-09-28). Regenerate an archived AIBOM of a tree that pins dated
+  snapshots — it will now show the retirement dates it should have shown.
 
   **`v0.4.6` changes how a fetched rule bundle applies.** Until v0.4.5 a bundle
   installed by `airom rules update` was used *instead of* the packs built into
@@ -89,7 +101,7 @@ toolchain.
 go install github.com/airomhq/airom/cmd/airom@latest
 ```
 
-`@latest` resolves to the newest release tag (`v0.4.6` today).
+`@latest` resolves to the newest release tag (`v0.4.7` today).
 
 ### Put it on your PATH
 
@@ -194,9 +206,9 @@ What you see depends on how you installed:
 <Tabs>
   <Tab title="pip / pipx">
     ```text
-    airom 0.4.6
-      commit: ad4c6e2
-      built:  2026-09-18T15:31:39+05:30
+    airom 0.4.7
+      commit: 8b2e2fd
+      built:  2026-09-28T09:28:40Z
       go:     go1.26.8 (darwin/arm64)
     ```
 
@@ -228,7 +240,7 @@ What you see depends on how you installed:
 
     `make` stamps the version from `git describe --tags --always --dirty`. On a
     commit after the latest tag that resolves to something like
-    `v0.4.6-4-g0fb8a93`, with `-dirty` appended if your working tree has
+    `v0.4.7-4-g0fb8a93`, with `-dirty` appended if your working tree has
     uncommitted changes.
   </Tab>
 </Tabs>
