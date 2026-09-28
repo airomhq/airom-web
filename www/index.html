@@ -54,7 +54,6 @@
   --ok-soft: rgba(22, 163, 74, 0.1);
   --warn-soft: rgba(217, 119, 6, 0.1);
   --crit-soft: rgba(220, 38, 38, 0.1);
-  --grid: rgba(37, 99, 235, 0.05);
   --shadow-lg: 0 24px 48px -24px rgba(15, 23, 42, 0.18);
 
   --radius-sm: 2px;
@@ -87,7 +86,6 @@
     --ok-soft: rgba(34, 197, 94, 0.12);
     --warn-soft: rgba(234, 179, 8, 0.12);
     --crit-soft: rgba(239, 68, 68, 0.12);
-    --grid: rgba(148, 163, 184, 0.06);
     --shadow-lg: 0 24px 48px -24px rgba(0, 0, 0, 0.6);
   }
 }
@@ -112,7 +110,6 @@
   --ok-soft: rgba(34, 197, 94, 0.12);
   --warn-soft: rgba(234, 179, 8, 0.12);
   --crit-soft: rgba(239, 68, 68, 0.12);
-  --grid: rgba(148, 163, 184, 0.06);
   --shadow-lg: 0 24px 48px -24px rgba(0, 0, 0, 0.6);
 }
 
@@ -121,6 +118,7 @@
 html { scroll-behavior: smooth; }
 
 body {
+  position: relative;
   margin: 0;
   background: var(--bg);
   color: var(--fg);
@@ -224,6 +222,10 @@ header.site .nav { display: flex; align-items: center; gap: 8px; height: 62px; }
 section { border-bottom: 1px solid var(--border); padding: 112px 0; scroll-margin-top: 62px; }
 section > .wrap { padding: 0 24px; }
 section.sunken { background: var(--bg-sunken); }
+:root[data-theme="dark"] section.sunken { background: rgba(1, 4, 9, 0.66); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) section.sunken { background: rgba(1, 4, 9, 0.66); }
+}
 section#evidence { padding: 120px 0; }
 
 .sec-head { margin-bottom: 48px; }
@@ -298,15 +300,288 @@ section#evidence { padding: 120px 0; }
 
 @media (max-width: 720px) { .cards.three { grid-template-columns: 1fr; } }
 
+/* ── the sky ──────────────────────────────────────────────────────────── */
+/* The previous site's starfield, thickened and taken across the whole landing
+   page rather than the top of the hero. The first 40 stars are the previous
+   site's, in their original places; the rest are generated once with a fixed
+   seed and pasted in, so it is the same sky every build and no JS draws a
+   background. Three tile sizes sharing no common factor, so the repeat never
+   settles into a visible lattice. No image is loaded, which is what keeps
+   `default-src 'self'` honest.
+
+   Dark only: white specks belong on a night page, and on a white one the same
+   field reads as dust on the screen. z-index -1 puts it behind every section
+   while still sitting on top of the page background. */
+.stars { display: none; }
+:root[data-theme="dark"] .stars,
+:root:not([data-theme]) .stars {
+  display: block;
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 34px 78px, rgba(255, 255, 255, 0.46), transparent 100%),
+    radial-gradient(1px 1px at 222px 120px, rgba(255, 255, 255, 0.39), transparent 100%),
+    radial-gradient(1px 1px at 8px 184px, rgba(255, 255, 255, 0.54), transparent 100%),
+    radial-gradient(1px 1px at 35px 171px, rgba(255, 255, 255, 0.38), transparent 100%),
+    radial-gradient(1px 1px at 33px 34px, rgba(255, 255, 255, 0.37), transparent 100%),
+    radial-gradient(1px 1px at 124px 220px, rgba(255, 255, 255, 0.38), transparent 100%),
+    radial-gradient(1px 1px at 242px 122px, rgba(255, 255, 255, 0.5), transparent 100%),
+    radial-gradient(1px 1px at 199px 23px, rgba(255, 255, 255, 0.53), transparent 100%),
+    radial-gradient(1px 1px at 135px 165px, rgba(255, 255, 255, 0.5), transparent 100%),
+    radial-gradient(1px 1px at 182px 209px, rgba(255, 255, 255, 0.3), transparent 100%),
+    radial-gradient(1px 1px at 234px 54px, rgba(255, 255, 255, 0.42), transparent 100%),
+    radial-gradient(1px 1px at 46px 243px, rgba(255, 255, 255, 0.33), transparent 100%),
+    radial-gradient(1px 1px at 198px 235px, rgba(255, 255, 255, 0.45), transparent 100%),
+    radial-gradient(1px 1px at 94px 205px, rgba(255, 255, 255, 0.42), transparent 100%),
+    radial-gradient(1px 1px at 226px 219px, rgba(255, 255, 255, 0.37), transparent 100%),
+    radial-gradient(1px 1px at 160px 123px, rgba(255, 255, 255, 0.5), transparent 100%),
+    radial-gradient(1px 1px at 238px 106px, rgba(255, 255, 255, 0.33), transparent 100%),
+    radial-gradient(1px 1px at 231px 100px, rgba(255, 255, 255, 0.51), transparent 100%),
+    radial-gradient(1px 1px at 248px 116px, rgba(255, 255, 255, 0.31), transparent 100%),
+    radial-gradient(1px 1px at 182px 254px, rgba(255, 255, 255, 0.53), transparent 100%),
+    radial-gradient(1px 1px at 124px 187px, rgba(255, 255, 255, 0.32), transparent 100%),
+    radial-gradient(1px 1px at 106px 90px, rgba(255, 255, 255, 0.47), transparent 100%),
+    radial-gradient(1px 1px at 143px 16px, rgba(255, 255, 255, 0.37), transparent 100%),
+    radial-gradient(1px 1px at 48px 227px, rgba(255, 255, 255, 0.61), transparent 100%),
+    radial-gradient(1px 1px at 100px 171px, rgba(255, 255, 255, 0.46), transparent 100%),
+    radial-gradient(1px 1px at 16px 236px, rgba(255, 255, 255, 0.31), transparent 100%),
+    radial-gradient(1px 1px at 205px 50px, rgba(255, 255, 255, 0.32), transparent 100%),
+    radial-gradient(1px 1px at 96px 138px, rgba(255, 255, 255, 0.48), transparent 100%),
+    radial-gradient(1px 1px at 121px 246px, rgba(255, 255, 255, 0.5), transparent 100%),
+    radial-gradient(1px 1px at 147px 171px, rgba(255, 255, 255, 0.36), transparent 100%),
+    radial-gradient(1px 1px at 106px 91px, rgba(255, 255, 255, 0.37), transparent 100%),
+    radial-gradient(1px 1px at 51px 123px, rgba(255, 255, 255, 0.35), transparent 100%),
+    radial-gradient(1px 1px at 182px 128px, rgba(255, 255, 255, 0.44), transparent 100%),
+    radial-gradient(1px 1px at 4px 178px, rgba(255, 255, 255, 0.6), transparent 100%),
+    radial-gradient(1px 1px at 24px 119px, rgba(255, 255, 255, 0.48), transparent 100%),
+    radial-gradient(1px 1px at 124px 0px, rgba(255, 255, 255, 0.49), transparent 100%),
+    radial-gradient(1px 1px at 216px 219px, rgba(255, 255, 255, 0.31), transparent 100%),
+    radial-gradient(1px 1px at 46px 185px, rgba(255, 255, 255, 0.4), transparent 100%),
+    radial-gradient(1px 1px at 65px 46px, rgba(255, 255, 255, 0.56), transparent 100%),
+    radial-gradient(1px 1px at 32px 182px, rgba(255, 255, 255, 0.42), transparent 100%),
+    radial-gradient(1px 1px at 54px 46px, rgba(255, 255, 255, 0.46), transparent 100%),
+    radial-gradient(1px 1px at 106px 8px, rgba(255, 255, 255, 0.39), transparent 100%),
+    radial-gradient(1px 1px at 68px 50px, rgba(255, 255, 255, 0.49), transparent 100%),
+    radial-gradient(1px 1px at 233px 23px, rgba(255, 255, 255, 0.58), transparent 100%),
+    radial-gradient(1px 1px at 81px 174px, rgba(255, 255, 255, 0.49), transparent 100%),
+    radial-gradient(1px 1px at 51px 80px, rgba(255, 255, 255, 0.48), transparent 100%),
+    radial-gradient(1px 1px at 49px 81px, rgba(255, 255, 255, 0.48), transparent 100%),
+    radial-gradient(1px 1px at 46px 94px, rgba(255, 255, 255, 0.42), transparent 100%),
+    radial-gradient(1px 1px at 135px 130px, rgba(255, 255, 255, 0.56), transparent 100%),
+    radial-gradient(1px 1px at 108px 115px, rgba(255, 255, 255, 0.54), transparent 100%),
+    radial-gradient(1px 1px at 103px 222px, rgba(255, 255, 255, 0.57), transparent 100%),
+    radial-gradient(1px 1px at 132px 10px, rgba(255, 255, 255, 0.43), transparent 100%),
+    radial-gradient(1px 1px at 114px 104px, rgba(255, 255, 255, 0.43), transparent 100%),
+    radial-gradient(1px 1px at 61px 253px, rgba(255, 255, 255, 0.6), transparent 100%),
+    radial-gradient(1px 1px at 190px 32px, rgba(255, 255, 255, 0.4), transparent 100%),
+    radial-gradient(1px 1px at 5px 72px, rgba(255, 255, 255, 0.45), transparent 100%),
+    radial-gradient(1px 1px at 204px 199px, rgba(255, 255, 255, 0.48), transparent 100%),
+    radial-gradient(1px 1px at 59px 195px, rgba(255, 255, 255, 0.6), transparent 100%),
+    radial-gradient(1px 1px at 195px 90px, rgba(255, 255, 255, 0.45), transparent 100%),
+    radial-gradient(1px 1px at 32px 140px, rgba(255, 255, 255, 0.58), transparent 100%),
+    radial-gradient(1px 1px at 206px 152px, rgba(255, 255, 255, 0.38), transparent 100%),
+    radial-gradient(1px 1px at 60px 187px, rgba(255, 255, 255, 0.58), transparent 100%),
+    radial-gradient(1px 1px at 155px 9px, rgba(255, 255, 255, 0.59), transparent 100%),
+    radial-gradient(1px 1px at 239px 77px, rgba(255, 255, 255, 0.44), transparent 100%),
+    radial-gradient(1px 1px at 184px 186px, rgba(255, 255, 255, 0.37), transparent 100%),
+    radial-gradient(1px 1px at 130px 9px, rgba(255, 255, 255, 0.48), transparent 100%),
+    radial-gradient(1px 1px at 41px 231px, rgba(255, 255, 255, 0.45), transparent 100%),
+    radial-gradient(1px 1px at 113px 213px, rgba(255, 255, 255, 0.52), transparent 100%),
+    radial-gradient(1px 1px at 175px 168px, rgba(255, 255, 255, 0.6), transparent 100%),
+    radial-gradient(1px 1px at 224px 75px, rgba(255, 255, 255, 0.51), transparent 100%),
+    radial-gradient(1px 1px at 45px 78px, rgba(255, 255, 255, 0.42), transparent 100%),
+    radial-gradient(1px 1px at 100px 202px, rgba(255, 255, 255, 0.55), transparent 100%),
+    radial-gradient(1px 1px at 243px 163px, rgba(255, 255, 255, 0.54), transparent 100%),
+    radial-gradient(1px 1px at 70px 85px, rgba(255, 255, 255, 0.32), transparent 100%),
+    radial-gradient(1.4px 1.4px at 228px 181px, rgba(255, 255, 255, 0.75), transparent 100%),
+    radial-gradient(1.4px 1.4px at 357px 404px, rgba(255, 255, 255, 0.43), transparent 100%),
+    radial-gradient(1.4px 1.4px at 310px 84px, rgba(255, 255, 255, 0.5), transparent 100%),
+    radial-gradient(1.4px 1.4px at 200px 123px, rgba(255, 255, 255, 0.72), transparent 100%),
+    radial-gradient(1.4px 1.4px at 289px 64px, rgba(255, 255, 255, 0.56), transparent 100%),
+    radial-gradient(1.4px 1.4px at 13px 205px, rgba(255, 255, 255, 0.56), transparent 100%),
+    radial-gradient(1.4px 1.4px at 28px 162px, rgba(255, 255, 255, 0.45), transparent 100%),
+    radial-gradient(1.4px 1.4px at 236px 347px, rgba(255, 255, 255, 0.53), transparent 100%),
+    radial-gradient(1.4px 1.4px at 137px 135px, rgba(255, 255, 255, 0.66), transparent 100%),
+    radial-gradient(1.4px 1.4px at 404px 407px, rgba(255, 255, 255, 0.61), transparent 100%),
+    radial-gradient(1.4px 1.4px at 289px 102px, rgba(255, 255, 255, 0.49), transparent 100%),
+    radial-gradient(1.4px 1.4px at 144px 4px, rgba(255, 255, 255, 0.67), transparent 100%),
+    radial-gradient(1.4px 1.4px at 195px 216px, rgba(255, 255, 255, 0.59), transparent 100%),
+    radial-gradient(1.4px 1.4px at 138px 76px, rgba(255, 255, 255, 0.44), transparent 100%),
+    radial-gradient(1.4px 1.4px at 222px 339px, rgba(255, 255, 255, 0.72), transparent 100%),
+    radial-gradient(1.4px 1.4px at 51px 396px, rgba(255, 255, 255, 0.62), transparent 100%),
+    radial-gradient(1.4px 1.4px at 192px 223px, rgba(255, 255, 255, 0.49), transparent 100%),
+    radial-gradient(1.4px 1.4px at 379px 415px, rgba(255, 255, 255, 0.8), transparent 100%),
+    radial-gradient(1.4px 1.4px at 303px 293px, rgba(255, 255, 255, 0.89), transparent 100%),
+    radial-gradient(1.4px 1.4px at 333px 64px, rgba(255, 255, 255, 0.78), transparent 100%),
+    radial-gradient(1.4px 1.4px at 280px 311px, rgba(255, 255, 255, 0.39), transparent 100%),
+    radial-gradient(1.4px 1.4px at 414px 123px, rgba(255, 255, 255, 0.74), transparent 100%),
+    radial-gradient(1.4px 1.4px at 351px 95px, rgba(255, 255, 255, 0.86), transparent 100%),
+    radial-gradient(1.4px 1.4px at 403px 40px, rgba(255, 255, 255, 0.54), transparent 100%),
+    radial-gradient(1.4px 1.4px at 421px 57px, rgba(255, 255, 255, 0.6), transparent 100%),
+    radial-gradient(1.4px 1.4px at 414px 404px, rgba(255, 255, 255, 0.62), transparent 100%),
+    radial-gradient(1.4px 1.4px at 137px 153px, rgba(255, 255, 255, 0.36), transparent 100%),
+    radial-gradient(1.4px 1.4px at 393px 218px, rgba(255, 255, 255, 0.78), transparent 100%),
+    radial-gradient(1.4px 1.4px at 379px 284px, rgba(255, 255, 255, 0.33), transparent 100%),
+    radial-gradient(1.4px 1.4px at 27px 146px, rgba(255, 255, 255, 0.56), transparent 100%),
+    radial-gradient(1.4px 1.4px at 174px 1px, rgba(255, 255, 255, 0.89), transparent 100%),
+    radial-gradient(1.4px 1.4px at 30px 246px, rgba(255, 255, 255, 0.69), transparent 100%),
+    radial-gradient(1.4px 1.4px at 49px 269px, rgba(255, 255, 255, 0.87), transparent 100%),
+    radial-gradient(1.4px 1.4px at 165px 115px, rgba(255, 255, 255, 0.62), transparent 100%),
+    radial-gradient(1.4px 1.4px at 415px 375px, rgba(255, 255, 255, 0.85), transparent 100%),
+    radial-gradient(1.4px 1.4px at 9px 91px, rgba(255, 255, 255, 0.8), transparent 100%),
+    radial-gradient(1.4px 1.4px at 319px 211px, rgba(255, 255, 255, 0.86), transparent 100%),
+    radial-gradient(1.4px 1.4px at 271px 266px, rgba(255, 255, 255, 0.5), transparent 100%),
+    radial-gradient(1.9px 1.9px at 92px 660px, rgba(255, 255, 255, 0.71), transparent 100%),
+    radial-gradient(1.9px 1.9px at 223px 24px, rgba(255, 255, 255, 0.79), transparent 100%),
+    radial-gradient(1.9px 1.9px at 577px 54px, rgba(255, 255, 255, 0.58), transparent 100%),
+    radial-gradient(1.9px 1.9px at 483px 265px, rgba(255, 255, 255, 0.9), transparent 100%),
+    radial-gradient(1.9px 1.9px at 558px 279px, rgba(255, 255, 255, 0.59), transparent 100%),
+    radial-gradient(1.9px 1.9px at 242px 216px, rgba(255, 255, 255, 0.69), transparent 100%),
+    radial-gradient(1.9px 1.9px at 433px 523px, rgba(255, 255, 255, 0.37), transparent 100%),
+    radial-gradient(1.9px 1.9px at 316px 579px, rgba(255, 255, 255, 0.7), transparent 100%),
+    radial-gradient(1.9px 1.9px at 398px 611px, rgba(255, 255, 255, 0.32), transparent 100%),
+    radial-gradient(1.9px 1.9px at 228px 662px, rgba(255, 255, 255, 0.67), transparent 100%),
+    radial-gradient(1.9px 1.9px at 107px 62px, rgba(255, 255, 255, 0.7), transparent 100%),
+    radial-gradient(1.9px 1.9px at 381px 259px, rgba(255, 255, 255, 0.72), transparent 100%),
+    radial-gradient(1.9px 1.9px at 303px 636px, rgba(255, 255, 255, 0.75), transparent 100%),
+    radial-gradient(1.9px 1.9px at 595px 19px, rgba(255, 255, 255, 0.76), transparent 100%),
+    radial-gradient(1.9px 1.9px at 666px 534px, rgba(255, 255, 255, 0.33), transparent 100%),
+    radial-gradient(1.9px 1.9px at 594px 136px, rgba(255, 255, 255, 0.72), transparent 100%);
+  background-size:
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    260px 260px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    430px 430px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px,
+    690px 690px;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .stars { display: none; }
+}
+
 /* ── hero ─────────────────────────────────────────────────────────────── */
 header.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); }
-header.hero .gridbg {
-  position: absolute; inset: 0; pointer-events: none;
-  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 48px 48px;
-  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 70% 40%, #000 30%, transparent 80%);
-  mask-image: radial-gradient(ellipse 80% 70% at 70% 40%, #000 30%, transparent 80%);
-}
 header.hero .inner {
   position: relative; display: flex; flex-wrap: wrap; gap: 56px; align-items: center;
   padding: 88px 24px 104px;
@@ -678,6 +953,8 @@ footer > .wrap { padding: 56px 24px 48px; }
 <body>
 <!-- Icon sprite: inlined rather than pulling lucide from a CDN, so the page
      keeps its zero-external-request property. Same 24px/stroke-2 geometry. -->
+<div class="stars" aria-hidden="true"></div>
+
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
     <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
@@ -738,10 +1015,10 @@ footer > .wrap { padding: 56px 24px 48px; }
     </a>
     <nav class="nav-links">
       <a href="#discover" class="hide-sm">Product</a>
-      <a href="#evidence" class="hide-sm">Evidence</a>
-      <a href="#trust" class="hide-sm">Security</a>
-      <a href="https://docs.airom.dev">Docs</a>
-      <a class="nav-cta" href="https://github.com/airomhq/airom">GitHub</a>
+      <a href="#evidence" class="hide-sm">How It Works</a>
+      <a href="https://docs.airom.dev">Documentation</a>
+      <a href="https://github.com/airomhq/airom">GitHub</a>
+      <a href="https://docs.airom.dev/community" class="hide-sm">Community</a>
       <button class="icon-btn" id="theme" type="button" aria-label="Toggle colour theme">
         <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
         <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
@@ -751,7 +1028,6 @@ footer > .wrap { padding: 56px 24px 48px; }
 </header>
 
 <header class="hero" id="top">
-  <div class="gridbg" aria-hidden="true"></div>
   <div class="wrap inner">
     <div class="hero-copy">
       <div class="eyebrow">Open source · AI supply chain security</div>
