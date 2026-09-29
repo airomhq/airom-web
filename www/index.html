@@ -6,10 +6,36 @@
 <title>AIROM — Know what's inside your AI stack</title>
 <meta name="description" content="Open-source AI Bill of Materials (AIBOM) scanner. Discover the models, datasets, prompts, embeddings, vector databases, RAG components and frameworks your software actually uses — with file:line evidence behind every finding. CycloneDX, SPDX 3.0.1, SARIF, OpenVEX.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
 <link rel="canonical" href="https://airom.dev/">
+<style>
+/* Fonts are served from this origin, not fetched from a CDN: www/vercel.json
+   sets `default-src 'self'` with `style-src 'self' 'unsafe-inline'` and
+   `font-src 'self'`, so an external stylesheet <link> is blocked by the page's
+   own policy — which is exactly what happened when these arrived as a Google
+   Fonts link, and the page fell back to the system stack wherever Inter was
+   not already installed. Both files are the latin subset of the upstream
+   variable font, so one file covers every weight the page asks for. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
 
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://airom.dev/">

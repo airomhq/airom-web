@@ -83,7 +83,12 @@ jobs:
         run: |
           f=www/index.html
           status=0
-          for p in $(grep -oE '(src|href)="/[^"#]*"' "$f" | sed -E 's/.*="\/([^"]*)"/\1/' | sort -u); do
+          # href=/src= attributes AND CSS url(/...) — the fonts are referenced
+          # the second way, and a typo there is invisible to the first pattern.
+          refs=$( { grep -oE '(src|href)="/[^"#]*"' "$f" | sed -E 's/.*="\/([^"]*)"/\1/'
+                    grep -oE 'url\(\s*"/[^"]*"' "$f" | sed -E 's/.*url\(\s*"\/([^"]*)"/\1/'
+                  } | sort -u )
+          for p in $refs; do
             [ -z "$p" ] && continue
             if [ ! -e "www/$p" ]; then
               echo "::error::$f references /$p, which is not in www/"; status=1
