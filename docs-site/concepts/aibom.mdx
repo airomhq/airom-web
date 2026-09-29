@@ -36,11 +36,32 @@ at a target to get a machine-readable inventory. The inputs are entirely differe
 are found in code, headers, and configs, not in manifests.
 </Note>
 
-## The 13 component kinds
+## The 8 categories and 13 component kinds
 
-Every component AIROM emits has exactly one kind. The kinds are deliberately AI-native: a
-hosted model reference and a local weights file are different things, with different identity
-rules and different data attached.
+AIROM organizes its detections into **8 high-level AI asset categories, represented by 13
+component kinds**. The categories are how the inventory is described — on the landing page,
+in the docs, in a summary to your security team. The kinds are what the tool actually emits:
+every component carries exactly one, in the `kind` field of native JSON and the `airom:kind`
+property of CycloneDX.
+
+| High-level category | Component kinds |
+|---|---|
+| **Models** | `hosted-llm`, `local-model-file` |
+| **Datasets** | `dataset` |
+| **Prompts** | `prompt` |
+| **Embeddings** | `embedding-model` |
+| **Vector databases** | `vector-db` |
+| **RAG pipelines** | `rag-pipeline` |
+| **Frameworks & SDKs** | `framework`, `library` |
+| **Infrastructure** | `infra`, `service`, `ai-config` |
+
+The thirteenth kind, `application`, is the scan root itself rather than a discovered AI
+asset: it is always present, anchors the relationship graph, and belongs to no category.
+
+### The kinds in full
+
+The kinds are deliberately AI-native: a hosted model reference and a local weights file are
+different things, with different identity rules and different data attached.
 
 | Kind | What it means | Example |
 |---|---|---|

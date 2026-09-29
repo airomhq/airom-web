@@ -1,0 +1,105 @@
+# AIROM
+
+> Open-source AI Bill of Materials (AIBOM) scanner. AIROM discovers AI components —
+> models, prompts, datasets, embeddings, vector databases, frameworks, and serving
+> infrastructure — across code, container images, and Kubernetes manifests, and records
+> the `file:line` evidence behind every finding. It emits CycloneDX, SPDX, SARIF,
+> OpenVEX, JSON, and YAML. Apache-2.0. Written in Go, distributed as a single static
+> binary and as a Python package.
+
+AIROM answers the question "why does this AIBOM say the service uses gpt-4.1?" Every
+component it reports carries the source location it was found at, the detection
+technique, and an evidence-weighted confidence score. Findings it cannot substantiate
+are reported as unknown rather than guessed at.
+
+Source: https://github.com/airomhq/airom
+Rule packs: https://github.com/airomhq/airom-rules
+Benchmark corpus: https://github.com/airomhq/airom-bench
+Package: https://pypi.org/project/airom/
+
+## Product
+
+- [What is AIROM](https://docs.airom.dev/): what the scanner does and what it returns.
+- [What is an AIBOM](https://docs.airom.dev/concepts/aibom): the AI Bill of Materials concept, and the 8 AI asset categories represented by AIROM's 13 component kinds.
+- [Open-source AIBOM scanner](https://docs.airom.dev/concepts/open-source-aibom-scanner): what an AIBOM scanner is and how AIROM approaches it.
+- [AI supply chain security](https://docs.airom.dev/concepts/ai-supply-chain-security): the problem AI asset inventory addresses.
+- [Evidence model](https://docs.airom.dev/concepts/evidence): occurrences, identity claims, detection technique, and how evidence survives into each output format.
+- [Confidence](https://docs.airom.dev/concepts/confidence): how the evidence-weighted score is computed, and what it is not.
+- [Versions](https://docs.airom.dev/concepts/versions): resolved release versus declared range, and why an unresolved version is left empty.
+- [Test scope](https://docs.airom.dev/concepts/test-scope): how AI found only in fixtures and test trees is marked and excluded from the default view.
+
+## Scan targets
+
+- [Filesystem](https://docs.airom.dev/scanning/filesystem): scan a directory tree.
+- [Repository](https://docs.airom.dev/scanning/repository): scan a git repository by URL (shallow clone) or local worktree.
+- [Container images](https://docs.airom.dev/scanning/container-images): scan an image archive or OCI layout. Live registry and daemon pulls are not implemented.
+- [Kubernetes](https://docs.airom.dev/scanning/kubernetes): enumerate workload images from manifests. Live-cluster scanning is not implemented.
+
+## Getting started
+
+- [Installation](https://docs.airom.dev/installation): `pip install airom`, `go install`, prebuilt signed binaries, or build from source.
+- [Quickstart](https://docs.airom.dev/quickstart): a first scan and emitting CycloneDX and SARIF.
+- [Examples](https://docs.airom.dev/examples): worked scans and output.
+- [CLI reference](https://docs.airom.dev/reference/cli): every command, flag, and exit code.
+- [Configuration](https://docs.airom.dev/reference/configuration): config file and environment variables.
+
+## Output formats
+
+One scan projects into every format. Native JSON is the lossless reference; the others
+are pure projections of it.
+
+- [Output formats overview](https://docs.airom.dev/output/formats): all eight formats and what each is for.
+- [CycloneDX](https://docs.airom.dev/output/cyclonedx): CycloneDX 1.6 and 1.7 ML-BOM, with `evidence.occurrences[]` and `evidence.identity[]` populated, and the kind-to-`component.type` mapping.
+- [SARIF](https://docs.airom.dev/output/sarif): SARIF 2.1.0 for GitHub Code Scanning and other SARIF consumers.
+- SPDX 3.0.1 (`-o spdx`), OpenVEX (`-o vex`), native JSON (`-o json`), YAML (`-o yaml`), terminal table (`-o table`), and compliance (`-o compliance`) are covered in the overview above. SPDX is the lossiest format AIROM emits: the spec has no slot for `file:line` evidence, and the document says so rather than leaving a reader to assume there was none.
+
+## Security
+
+- [Risk detection](https://docs.airom.dev/concepts/risks): load-time code-execution surfaces — pickle imports, Keras Lambda layers, GGUF template gadgets, unsafe `torch.load` — emitted as CycloneDX `vulnerabilities[]` and SARIF. Runs offline.
+- [CVE overlay](https://docs.airom.dev/concepts/cve): AI dependencies matched against OSV.dev with locally computed CVSS scores and a fail-closed gate. On by default; the only overlay that needs the network.
+- [Model lifecycle](https://docs.airom.dev/concepts/eol): hosted models matched against a dated, sourced catalog of provider retirement announcements.
+- [Compliance mapping](https://docs.airom.dev/concepts/compliance): NIST AI RMF and OWASP Agentic controls as CycloneDX attestations, marked met, gap, or manual.
+- Model weights are never loaded, deserialized, or executed. They are identified by magic bytes and bounded header parsing; a pickle's opcode stream is walked statically to enumerate its imports and is never unpickled.
+- Every binary header parser is fuzzed in CI and must return an error rather than panic.
+- `--offline` asserts globally that no network access occurs.
+- Releases are `CGO_ENABLED=0`, reproducible, checksummed, and keyless-cosign-signed.
+- Security policy: https://github.com/airomhq/airom/blob/main/SECURITY.md
+
+## CI/CD
+
+- [GitHub Actions](https://docs.airom.dev/ci/github-actions): running AIROM in a pipeline and uploading SARIF to Code Scanning.
+- [Exit codes](https://docs.airom.dev/ci/exit-codes): a completed scan exits 0 whatever it found; `--exit-code` and `--fail-on` are the opt-in gate; exit 2 is a fatal error.
+
+## Extending AIROM
+
+- [Rule packs](https://docs.airom.dev/rules/overview): the YAML detection layer that carries the fast-moving surface (model IDs, provider SDKs) without a new binary.
+- [Writing rules](https://docs.airom.dev/rules/writing-rules): authoring a pack, its fixtures, and the lint contract.
+- [Signed rule updates](https://docs.airom.dev/rules/updates): the ed25519-signed update channel, its integrity checks, and rollback protection.
+- Rule schema reference: https://github.com/airomhq/airom/blob/main/docs/rule-schema.md
+- Detector plugin guide: https://github.com/airomhq/airom/blob/main/docs/plugin-guide.md
+- Go SDK: https://pkg.go.dev/github.com/airomhq/airom/pkg/airom
+
+## Development
+
+- Architecture: https://github.com/airomhq/airom/blob/main/docs/ARCHITECTURE.md
+- Field mapping (domain model to every output format): https://github.com/airomhq/airom/blob/main/docs/mapping.md
+- Contributing: https://github.com/airomhq/airom/blob/main/CONTRIBUTING.md
+- Releasing: https://github.com/airomhq/airom/blob/main/docs/RELEASING.md
+
+## Limitations
+
+Stated so that an answer about AIROM does not overclaim:
+
+- Caching is not implemented; `--no-cache` is a no-op.
+- Pulling a container image from a live registry or a local daemon is not implemented. Use an archive or OCI layout with `airom image --input`.
+- Scanning a live Kubernetes cluster is not implemented. Use `airom k8s --manifests <dir>`.
+- Confidence scores are evidence-weighted, not empirically calibrated probabilities.
+- AIROM is a static scanner. It does not observe runtime behaviour, evaluate model quality, or red-team a model.
+- It is not a general SBOM generator: non-AI dependencies are deliberately absent from the output.
+- Project status and the full ledger of what is complete and what is deferred: https://github.com/airomhq/airom/blob/main/docs/project-status.md
+
+## Community
+
+- [Community](https://docs.airom.dev/community): where to ask questions and how to get involved.
+- Issues: https://github.com/airomhq/airom/issues
+- License: Apache-2.0 — https://github.com/airomhq/airom/blob/main/LICENSE
