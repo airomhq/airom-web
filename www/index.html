@@ -643,10 +643,23 @@ header.hero .inner {
 
 .panel-body { display: flex; flex-wrap: wrap; }
 .tree {
+  position: relative; overflow: hidden;
   flex: 1 1 190px; min-width: 0; padding: 12px 8px;
   border-right: 1px solid var(--border);
   font-family: var(--mono); font-size: 12px;
 }
+/* The sweep: a lit hairline crossing the tree while the scan runs, and gone
+   the moment it completes. Only ever decoration, so it is hidden rather than
+   frozen mid-track when animation is off — the global reduced-motion rule
+   kills the animation, which would otherwise park a stray line at the top. */
+.tree .scanline {
+  position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: var(--accent); box-shadow: 0 0 12px 2px rgba(59, 130, 246, 0.35);
+  pointer-events: none; display: none;
+}
+.tree.scanning .scanline { display: block; animation: airom-scan 2.2s linear infinite; }
+@keyframes airom-scan { 0% { top: 0%; } 100% { top: 100%; } }
+@media (prefers-reduced-motion: reduce) { .tree.scanning .scanline { display: none; } }
 .tree .node {
   display: flex; align-items: center; gap: 6px; height: 24px;
   border-radius: 4px; color: var(--fg-muted);
@@ -1552,6 +1565,7 @@ airom scan ." aria-label="Copy install commands">
   treeEl.innerHTML = TREE.map(function (n) {
     return '<div class="node d' + n[1] + '" data-file="' + esc(n[0]) + '"><svg class="i i-sm"><use href="#i-' + n[2] + '"/></svg><span>' + esc(n[0]) + "</span></div>";
   }).join("");
+  treeEl.insertAdjacentHTML("beforeend", '<div class="scanline" aria-hidden="true"></div>');
 
   listEl.innerHTML = FINDINGS.map(function (f, i) {
     return '<button class="finding" type="button" aria-pressed="false" data-i="' + i + '">' +
@@ -1560,7 +1574,7 @@ airom scan ." aria-label="Copy install commands">
   }).join("");
 
   var findingEls = Array.prototype.slice.call(listEl.children);
-  var nodeEls = Array.prototype.slice.call(treeEl.children);
+  var nodeEls = Array.prototype.slice.call(treeEl.querySelectorAll(".node"));
 
   function emptyEvidence() {
     evEl.innerHTML = '<p class="ev-empty"><svg class="i i-sm"><use href="#i-pointer"/></svg>Select a finding to see its evidence</p>';
@@ -1606,12 +1620,14 @@ airom scan ." aria-label="Copy install commands">
     countEl.textContent = "0 / " + FINDINGS.length;
     emptyEvidence();
     setStatus("badge-info", "Scanning");
+    treeEl.classList.add("scanning");
     barEl.style.width = "0";
 
     if (reduce) {
       FINDINGS.forEach(function (f, i) { markFound(i); });
       countEl.textContent = FINDINGS.length + " / " + FINDINGS.length;
       barEl.style.width = "100%";
+      treeEl.classList.remove("scanning");
       setStatus("badge-ok", "Complete");
       select(0);
       return;
@@ -1630,6 +1646,7 @@ airom scan ." aria-label="Copy install commands">
       }, 380 + i * 700));
     });
     timers.push(setTimeout(function () {
+      treeEl.classList.remove("scanning");
       setStatus("badge-ok", "Complete");
       select(0);
     }, 380 + FINDINGS.length * 700 + 220));
