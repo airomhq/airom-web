@@ -12,13 +12,18 @@
       tab strip. The source mark relied on prefers-color-scheme, which a tab
       bar does not reliably match: a browser in light mode with a dark tab
       strip would render near-black strokes on near-black.
+
+  The tile is --accent's light-theme value, #2563EB. A favicon cannot answer
+  prefers-color-scheme, so one of the two accents has to be picked outright;
+  #2563EB carries white strokes at 5.17:1 where #3B82F6 manages only 3.68:1,
+  which is under the 4.5:1 floor for the thin ridges at 16px.
     - the geometry is scaled to fill the tile and the receding ridges are
       lifted to 40% and 70%, so all three survive at 16px.
 
   Geometry, proportions and stacking order are otherwise the mark's own.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="AIROM">
-  <rect width="32" height="32" rx="7" fill="#4F46E5"/>
+  <rect width="32" height="32" rx="7" fill="#2563EB"/>
   <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     <path d="M4.5 26 L16 14.5 L27.5 26" opacity="0.40"/>
     <path d="M4.5 20 L16 8.5 L27.5 20" opacity="0.70"/>
